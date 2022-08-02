@@ -11,8 +11,8 @@ public class TestCharacterWalker : MonoBehaviour {
         _animator = GetComponentInChildren<Animator>(true);
     }
 
-    public void GoToPoint(Vector3 worldPos) {
-        _agent.SetDestination(worldPos);
+    public void GoToPoint(Vector3 worldPos, System.Action<bool> callback) {
+        _agent.SetDestination(worldPos, callback);
     }
 
     private void Update() {

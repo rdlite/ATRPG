@@ -297,8 +297,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _baseOffset: 0
-  _movementSpeed: 5
-  _faceForwardSpeed: 10
+  _movementSpeed: 7
+  _faceForwardSpeed: 12
   _stoppingDistance: 0
 --- !u!114 &141232132
 MonoBehaviour:
@@ -2202,6 +2202,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   _minDeltaForTouch: 5
+  _walkPointerDecalPrefab: {fileID: 975291465269973939, guid: 541f6f8636287bf45975c6bd7656b7e7,
+    type: 3}
 --- !u!4 &1875813860
 Transform:
   m_ObjectHideFlags: 0
