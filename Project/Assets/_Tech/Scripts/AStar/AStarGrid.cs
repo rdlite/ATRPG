@@ -9,6 +9,8 @@ public class AStarGrid : MonoBehaviour {
     public int GridWidth => _gridSizeX;
     public int GridHeight => _gridSizeY;
     public float NodeRadius => _nodeRadius;
+    public Vector3 LDPoint => _worldBoundPoints[0].position;
+    public Vector3 RUPoint => _worldBoundPoints[1].position;
 
     private const int NAVDATA_KEY = 69;
 
@@ -24,8 +26,6 @@ public class AStarGrid : MonoBehaviour {
 
     private Dictionary<int, int> _walkableRegionsDictionary = new Dictionary<int, int>();
     private Node[,] _nodesGrid;
-    private Vector3 LDPoint => _worldBoundPoints[0].position;
-    private Vector3 RUPoint => _worldBoundPoints[1].position;
     private TextAsset _navGridData;
     private AStarPathfinder _pathfinder;
     private PathRequestManager _pathRequestManager;

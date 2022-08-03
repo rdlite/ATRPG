@@ -48,6 +48,10 @@ public class OnFieldRaycaster : MonoBehaviour {
         }
     }
 
+    public void ClearWalkPoints() {
+        DestroyAllPointers();
+    }
+
     private void DestroyAllPointers() {
         for (int i = 0; i < _createdDecals.Count; i++) {
             if (_createdDecals[i] != null) {

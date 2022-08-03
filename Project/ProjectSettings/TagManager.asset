@@ -14,8 +14,8 @@ TagManager:
   - Obstacle
   - Ground
   - Road
-  - 
-  - 
+  - FOWSolidMask
+  - FOWTransparentMask
   - 
   - 
   - 

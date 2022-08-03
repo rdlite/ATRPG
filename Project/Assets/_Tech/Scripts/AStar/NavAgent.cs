@@ -5,11 +5,11 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class NavAgent : MonoBehaviour {
+    public float MovementSpeed;
     public Vector3 Velocity { get; private set; }
     public bool IsWalkingByPath => _isMoving;
 
     [SerializeField] private float _baseOffset = .85f;
-    [SerializeField] private float _movementSpeed;
     [SerializeField] private float _faceForwardSpeed = 10f;
     [SerializeField] private float _stoppingDistance = 1f;
 
@@ -25,6 +25,11 @@ public class NavAgent : MonoBehaviour {
             OnPathFound(path, successful);
             foundCallback?.Invoke(successful);
             });
+    }
+
+    public void StopMovement() {
+        _isMoving = false;
+        StopAllCoroutines();
     }
 
     private void OnPathFound(Vector3[] path, bool successful) {
@@ -66,6 +71,20 @@ public class NavAgent : MonoBehaviour {
         return resultPath.ToArray();
     }
 
+    public float GetPathLength() {
+        if (_path != null && _path.Length >= 2) {
+            float length = 0f;
+
+            for (int i = 1; i < _path.Length; i++) {
+                length += Vector3.Distance(_path[i - 1], _path[i]);
+            }
+
+            return length;
+        }
+
+        return 0f;
+    }
+
     private void Update() {
         if (!_isMoving) {
             Velocity = Vector3.Lerp(Velocity, Vector3.zero, Time.deltaTime * 5f);
@@ -99,7 +118,7 @@ public class NavAgent : MonoBehaviour {
                 yield break;
             }
 
-            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, _movementSpeed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, MovementSpeed * Time.deltaTime);
 
             Vector3 lookDirection = (currentWaypoint - transform.position);
             lookDirection.y = 0f;
