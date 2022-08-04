@@ -34,6 +34,10 @@ public class AStarPathfinder {
         Node startNode = _grid.GetNodeFromWorldPoint(startPos);
         Node endNode = _grid.GetNodeFromWorldPoint(endPos);
 
+        if (!endNode.IsWalkable) {
+            endNode = _grid.GetFirstNearestWalkableNode(endNode);
+        }
+
         int gridW = _grid.GridWidth;
         int gridH = _grid.GridHeight;
 

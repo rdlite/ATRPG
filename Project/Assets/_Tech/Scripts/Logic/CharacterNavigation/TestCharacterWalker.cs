@@ -33,6 +33,8 @@ public class TestCharacterWalker : MonoBehaviour {
             _fieldRaycaster.ClearWalkPoints();
         }
 
+        //Shader.SetGlobalVector("_CharacterPosition", transform.position + Vector3.up);
+
         if (!_isCurrentlyMoving && _agent.IsWalkingByPath) {
             StartMove();
         } else if (_isCurrentlyMoving && !_agent.IsWalkingByPath) {

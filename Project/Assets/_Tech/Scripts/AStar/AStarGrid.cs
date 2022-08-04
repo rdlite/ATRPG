@@ -314,6 +314,66 @@ public class AStarGrid : MonoBehaviour {
         }
     }
 
+    public Node GetFirstNearestWalkableNode(Node node) {
+        return FindNearestWalkableNode(node);
+    }
+
+    int findSave = 0;
+
+    private Node FindNearestWalkableNode(Node node) {
+        if (node.IsWalkable) {
+            return node;
+        }
+
+        int checksAmount = 12;
+        float findRadius = .4f;
+        float step = .2f;
+
+        while (true) {
+            findSave++;
+
+            if (findSave > 1000000) {
+                return node;
+            }
+
+            for (int i = 0; i < checksAmount; i++) {
+                float t = (float)i / checksAmount;
+
+                float circlePoint = t * Mathf.PI * 2f;
+
+                Vector3 checkWPos = node.WorldPosition + new Vector3(Mathf.Cos(circlePoint), 0f, Mathf.Sin(circlePoint)) * findRadius;
+
+                Node nodeCheck = GetNodeFromWorldPoint(checkWPos);
+                if (nodeCheck.IsWalkable) {
+                    return nodeCheck;
+                }
+            }
+
+            findRadius += step;
+        }
+
+        return node;
+    }
+
+    //private Node FindNearestWalkableNode(Node node, List<Node> checkedNodes) {
+    //    if (checkedNodes == null) {
+    //        checkedNodes = new List<Node>();
+    //    }
+
+    //    if (node.IsWalkable) {
+    //        return node;
+    //    }
+
+    //    foreach (Node neighbour in GetNeighbours(node, false)) {
+    //        if (!checkedNodes.Contains(neighbour)) {
+    //            checkedNodes.Add(neighbour);
+    //            return FindNearestWalkableNode(neighbour, checkedNodes);
+    //        }
+    //    }
+
+    //    return node;
+    //}
+
     public Node GetNodeFromWorldPoint(Vector3 worldPos) {
         Vector3 flatWorldPos = worldPos.RemoveYCoord();
         Vector3 localPos = flatWorldPos - LDPoint.RemoveYCoord();
