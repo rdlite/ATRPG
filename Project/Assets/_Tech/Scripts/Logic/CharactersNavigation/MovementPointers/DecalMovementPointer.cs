@@ -40,7 +40,7 @@ public class DecalMovementPointer : MonoBehaviour {
             }
         }
 
-        if (!_isDestroying && Vector3.Distance(transform.position.RemoveYCoord(), _destroyer.transform.position.RemoveYCoord()) < .2f) {
+        if (!_isDestroying && Vector3.Distance(transform.position.RemoveYCoord(), _destroyer.transform.position.RemoveYCoord()) < .5f) {
             DestroyDecal();
         }
     }

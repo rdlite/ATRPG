@@ -36,6 +36,11 @@ public class AStarPathfinder {
         Node startNode = _grid.GetNodeFromWorldPoint(startPos);
         Node endNode = _grid.GetNodeFromWorldPoint(endPos);
 
+        if (!startNode.IsWalkable) {
+            startNode = _grid.GetFirstNearestWalkableNode(startNode);
+            startPos = startNode.WorldPosition;
+        }
+
         if (!endNode.IsWalkable) {
             endNode = _grid.GetFirstNearestWalkableNode(endNode);
         }
@@ -122,7 +127,12 @@ public class AStarPathfinder {
             resultWaypoints = RetracePath(startNode, endNode);
         }
 
-        if (startNode == endNode) {
+        if (startNode == endNode ||
+            resultWaypoints.Length == 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask) ||
+            resultWaypoints.Length > 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask) ||
+            resultWaypoints.Length == 1 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[0], startPos) ||
+            resultWaypoints.Length == 2 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[^1], resultWaypoints[^2]) ||
+            resultWaypoints.Length == 2 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[0], startPos)) {
             pathSuccess = false;
         }
         

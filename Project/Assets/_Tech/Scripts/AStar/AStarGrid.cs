@@ -6,6 +6,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 public class AStarGrid : MonoBehaviour {
+    public LayerMask ObstacleMask => _obstacleLayerMask;
     public int GridWidth => _gridSizeX;
     public int GridHeight => _gridSizeY;
     public float NodeRadius => _nodeRadius;
@@ -237,7 +238,7 @@ public class AStarGrid : MonoBehaviour {
         return (90f - (90f * Vector3.Dot(Vector3.up, surfaceNormal))) < _maxSurfaceSlope;
     }
 
-    private Node CheckIfNodeDelinkedByHeightAndReturnLowest(Node nodeA, Node nodeB) {
+    public Node CheckIfNodeDelinkedByHeightAndReturnLowest(Node nodeA, Node nodeB) {
         bool isDelinkedByHeight = Mathf.Abs(nodeA.WorldPosition.y - nodeB.WorldPosition.y) >= _heightDelink;
 
         if (isDelinkedByHeight) {
@@ -258,6 +259,31 @@ public class AStarGrid : MonoBehaviour {
                 return null;
             } else {
                 return nodeA.WorldPosition.y > nodeB.WorldPosition.y ? nodeB : nodeA; ;
+            }
+        }
+    }
+
+    public bool CheckIfointsDelinkedByHeight(Vector3 nodeA, Vector3 nodeB) {
+        bool isDelinkedByHeight = Mathf.Abs(nodeA.y - nodeB.y) >= _heightDelink;
+
+        if (isDelinkedByHeight) {
+            return true;
+        } else {
+            LayerMask checkMask = new LayerMask();
+            checkMask.value = 0;
+
+            foreach (TerrainType terrainType in _regions) {
+                checkMask.value = checkMask | terrainType.TerrainMask.value;
+            }
+
+            Vector3 offset = Vector3.up * .1f;
+
+            bool isHaveInstersection = Physics.Linecast(nodeA + offset, nodeB + offset, checkMask);
+
+            if (!isHaveInstersection) {
+                return false;
+            } else {
+                return true;
             }
         }
     }
@@ -337,7 +363,7 @@ public class AStarGrid : MonoBehaviour {
                 Vector3 checkWPos = node.WorldPosition + new Vector3(Mathf.Cos(circlePoint), 0f, Mathf.Sin(circlePoint)) * findRadius;
 
                 Node nodeCheck = GetNodeFromWorldPoint(checkWPos);
-                if (nodeCheck.IsWalkable) {
+                if (nodeCheck.IsWalkable && !CheckIfointsDelinkedByHeight(nodeCheck.WorldPosition, node.WorldPosition)) {
                     return nodeCheck;
                 }
             }

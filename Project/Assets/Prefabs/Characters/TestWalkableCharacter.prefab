@@ -166,6 +166,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: SphericalFOWMask
       objectReference: {fileID: 0}
+    - target: {fileID: 6624871792487185699, guid: 7331e9a3c30496248af713b592634ce4,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7331e9a3c30496248af713b592634ce4, type: 3}
 --- !u!4 &8753632803513780406 stripped

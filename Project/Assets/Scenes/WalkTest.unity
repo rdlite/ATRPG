@@ -556,6 +556,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestWalkableCharacter (3)
       objectReference: {fileID: 0}
+    - target: {fileID: 8753632802380966426, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa9d2aa79821de42b4b0a593b59ee7e, type: 3}
 --- !u!4 &268113101 stripped
@@ -564,18 +569,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 268113100}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &268113102 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8753632802380966431, guid: afa9d2aa79821de42b4b0a593b59ee7e,
-    type: 3}
-  m_PrefabInstance: {fileID: 268113100}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1289e3af2493acd44bc551c2c73abdbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &343732866
 GameObject:
   m_ObjectHideFlags: 0
@@ -2238,6 +2231,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestWalkableCharacter (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 8753632802380966426, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: afa9d2aa79821de42b4b0a593b59ee7e, type: 3}
 --- !u!4 &1414116865 stripped
@@ -2246,18 +2244,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1414116864}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1414116866 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8753632802380966431, guid: afa9d2aa79821de42b4b0a593b59ee7e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1414116864}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1289e3af2493acd44bc551c2c73abdbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1437555747
 GameObject:
   m_ObjectHideFlags: 0
@@ -2628,6 +2614,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TestWalkableCharacter (1)
       objectReference: {fileID: 0}
+    - target: {fileID: 8753632802380966426, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8753632803513780407, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_Name
@@ -2641,18 +2632,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1614604771}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &1614604773 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 8753632802380966431, guid: afa9d2aa79821de42b4b0a593b59ee7e,
-    type: 3}
-  m_PrefabInstance: {fileID: 1614604771}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1289e3af2493acd44bc551c2c73abdbb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1621508215
 GameObject:
   m_ObjectHideFlags: 0
@@ -2751,7 +2730,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &1630022388
 Transform:
   m_ObjectHideFlags: 0
@@ -3377,9 +3356,6 @@ MonoBehaviour:
   <MainCharacter>k__BackingField: {fileID: 141232132}
   _charactersInGroup:
   - {fileID: 141232132}
-  - {fileID: 1614604773}
-  - {fileID: 1414116866}
-  - {fileID: 268113102}
 --- !u!4 &1976122164
 Transform:
   m_ObjectHideFlags: 0
@@ -3616,17 +3592,17 @@ PrefabInstance:
     - target: {fileID: 8753632802380966425, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.9571643
+      value: -41.5
       objectReference: {fileID: 0}
     - target: {fileID: 8753632802380966425, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 3.3400002
+      value: -2.12
       objectReference: {fileID: 0}
     - target: {fileID: 8753632802380966425, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 4.7411213
+      value: 15.2
       objectReference: {fileID: 0}
     - target: {fileID: 8753632802380966425, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}

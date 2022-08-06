@@ -112,7 +112,11 @@ public class NavAgent : MonoBehaviour {
         Vector3 currentWaypoint = _path[0] + Vector3.up * _baseOffset;
 
         while (true) {
-            if (transform.position == currentWaypoint) {
+            bool isFPSBelowCap = (1 / Time.deltaTime) < 40;
+
+            float distanceOffsetLerp = Mathf.Lerp(.25f, .1f, Mathf.InverseLerp(40, 60, 1 / Time.deltaTime));
+
+            if (isFPSBelowCap && (transform.position - currentWaypoint).sqrMagnitude <= .1f || !isFPSBelowCap && (transform.position - currentWaypoint).sqrMagnitude <= distanceOffsetLerp) {
                 _targetIndex++;
 
                 if (_targetIndex >= _path.Length) {
@@ -128,13 +132,17 @@ public class NavAgent : MonoBehaviour {
                 yield break;
             }
 
-            transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, MovementSpeed * Time.deltaTime);
+            if (isFPSBelowCap) {
+                transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, Time.deltaTime * MovementSpeed);
+            } else {
+                transform.position += (currentWaypoint - transform.position).normalized * (Time.deltaTime * MovementSpeed);
+            }
 
-            Vector3 lookDirection = (currentWaypoint - transform.position);
-            lookDirection.y = 0f;
-            lookDirection.Normalize();
-            if (lookDirection != Vector3.zero) {
-                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(lookDirection), _faceForwardSpeed * Time.deltaTime);
+            Vector3 movementDirection = (currentWaypoint - transform.position);
+            movementDirection.y = 0f;
+            movementDirection.Normalize();
+            if (movementDirection != Vector3.zero) {
+                transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(movementDirection), _faceForwardSpeed * Time.deltaTime);
             }
 
             Velocity = (transform.position - _prevPosition) * 100f;
