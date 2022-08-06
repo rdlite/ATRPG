@@ -1,8 +1,9 @@
 using UnityEngine;
 
-public class TestCharacterWalker : MonoBehaviour {
+public class CharacterWalker : MonoBehaviour {
     [SerializeField] private GameObject _viewFow;
     [SerializeField] private NavAgent _agent;
+    [SerializeField] private Collider _collider;
     [SerializeField] private float _walkDistance = 5f;
 
     private int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
@@ -19,8 +20,8 @@ public class TestCharacterWalker : MonoBehaviour {
         _viewFow.SetActive(true);
     }
 
-    public void GoToPoint(Vector3 worldPos, System.Action<bool> callback) {
-        _agent.SetDestination(worldPos, (val) => {
+    public void GoToPoint(Vector3 worldPos, bool isMoveToExactPoint, System.Action<PathCallbackData> callback) {
+        _agent.SetDestination(worldPos, isMoveToExactPoint, (val) => {
             callback?.Invoke(val);
             _animator.SetFloat(MOVEMENT_MAGNITUDE, _agent.GetPathLength() > _walkDistance ? 1f : .5f);
             _agent.MovementSpeed = _agent.GetPathLength() > _walkDistance ? _defaultSpeed : _defaultSpeed / 2f;
@@ -33,8 +34,6 @@ public class TestCharacterWalker : MonoBehaviour {
             _fieldRaycaster.ClearWalkPoints();
         }
 
-        //Shader.SetGlobalVector("_CharacterPosition", transform.position + Vector3.up);
-
         if (!_isCurrentlyMoving && _agent.IsWalkingByPath) {
             StartMove();
         } else if (_isCurrentlyMoving && !_agent.IsWalkingByPath) {
@@ -43,11 +42,13 @@ public class TestCharacterWalker : MonoBehaviour {
     }
 
     private void StartMove() {
+        _collider.enabled = false;
         _isCurrentlyMoving = true;
         _animator.SetBool(IS_MOVING_HASH, true);
     }
 
     private void StopMove() {
+        _collider.enabled = true;
         _isCurrentlyMoving = false;
         _animator.SetBool(IS_MOVING_HASH, false);
     }

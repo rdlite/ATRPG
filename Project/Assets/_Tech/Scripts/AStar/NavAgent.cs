@@ -20,11 +20,22 @@ public class NavAgent : MonoBehaviour {
     private int _targetIndex;
     private bool _isMoving;
 
-    public void SetDestination(Vector3 destination, Action<bool> foundCallback) {
-        PathRequestManager.RequestPath(transform.position, destination, (path, successful) => {
-            OnPathFound(path, successful);
-            foundCallback?.Invoke(successful);
-            });
+    public void SetDestination(Vector3 destination, bool isMoveToExactPoint, Action<PathCallbackData> foundCallback) {
+        PathRequestManager.RequestPath(transform.position, destination, isMoveToExactPoint, (foundPath, successful) => {
+            if (foundPath != null && foundPath.Length > 0) {
+                OnPathFound(foundPath, successful);
+
+                Vector3 endPointForwardDirection = Vector3.zero;
+
+                if (foundPath.Length > 1) {
+                    endPointForwardDirection = foundPath[^1] - foundPath[^2];
+                    endPointForwardDirection.Normalize();
+                }
+
+                PathCallbackData pathCallbackData = new PathCallbackData(foundPath[^1], endPointForwardDirection, successful);
+                foundCallback?.Invoke(pathCallbackData);
+            }
+        });
     }
 
     public void StopMovement() {
@@ -32,10 +43,9 @@ public class NavAgent : MonoBehaviour {
         StopAllCoroutines();
     }
 
-    private void OnPathFound(Vector3[] path, bool successful) {
+    private void OnPathFound(Vector3[] foundPath, bool successful) {
         if (successful) {
-            _path = SmoothPath(path);
-            //_path = path;
+            _path = SmoothPath(foundPath);
 
             if (_movementRoutine != null) {
                 StopCoroutine(_movementRoutine);
@@ -46,7 +56,7 @@ public class NavAgent : MonoBehaviour {
             _movementRoutine = StartCoroutine(FollowPath());
         }
     }
-    
+
     private Vector3[] SmoothPath(Vector3[] path) {
         List<Vector3> resultPath = new List<Vector3>();
 
@@ -150,5 +160,17 @@ public class NavAgent : MonoBehaviour {
                 Gizmos.DrawLine(_path[i - 1], _path[i]);
             }
         }
+    }
+}
+
+public struct PathCallbackData {
+    public Vector3 EndWorldPos;
+    public Vector3 EndForwardDirection;
+    public bool IsSuccessful;
+
+    public PathCallbackData(Vector3 endWorldPos, Vector3 endForwardDirection, bool isSuccessful) {
+        EndWorldPos = endWorldPos;
+        EndForwardDirection = endForwardDirection;
+        IsSuccessful = isSuccessful;
     }
 }

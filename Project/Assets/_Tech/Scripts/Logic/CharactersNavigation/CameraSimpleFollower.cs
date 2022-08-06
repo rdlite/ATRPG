@@ -2,8 +2,10 @@ using UnityEngine;
 
 public class CameraSimpleFollower : MonoBehaviour {
     [SerializeField] private Vector3 _offset;
+    [SerializeField] private Vector3 _targetRotation;
     [Range(.4f, 2f), SerializeField] private float _zoom = 1f;
     [SerializeField] private float _zoomSpeed = 1f, _zoomSmooth = 10f;
+    [SerializeField] private float _rotationLerpMovement = 10f;
     [SerializeField] private float _freeMovementSpeed = 5f, _freeMovementLerpSpeed = 2f;
 
     private const string HORIZONTAL_AXIS = "Horizontal";
@@ -53,6 +55,8 @@ public class CameraSimpleFollower : MonoBehaviour {
                     Mathf.Clamp(_freeMovementPoint.position.z, _cameraLDPoint.z + _offset.z * 1.5f, _cameraRUPoint.z - _offset.z * 1.5f));
             transform.position = _freeMovementPoint.position + _offset * _currentZooming;
         }
+
+        transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, _targetRotation, _rotationLerpMovement * Time.deltaTime);
 
         _zoom -= Input.GetAxis(MOUSE_SCROLLWHEEL) * _zoomSpeed;
         _zoom = Mathf.Clamp(_zoom, .4f, 2f);

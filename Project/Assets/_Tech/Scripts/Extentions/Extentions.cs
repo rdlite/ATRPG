@@ -1,7 +1,6 @@
 using UnityEngine;
 
-public static class Extentions
-{
+public static class Extentions {
     public static Vector2 GetYRemovedV2(this Vector3 v3) {
         return new Vector2(v3.x, v3.z);
     }

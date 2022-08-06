@@ -10,6 +10,7 @@ public class AStarPathfinder {
     private AStarGrid _grid;
     private PathRequestManager _pathRequestManager;
     private Vector3 _exactEndPos;
+    private bool _isMoveToNodePoint;
 
     public void Init(AStarGrid grid, PathRequestManager pathRequestManager) {
         _grid = grid;
@@ -21,11 +22,12 @@ public class AStarPathfinder {
         _listCloseSetContains = new bool[_grid.GridWidth, _grid.GridHeight];
     }
 
-    public void StartFindPath(Vector3 wPosStart, Vector3 wPosEnd) {
-        Pathfinding(wPosStart, wPosEnd);
+    public void StartFindPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToNodePoint) {
+        _isMoveToNodePoint = isMoveToNodePoint;
+        _grid.StartCoroutine(Pathfinding(wPosStart, wPosEnd));
     }
 
-    private void Pathfinding(Vector3 startPos, Vector3 endPos) {
+    private IEnumerator Pathfinding(Vector3 startPos, Vector3 endPos) {
         _exactEndPos = endPos;
 
         Vector3[] resultWaypoints = new Vector3[0];
@@ -41,6 +43,15 @@ public class AStarPathfinder {
         int gridW = _grid.GridWidth;
         int gridH = _grid.GridHeight;
 
+        float distanceBetweenPoints = Vector3.Distance(startPos, endPos);
+        float distanceCheck = distanceBetweenPoints / 100f;
+
+        int frameSkip = 0;
+
+        if (distanceCheck >= 1) {
+            frameSkip = Mathf.RoundToInt(distanceCheck);
+        }
+
         for (int x = 0; x < gridW; x++) {
             for (int y = 0; y < gridH; y++) {
                 _listOpenSetContains[x, y] = false;
@@ -54,8 +65,16 @@ public class AStarPathfinder {
 
         Node currentCheckNode = null;
         int opensetCount = 0;
+        int passesCount = 0;
 
         while (_openSet.Count > 0) {
+            if (frameSkip != 0 && passesCount > 1500 / frameSkip) {
+                passesCount = 0;
+                yield return null;
+            }
+
+            passesCount++;
+
             Node currentNode = _openSet[0];
 
             opensetCount = _openSet.Count;
@@ -106,7 +125,7 @@ public class AStarPathfinder {
         if (startNode == endNode) {
             pathSuccess = false;
         }
-
+        
         _pathRequestManager.FinishedProcessingPath(resultWaypoints, pathSuccess);
     }
 
@@ -206,7 +225,9 @@ public class AStarPathfinder {
     private Vector3[] ConvertPath(List<Node> path) {
         List<Vector3> result = new List<Vector3>();
 
-        result.Add(_exactEndPos);
+        if (!_isMoveToNodePoint) {
+            result.Add(_exactEndPos);
+        }
 
         Vector3 directionOld = Vector3.zero;
         for (int i = 1; i < path.Count; i++) {

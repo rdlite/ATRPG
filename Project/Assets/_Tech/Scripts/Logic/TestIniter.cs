@@ -10,10 +10,10 @@ public class TestIniter : MonoBehaviour {
         OnFieldRaycaster fieldRaycaster = FindObjectOfType<OnFieldRaycaster>();
         CameraSimpleFollower cameraFollower = FindObjectOfType<CameraSimpleFollower>();
         Camera mainCamera = Camera.main;
-        TestCharacterWalker testCharacterWalker = FindObjectOfType<TestCharacterWalker>();
+        CharactersGroupContainer charactersGroupContainer = FindObjectOfType<CharactersGroupContainer>();
 
-        testCharacterWalker.Init(fieldRaycaster);
-        cameraFollower.Init(testCharacterWalker.transform, globalGrid.LDPoint, globalGrid.RUPoint);
-        fieldRaycaster.Init(mainCamera, globalGrid);
+        charactersGroupContainer.Init(fieldRaycaster, globalGrid);
+        cameraFollower.Init(charactersGroupContainer.MainCharacter.transform, globalGrid.LDPoint, globalGrid.RUPoint);
+        fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
     }
 }

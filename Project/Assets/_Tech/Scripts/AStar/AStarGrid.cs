@@ -22,6 +22,7 @@ public class AStarGrid : MonoBehaviour {
     [Range(.2f, 3f), SerializeField] private float _nodeRadius;
     [Range(0f, 3f), SerializeField] private float _obstacleAvoidance = .5f;
     [SerializeField] private float _heightDelink;
+
     [SerializeField] private float _maxSurfaceSlope = 30f;
 
     private Dictionary<int, int> _walkableRegionsDictionary = new Dictionary<int, int>();
@@ -318,8 +319,6 @@ public class AStarGrid : MonoBehaviour {
         return FindNearestWalkableNode(node);
     }
 
-    int findSave = 0;
-
     private Node FindNearestWalkableNode(Node node) {
         if (node.IsWalkable) {
             return node;
@@ -330,12 +329,6 @@ public class AStarGrid : MonoBehaviour {
         float step = .2f;
 
         while (true) {
-            findSave++;
-
-            if (findSave > 1000000) {
-                return node;
-            }
-
             for (int i = 0; i < checksAmount; i++) {
                 float t = (float)i / checksAmount;
 
@@ -351,28 +344,49 @@ public class AStarGrid : MonoBehaviour {
 
             findRadius += step;
         }
-
-        return node;
     }
 
-    //private Node FindNearestWalkableNode(Node node, List<Node> checkedNodes) {
-    //    if (checkedNodes == null) {
-    //        checkedNodes = new List<Node>();
-    //    }
+    public List<Node> GetUniqueNodesInRange(float circleRange, Vector3 centerPoint, Vector3 excludePoint, int nodesAmount, float maxDistance) {
+        List<Node> resultNodes = new List<Node>(nodesAmount);
+        List<Node> totalNodesPool = new List<Node>();
 
-    //    if (node.IsWalkable) {
-    //        return node;
-    //    }
+        Node playerNode = GetNodeFromWorldPoint(excludePoint);
 
-    //    foreach (Node neighbour in GetNeighbours(node, false)) {
-    //        if (!checkedNodes.Contains(neighbour)) {
-    //            checkedNodes.Add(neighbour);
-    //            return FindNearestWalkableNode(neighbour, checkedNodes);
-    //        }
-    //    }
+        float checkStep = _nodeRadius / 2f;
+        for (float x = centerPoint.x - circleRange / 2f; x <= centerPoint.x + circleRange / 2f; x += checkStep) {
+            for (float y = centerPoint.z - circleRange / 2f; y <= centerPoint.z + circleRange / 2f; y += checkStep) {
+                Node node = GetNodeFromWorldPoint(new Vector3(x, centerPoint.y, y));
 
-    //    return node;
-    //}
+                if (!totalNodesPool.Contains(node) && 
+                    Vector3.Distance(centerPoint, node.WorldPosition) < circleRange / 2f &&
+                    node.IsWalkable &&
+                    node != playerNode &&
+                    !Physics.Linecast(centerPoint + Vector3.up, node.WorldPosition + Vector3.up, _obstacleLayerMask)) {
+                    totalNodesPool.Add(node);
+                }
+            }
+        }
+
+        for (int i = 0; i < totalNodesPool.Count; i++) {
+            Debug.DrawLine(totalNodesPool[i].WorldPosition, totalNodesPool[i].WorldPosition + Vector3.up, Color.blue, 10000f);
+        }
+
+        if (nodesAmount > totalNodesPool.Count) {
+            resultNodes = new List<Node>(totalNodesPool);
+            for (int i = 0; i < nodesAmount - totalNodesPool.Count; i++) {
+                resultNodes.Add(totalNodesPool[0]);
+            }
+        } else {
+            for (int i = 0; i < nodesAmount; i++) {
+                int randomNodeID = UnityEngine.Random.Range(0, totalNodesPool.Count);
+                resultNodes.Add(totalNodesPool[randomNodeID]);
+                totalNodesPool.RemoveAt(randomNodeID);
+            }
+        }
+
+
+        return resultNodes;
+    }
 
     public Node GetNodeFromWorldPoint(Vector3 worldPos) {
         Vector3 flatWorldPos = worldPos.RemoveYCoord();

@@ -21,8 +21,8 @@ public class PathRequestManager {
         _pathfinder = pathfinder;
     }
 
-    public static void RequestPath(Vector3 wPosStart, Vector3 wPosEnd, Action<Vector3[], bool> callback = null) {
-        PathRequest newRequest = new PathRequest(wPosStart, wPosEnd, callback);
+    public static void RequestPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToExactPoint, Action<Vector3[], bool> callback = null) {
+        PathRequest newRequest = new PathRequest(wPosStart, wPosEnd, isMoveToExactPoint, callback);
         _instance._pathRequestQueue.Enqueue(newRequest);
         _instance.TryProcessNext();
     }
@@ -37,15 +37,17 @@ public class PathRequestManager {
         if (!_isProcessingPath && _pathRequestQueue.Count > 0) {
             _currentPathRequest = _pathRequestQueue.Dequeue();
             _isProcessingPath = true;
-            _pathfinder.StartFindPath(_currentPathRequest.PathStart, _currentPathRequest.PathEnd);
+            _pathfinder.StartFindPath(_currentPathRequest.PathStart, _currentPathRequest.PathEnd, _currentPathRequest.IsMoveToExactPoint);
         }
     }
 
     private struct PathRequest {
         public Vector3 PathStart, PathEnd;
+        public bool IsMoveToExactPoint;
         public Action<Vector3[], bool> Callback;
 
-        public PathRequest(Vector3 pathStart, Vector3 pathEnd, Action<Vector3[], bool> callback) {
+        public PathRequest(Vector3 pathStart, Vector3 pathEnd, bool isMoveToExactPoint, Action<Vector3[], bool> callback) {
+            IsMoveToExactPoint = isMoveToExactPoint;
             PathStart = pathStart;
             PathEnd = pathEnd;
             Callback = callback;

@@ -8,10 +8,13 @@ public class OnFieldRaycaster : MonoBehaviour {
 
     private List<DecalMovementPointer> _createdDecals;
     private Camera _camera;
+    private CharactersGroupContainer _charactersGroupContainer;
     private AStarGrid _globalGrid;
     private Vector2 _start1ButtonPresPosition;
 
-    public void Init(Camera camera, AStarGrid globalGrid) {
+    public void Init(
+        Camera camera, AStarGrid globalGrid, CharactersGroupContainer charactersGroupContainer) {
+        _charactersGroupContainer = charactersGroupContainer;
         _globalGrid = globalGrid;
         _camera = camera;
 
@@ -36,16 +39,17 @@ public class OnFieldRaycaster : MonoBehaviour {
         if (groundcastInfo.transform != null) {
             Vector3 worldPoint = groundcastInfo.point;
             Vector3 surfaceNormal = groundcastInfo.normal;
-            FindObjectOfType<TestCharacterWalker>().GoToPoint(worldPoint, (successful) => 
-                OnPathFound(worldPoint, surfaceNormal, FindObjectOfType<TestCharacterWalker>().transform, successful));
+            
+            _charactersGroupContainer.SendCharactersToPoint(worldPoint, surfaceNormal, OnPathFound);
         }
     }
 
-    private void OnPathFound(Vector3 worldPoint, Vector3 normal, Transform founder, bool successful) {
-        if (successful) {
+    private void OnPathFound(Vector3 worldPoint, Vector3 normal, Transform markPointRequester, bool isErasePreviousPoints) {
+        if (isErasePreviousPoints) {
             DestroyAllPointers();
-            CreateMovementPointer(worldPoint, normal, founder);
         }
+
+        CreateMovementPointer(worldPoint, normal, markPointRequester);
     }
 
     public void ClearWalkPoints() {
