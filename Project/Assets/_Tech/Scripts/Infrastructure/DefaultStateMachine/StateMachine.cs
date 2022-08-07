@@ -11,6 +11,10 @@ public abstract class StateMachine : IStateMachine {
     }
 
     public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadState<TPayload> {
+        if (_activeState is TState) {
+            return;
+        }
+
         ChangeState<TState>().Enter(payload);
     }
 

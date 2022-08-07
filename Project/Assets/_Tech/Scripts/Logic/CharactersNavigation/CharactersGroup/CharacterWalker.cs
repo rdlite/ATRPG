@@ -9,13 +9,15 @@ public abstract class CharacterWalker : MonoBehaviour {
     protected int MOVEMENT_MAGNITUDE = Animator.StringToHash("MovementMagnitude");
     protected OnFieldRaycaster _fieldRaycaster;
     protected Animator _animator;
+    protected SceneAbstractEntitiesMediator _abstractEntityMediator;
     protected float _defaultSpeed;
     protected bool _isCurrentlyMoving;
 
-    public void Init(OnFieldRaycaster fieldRaycaster) {
+    public void Init(OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator) {
         _fieldRaycaster = fieldRaycaster;
         _animator = GetComponentInChildren<Animator>(true);
         _defaultSpeed = _agent.MovementSpeed;
+        _abstractEntityMediator = abstractEntitiesMediator;
 
         LocalInit();
     }
@@ -30,12 +32,17 @@ public abstract class CharacterWalker : MonoBehaviour {
         });
     }
 
-    protected virtual void Update() {
+    public virtual void Tick() {
         if (!_isCurrentlyMoving && _agent.IsWalkingByPath) {
             StartMove();
         } else if (_isCurrentlyMoving && !_agent.IsWalkingByPath) {
             StopMove();
         }
+    }
+
+    public virtual void AbortMovement() {
+        StopMove();
+        _agent.StopMovement();
     }
 
     protected virtual void StartMove() {

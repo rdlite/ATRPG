@@ -413,9 +413,9 @@ public class AStarGrid : MonoBehaviour {
             }
         }
 
-        for (int i = 0; i < totalNodesPool.Count; i++) {
-            Debug.DrawLine(totalNodesPool[i].WorldPosition, totalNodesPool[i].WorldPosition + Vector3.up, Color.blue, 10000f);
-        }
+        //for (int i = 0; i < totalNodesPool.Count; i++) {
+        //    Debug.DrawLine(totalNodesPool[i].WorldPosition, totalNodesPool[i].WorldPosition + Vector3.up, Color.blue, 10000f);
+        //}
 
         if (nodesAmount > totalNodesPool.Count) {
             resultNodes = new List<Node>(totalNodesPool);

@@ -10,11 +10,24 @@ public class CharactersGroupContainer : MonoBehaviour {
 
     private AStarGrid _grid;
 
-    public void Init(OnFieldRaycaster fieldRaycaster, AStarGrid grid) {
+    public void Init(
+        OnFieldRaycaster fieldRaycaster, AStarGrid grid, SceneAbstractEntitiesMediator abstractEntitiesMediator) {
         _grid = grid;
 
         foreach (CharacterWalker character in _charactersInGroup) {
-            character.Init(fieldRaycaster);
+            character.Init(fieldRaycaster, abstractEntitiesMediator);
+        }
+    }
+
+    public void Tick() {
+        foreach (CharacterWalker character in _charactersInGroup) {
+            character.Tick();
+        }
+    }
+
+    public void StopCharacters() {
+        foreach (CharacterWalker character in _charactersInGroup) {
+            character.AbortMovement();
         }
     }
 

@@ -22,19 +22,31 @@ public class LoadLevelState : IPayloadState<string> {
     private void InitLoadedLevel() {
         QualitySettings.SetQualityLevel(3);
 
+        BattleGridGenerator battleGridGenerator = Object.FindObjectOfType<BattleGridGenerator>();
         AStarGrid globalGrid = Object.FindObjectOfType<AStarGrid>();
         OnFieldRaycaster fieldRaycaster = Object.FindObjectOfType<OnFieldRaycaster>();
         CameraSimpleFollower cameraFollower = Object.FindObjectOfType<CameraSimpleFollower>();
         Camera mainCamera = Camera.main;
         CharactersGroupContainer charactersGroupContainer = Object.FindObjectOfType<CharactersGroupContainer>();
+        SceneAbstractEntitiesMediator abstractEntitiesMediator = new SceneAbstractEntitiesMediator();
 
         globalGrid.Init();
+        battleGridGenerator.Init(globalGrid);
 
-        charactersGroupContainer.Init(fieldRaycaster, globalGrid);
+        charactersGroupContainer.Init(fieldRaycaster, globalGrid, abstractEntitiesMediator);
         cameraFollower.Init(charactersGroupContainer.MainCharacter.transform, globalGrid.LDPoint, globalGrid.RUPoint);
         fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
 
-        BetweenStatesDataContainer statesDataContainer = new BetweenStatesDataContainer(fieldRaycaster);
+        BetweenStatesDataContainer statesDataContainer = new BetweenStatesDataContainer(
+            fieldRaycaster, charactersGroupContainer);
+
+        EnemyCharacterWalker[] enemyWalkers = Object.FindObjectsOfType<EnemyCharacterWalker>();
+
+        foreach (EnemyCharacterWalker enemyWalker in enemyWalkers) {
+            enemyWalker.Init(fieldRaycaster, abstractEntitiesMediator);
+        }
+
+        abstractEntitiesMediator.Init(globalGrid, _globalStatemachine, statesDataContainer);
 
         _globalStatemachine.Enter<WordWalkingState, BetweenStatesDataContainer>(statesDataContainer);
     }

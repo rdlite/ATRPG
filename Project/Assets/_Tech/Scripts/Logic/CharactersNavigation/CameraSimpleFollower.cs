@@ -11,18 +11,18 @@ public class CameraSimpleFollower : MonoBehaviour {
     private const string HORIZONTAL_AXIS = "Horizontal";
     private const string VERTICAL_AXIS = "Vertical";
     private const string MOUSE_SCROLLWHEEL = "Mouse ScrollWheel";
-    private Vector3 _cameraLDPoint;
-    private Vector3 _cameraRUPoint;
+    private Vector3 _cameraGlobalLDPoint;
+    private Vector3 _cameraGlobalRUPoint;
     private Transform _target;
     private Transform _freeMovementPoint;
     private Vector2 _freeMovementVelocity;
     private float _currentZooming;
     private bool _isSnapping;
 
-    public void Init(Transform target, Vector3 cameraLDPoint, Vector3 cameraRUPoint) {
+    public void Init(Transform target, Vector3 cameraGlobalLDPoint, Vector3 cameraGlobalRUPoint) {
         _isSnapping = true;
-        _cameraLDPoint = cameraLDPoint;
-        _cameraRUPoint = cameraRUPoint;
+        _cameraGlobalLDPoint = cameraGlobalLDPoint;
+        _cameraGlobalRUPoint = cameraGlobalRUPoint;
         _target = target;
 
         _freeMovementVelocity = new Vector2(0f, 0f);
@@ -50,9 +50,9 @@ public class CameraSimpleFollower : MonoBehaviour {
             _freeMovementVelocity = Vector2.Lerp(_freeMovementVelocity, new Vector2(Input.GetAxis(HORIZONTAL_AXIS), Input.GetAxis(VERTICAL_AXIS)), _freeMovementLerpSpeed * Time.deltaTime);
             _freeMovementPoint.position -= new Vector3(_freeMovementVelocity.x, 0f, _freeMovementVelocity.y) * Time.deltaTime * _freeMovementSpeed;
             _freeMovementPoint.position = new Vector3(
-                    Mathf.Clamp(_freeMovementPoint.position.x, _cameraLDPoint.x + 5f, _cameraRUPoint.x - 5f),
+                    Mathf.Clamp(_freeMovementPoint.position.x, _cameraGlobalLDPoint.x + 5f, _cameraGlobalRUPoint.x - 5f),
                     _freeMovementPoint.position.y,
-                    Mathf.Clamp(_freeMovementPoint.position.z, _cameraLDPoint.z + _offset.z * 1.5f, _cameraRUPoint.z - _offset.z * 1.5f));
+                    Mathf.Clamp(_freeMovementPoint.position.z, _cameraGlobalLDPoint.z + _offset.z * 1.5f, _cameraGlobalRUPoint.z - _offset.z * 1.5f));
             transform.position = _freeMovementPoint.position + _offset * _currentZooming;
         }
 

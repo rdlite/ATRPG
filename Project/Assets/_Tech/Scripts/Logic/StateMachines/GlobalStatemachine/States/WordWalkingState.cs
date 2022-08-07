@@ -4,7 +4,6 @@ public class WordWalkingState : IPayloadState<BetweenStatesDataContainer>, IUpda
     private GameStateMachine _gameStateMachine;
     private BetweenStatesDataContainer _statesData;
 
-
     public WordWalkingState(GameStateMachine gameStateMachine) {
         _gameStateMachine = gameStateMachine;
     }
@@ -17,5 +16,7 @@ public class WordWalkingState : IPayloadState<BetweenStatesDataContainer>, IUpda
 
     public void Update() {
         _statesData.FieldRaycaster.Tick();
+
+        _statesData.CharactersGroupContainer.Tick();
     }
 }

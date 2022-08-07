@@ -4,13 +4,13 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 public class BattleGridGenerator : MonoBehaviour {
-    [SerializeField] private List<UnitTestData> _unitsTestData;
     [SerializeField] private DecalProjector _decalProjector;
     [SerializeField] private Transform _startPoint;
     [SerializeField] protected Transform _LDPoint, _RUPoint;
     [SerializeField] private float _circularAppearanceSpeed = 5f;
     [SerializeField] private bool _isDebug;
 
+    private List<UnitTestData> _unitsData;
     private Node[,] _nodesArray;
     private bool[,] _isWalkableMap;
     private AStarGrid _globalGrid;
@@ -21,8 +21,8 @@ public class BattleGridGenerator : MonoBehaviour {
     private int _additionalResolutionForWalkingPoint = 2;
     private bool _isGenerated;
 
-    private void Start() {
-        _globalGrid = FindObjectOfType<AStarGrid>();
+    public void Init(AStarGrid globalGrid) {
+        _globalGrid = globalGrid;
     }
 
     private void Update() {
@@ -102,8 +102,8 @@ public class BattleGridGenerator : MonoBehaviour {
     }
 
     private void PlaceUnitsOnGrid() {
-        for (int i = 0; i < _unitsTestData.Count; i++) {
-            StartCoroutine(SmoothMovementToUnitNode(_unitsTestData[i].Unit.transform));
+        for (int i = 0; i < _unitsData.Count; i++) {
+            StartCoroutine(SmoothMovementToUnitNode(_unitsData[i].Unit.transform));
         }
     }
 
@@ -142,7 +142,7 @@ public class BattleGridGenerator : MonoBehaviour {
     private void PickUnit() {
         _currentUnit++;
 
-        if (_currentUnit == _unitsTestData.Count) {
+        if (_currentUnit == _unitsData.Count) {
             _currentUnit = 0;
         }
 
@@ -150,7 +150,7 @@ public class BattleGridGenerator : MonoBehaviour {
         _decalProjector.material.SetFloat("_AppearRoundRange", 1f);
         //_decalProjector.material.SetFloat("_AppearRoundRange", 0f);
 
-        Vector3 unitPosition = _unitsTestData[_currentUnit].Unit.position.RemoveYCoord();
+        Vector3 unitPosition = _unitsData[_currentUnit].Unit.position.RemoveYCoord();
         Vector3 minPos = _nodesArray[0, 0].WorldPosition.RemoveYCoord();
         Vector3 maxPos = _nodesArray[_width - 1, _height - 1].WorldPosition.RemoveYCoord();
 
@@ -163,7 +163,7 @@ public class BattleGridGenerator : MonoBehaviour {
     }
 
     private void ShowUnitWalkingDistance() {
-        Vector3 currentUnityPosition = _unitsTestData[_currentUnit].Unit.position;
+        Vector3 currentUnityPosition = _unitsData[_currentUnit].Unit.position;
 
         Node startNode = _globalGrid.GetNodeFromWorldPoint(currentUnityPosition);
 
@@ -173,7 +173,7 @@ public class BattleGridGenerator : MonoBehaviour {
 
         possibleNodes.Add(_globalGrid.GetNodeFromWorldPoint(currentUnityPosition));
 
-        int unitMaxWalkDistance = _unitsTestData[_currentUnit].WalkRange;
+        int unitMaxWalkDistance = _unitsData[_currentUnit].WalkRange;
         int crushProtection = 0;
 
         for (int x = 0; x < _width; x++) {
@@ -182,8 +182,6 @@ public class BattleGridGenerator : MonoBehaviour {
             }
         }
         
-        List<Node> nodesPath;
-
         while (possibleNodes.Count > 0) {
             crushProtection++;
 

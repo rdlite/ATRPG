@@ -12,15 +12,19 @@ public class GameStateMachine : UpdateStateMachine
             [typeof(LoadLevelState)] = new LoadLevelState(
                 ServicesContainer.Instance.Get<LevelsLoadingService>(), this),
             [typeof(WordWalkingState)] = new WordWalkingState(
-                this)
+                this),
+            [typeof(BattleState)] = new BattleState()
         };
     }
 }
 
 public class BetweenStatesDataContainer {
     public OnFieldRaycaster FieldRaycaster;
+    public CharactersGroupContainer CharactersGroupContainer;
+    public EnemyCharacterWalker EnemyDetected;
 
-    public BetweenStatesDataContainer(OnFieldRaycaster fieldRaycaster) {
+    public BetweenStatesDataContainer(OnFieldRaycaster fieldRaycaster, CharactersGroupContainer charactersGroupContainer) {
+        CharactersGroupContainer = charactersGroupContainer;
         FieldRaycaster = fieldRaycaster;
     }
 }
