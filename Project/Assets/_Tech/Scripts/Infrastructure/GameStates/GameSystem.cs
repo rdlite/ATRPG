@@ -2,9 +2,9 @@ public class GameService {
     private GameStateMachine _gameStateMachine;
 
     public GameService(
-        ICoroutineService corounieSystem) {
+        ICoroutineService corounieSystem, ConfigsContainer configsContainer) {
         _gameStateMachine = new GameStateMachine(
-            corounieSystem);
+            corounieSystem, configsContainer);
 
         _gameStateMachine.Enter<BootstrapState>();
     }

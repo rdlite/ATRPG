@@ -4,13 +4,13 @@ using System.Collections.Generic;
 public class GameStateMachine : UpdateStateMachine
 {
     public GameStateMachine(
-        ICoroutineService coroutineService)
+        ICoroutineService coroutineService, ConfigsContainer configsContainer)
     {
         _states = new Dictionary<Type, IExitableState>() {
             [typeof(BootstrapState)] = new BootstrapState(
                 this, coroutineService),
             [typeof(LoadLevelState)] = new LoadLevelState(
-                ServicesContainer.Instance.Get<LevelsLoadingService>(), this),
+                ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer),
             [typeof(WordWalkingState)] = new WordWalkingState(
                 this),
             [typeof(BattleState)] = new BattleState()

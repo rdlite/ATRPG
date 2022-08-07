@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73a1aa9cdb66f364cb0f158853d77fd2, type: 3}
+  m_Name: Characters selection config
+  m_EditorClassIdentifier: 
+  _selectionDatas:
+  - Thickness: 2
+    OutlineColor: {r: 0.514151, g: 1, b: 0.6151307, a: 0.68235296}
+  - Thickness: 2
+    OutlineColor: {r: 1, g: 0.46846846, b: 0.3820755, a: 0.6862745}

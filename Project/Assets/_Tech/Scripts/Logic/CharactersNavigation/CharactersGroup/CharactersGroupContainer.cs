@@ -11,11 +11,13 @@ public class CharactersGroupContainer : MonoBehaviour {
     private AStarGrid _grid;
 
     public void Init(
-        OnFieldRaycaster fieldRaycaster, AStarGrid grid, SceneAbstractEntitiesMediator abstractEntitiesMediator) {
+        OnFieldRaycaster fieldRaycaster, AStarGrid grid, SceneAbstractEntitiesMediator abstractEntitiesMediator,
+        ConfigsContainer configsContainer) {
         _grid = grid;
 
         foreach (CharacterWalker character in _charactersInGroup) {
-            character.Init(fieldRaycaster, abstractEntitiesMediator);
+            character.Init(
+                fieldRaycaster, abstractEntitiesMediator, configsContainer);
         }
     }
 

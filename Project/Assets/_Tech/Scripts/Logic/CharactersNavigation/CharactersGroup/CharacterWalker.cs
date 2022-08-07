@@ -7,17 +7,35 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     protected int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
     protected int MOVEMENT_MAGNITUDE = Animator.StringToHash("MovementMagnitude");
+    protected Outline[] _childOutlines;
+    private ConfigsContainer _configsContainer;
     protected OnFieldRaycaster _fieldRaycaster;
     protected Animator _animator;
     protected SceneAbstractEntitiesMediator _abstractEntityMediator;
     protected float _defaultSpeed;
     protected bool _isCurrentlyMoving;
 
-    public void Init(OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator) {
+    public void Init(
+        OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer) {
+        _configsContainer = configsContainer;
         _fieldRaycaster = fieldRaycaster;
         _animator = GetComponentInChildren<Animator>(true);
         _defaultSpeed = _agent.MovementSpeed;
         _abstractEntityMediator = abstractEntitiesMediator;
+
+        _childOutlines = GetComponentsInChildren<Outline>(true);
+
+        SelectionData selectionData = null;
+
+        if (this is EnemyCharacterWalker) {
+            selectionData = _configsContainer.CharactersSelectionData.EnemySelection;
+        } else if (this is PlayerCharacterWalker){
+            selectionData = _configsContainer.CharactersSelectionData.PlayerSelection;
+        }
+
+        for (int i = 0; i < _childOutlines.Length; i++) {
+            _childOutlines[i].SetOutlineValues(selectionData);
+        }
 
         LocalInit();
     }
@@ -43,6 +61,12 @@ public abstract class CharacterWalker : MonoBehaviour {
     public virtual void AbortMovement() {
         StopMove();
         _agent.StopMovement();
+    }
+
+    public void SetActiveOutline(bool value) {
+        for (int i = 0; i < _childOutlines.Length; i++) {
+            _childOutlines[i].enabled = value;
+        }
     }
 
     protected virtual void StartMove() {

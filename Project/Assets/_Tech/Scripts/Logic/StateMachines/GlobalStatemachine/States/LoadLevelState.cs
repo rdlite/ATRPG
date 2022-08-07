@@ -3,10 +3,13 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 public class LoadLevelState : IPayloadState<string> {
+    private ConfigsContainer _configsContainer;
     private GameStateMachine _globalStatemachine;
     private LevelsLoadingService _levelsLoadingService;
 
-    public LoadLevelState(LevelsLoadingService levelsLoadingService, GameStateMachine globalStatemachine) {
+    public LoadLevelState(
+        LevelsLoadingService levelsLoadingService, GameStateMachine globalStatemachine, ConfigsContainer configsContainer) {
+        _configsContainer = configsContainer;
         _globalStatemachine = globalStatemachine;
         _levelsLoadingService = levelsLoadingService;
     }
@@ -33,7 +36,9 @@ public class LoadLevelState : IPayloadState<string> {
         globalGrid.Init();
         battleGridGenerator.Init(globalGrid);
 
-        charactersGroupContainer.Init(fieldRaycaster, globalGrid, abstractEntitiesMediator);
+        charactersGroupContainer.Init(
+            fieldRaycaster, globalGrid, abstractEntitiesMediator,
+            _configsContainer);
         cameraFollower.Init(charactersGroupContainer.MainCharacter.transform, globalGrid.LDPoint, globalGrid.RUPoint);
         fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
 
@@ -45,14 +50,15 @@ public class LoadLevelState : IPayloadState<string> {
         EnemyContainer[] enemyContainers = Object.FindObjectsOfType<EnemyContainer>();
 
         foreach (EnemyCharacterWalker enemyWalker in enemyWalkers) {
-            enemyWalker.Init(fieldRaycaster, abstractEntitiesMediator);
+            enemyWalker.Init(fieldRaycaster, abstractEntitiesMediator, _configsContainer);
         }
         
         foreach (EnemyContainer enemyContainer in enemyContainers) {
             enemyContainer.Init();
         }
 
-        abstractEntitiesMediator.Init(globalGrid, _globalStatemachine, statesDataContainer);
+        abstractEntitiesMediator.Init(
+            globalGrid, _globalStatemachine, statesDataContainer);
 
         _globalStatemachine.Enter<WordWalkingState, BetweenStatesDataContainer>(statesDataContainer);
     }

@@ -3929,6 +3929,11 @@ PrefabInstance:
       propertyPath: _isMainChar
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3663343100620078138, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 3872780644035602496, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_RootOrder
