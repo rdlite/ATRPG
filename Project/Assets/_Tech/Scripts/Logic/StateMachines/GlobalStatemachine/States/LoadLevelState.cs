@@ -38,12 +38,18 @@ public class LoadLevelState : IPayloadState<string> {
         fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
 
         BetweenStatesDataContainer statesDataContainer = new BetweenStatesDataContainer(
-            fieldRaycaster, charactersGroupContainer);
+            fieldRaycaster, charactersGroupContainer, battleGridGenerator,
+            cameraFollower);
 
         EnemyCharacterWalker[] enemyWalkers = Object.FindObjectsOfType<EnemyCharacterWalker>();
+        EnemyContainer[] enemyContainers = Object.FindObjectsOfType<EnemyContainer>();
 
         foreach (EnemyCharacterWalker enemyWalker in enemyWalkers) {
             enemyWalker.Init(fieldRaycaster, abstractEntitiesMediator);
+        }
+        
+        foreach (EnemyContainer enemyContainer in enemyContainers) {
+            enemyContainer.Init();
         }
 
         abstractEntitiesMediator.Init(globalGrid, _globalStatemachine, statesDataContainer);

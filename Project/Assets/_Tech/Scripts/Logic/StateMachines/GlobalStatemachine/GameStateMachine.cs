@@ -22,9 +22,15 @@ public class BetweenStatesDataContainer {
     public OnFieldRaycaster FieldRaycaster;
     public CharactersGroupContainer CharactersGroupContainer;
     public EnemyCharacterWalker EnemyDetected;
+    public BattleGridGenerator BattleGridGenerator;
+    public CameraSimpleFollower Camera;
 
-    public BetweenStatesDataContainer(OnFieldRaycaster fieldRaycaster, CharactersGroupContainer charactersGroupContainer) {
+    public BetweenStatesDataContainer(
+        OnFieldRaycaster fieldRaycaster, CharactersGroupContainer charactersGroupContainer, BattleGridGenerator battleGridGenerator,
+        CameraSimpleFollower camera) {
+        Camera = camera;
         CharactersGroupContainer = charactersGroupContainer;
         FieldRaycaster = fieldRaycaster;
+        BattleGridGenerator = battleGridGenerator;
     }
 }

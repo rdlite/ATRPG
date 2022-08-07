@@ -36,12 +36,12 @@ public class AStarPathfinder {
         Node startNode = _grid.GetNodeFromWorldPoint(startPos);
         Node endNode = _grid.GetNodeFromWorldPoint(endPos);
 
-        if (!startNode.IsWalkable) {
+        if (!startNode.CheckWalkability) {
             startNode = _grid.GetFirstNearestWalkableNode(startNode);
             startPos = startNode.WorldPosition;
         }
 
-        if (!endNode.IsWalkable) {
+        if (!endNode.CheckWalkability) {
             endNode = _grid.GetFirstNearestWalkableNode(endNode);
         }
 
@@ -103,7 +103,7 @@ public class AStarPathfinder {
             }
 
             foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true)) {
-                if (!neighbourNode.IsWalkable || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
                     continue;
                 }
 
@@ -181,7 +181,7 @@ public class AStarPathfinder {
             }
 
             foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true)) {
-                if (!neighbourNode.IsWalkable || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
                     continue;
                 }
 

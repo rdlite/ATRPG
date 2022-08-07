@@ -366,7 +366,7 @@ public class AStarGrid : MonoBehaviour {
     }
 
     private Node FindNearestWalkableNode(Node node) {
-        if (node.IsWalkable) {
+        if (node.CheckWalkability) {
             return node;
         }
 
@@ -383,7 +383,7 @@ public class AStarGrid : MonoBehaviour {
                 Vector3 checkWPos = node.WorldPosition + new Vector3(Mathf.Cos(circlePoint), 0f, Mathf.Sin(circlePoint)) * findRadius;
 
                 Node nodeCheck = GetNodeFromWorldPoint(checkWPos);
-                if (nodeCheck.IsWalkable && !CheckIfointsDelinkedByHeight(nodeCheck.WorldPosition, node.WorldPosition)) {
+                if (nodeCheck.CheckWalkability && !CheckIfointsDelinkedByHeight(nodeCheck.WorldPosition, node.WorldPosition)) {
                     return nodeCheck;
                 }
             }
@@ -405,7 +405,7 @@ public class AStarGrid : MonoBehaviour {
 
                 if (!totalNodesPool.Contains(node) && 
                     Vector3.Distance(centerPoint, node.WorldPosition) < circleRange / 2f &&
-                    node.IsWalkable &&
+                    node.CheckWalkability &&
                     node != playerNode &&
                     !Physics.Linecast(centerPoint + Vector3.up, node.WorldPosition + Vector3.up, _obstacleLayerMask)) {
                     totalNodesPool.Add(node);
@@ -524,7 +524,7 @@ public class AStarGrid : MonoBehaviour {
 
                 for (int i = 0; i < savedNodes.Datas.Count; i++) {
                     _nodesGrid[savedNodes.Datas[i].GridX, savedNodes.Datas[i].GridY] = savedNodes.Datas[i];
-                    viewTexture.SetPixel(savedNodes.Datas[i].GridX, savedNodes.Datas[i].GridY, savedNodes.Datas[i].IsWalkable ? Color.white : Color.black);
+                    viewTexture.SetPixel(savedNodes.Datas[i].GridX, savedNodes.Datas[i].GridY, savedNodes.Datas[i].CheckWalkability ? Color.white : Color.black);
                 }
 
                 viewTexture.Apply();
@@ -566,14 +566,14 @@ public class AStarGrid : MonoBehaviour {
                         } 
                         else {
                             if (_drawType.HasFlag(GizmoDrawType.Ground)) {
-                                if (_nodesGrid[x, y].IsWalkable) {
+                                if (_nodesGrid[x, y].CheckWalkability) {
                                     Gizmos.color = Color.white;
                                     Gizmos.DrawSphere(_nodesGrid[x, y].WorldPosition, _nodeRadius / 2f);
                                 }
                             }
 
                             if (_drawType.HasFlag(GizmoDrawType.Colliders)) {
-                                if (!_nodesGrid[x, y].IsWalkable) {
+                                if (!_nodesGrid[x, y].CheckWalkability) {
                                     Gizmos.color = Color.red;
                                     Gizmos.DrawSphere(_nodesGrid[x, y].WorldPosition, _nodeRadius / 2f);
                                 }

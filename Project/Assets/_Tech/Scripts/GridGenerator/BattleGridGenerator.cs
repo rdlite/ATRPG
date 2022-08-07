@@ -6,13 +6,15 @@ using UnityEngine.Rendering.Universal;
 public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private DecalProjector _decalProjector;
     [SerializeField] private Transform _startPoint;
-    [SerializeField] protected Transform _LDPoint, _RUPoint;
     [SerializeField] private float _circularAppearanceSpeed = 5f;
+    [SerializeField] private float _borderForGeneratedRect = 10f;
     [SerializeField] private bool _isDebug;
 
-    private List<UnitTestData> _unitsData;
+    private List<CharacterWalker> _unitsData;
     private Node[,] _nodesArray;
     private bool[,] _isWalkableMap;
+    private Transform _LDPoint, _RUPoint;
+    private CameraSimpleFollower _cameraFollower;
     private AStarGrid _globalGrid;
     private Texture2D _viewTexture;
     private Texture2D _walkingPointsTexture;
@@ -25,7 +27,7 @@ public class BattleGridGenerator : MonoBehaviour {
         _globalGrid = globalGrid;
     }
 
-    private void Update() {
+    public void Tick() {
         //if (!_isGenerated) {
         //    if (Input.GetKeyDown(KeyCode.Space)) {
         //        GenerateStaticDataForBattle();
@@ -40,6 +42,52 @@ public class BattleGridGenerator : MonoBehaviour {
         //    _circularAppearance += Time.deltaTime * _circularAppearanceSpeed * _unitsTestData[_currentUnit].WalkRange / 50f;
         //    _decalProjector.material.SetFloat("_AppearRoundRange", _circularAppearance);
         //}
+    }
+
+    public void StartBattle(
+        CharactersGroupContainer charactersContainer, EnemyCharacterWalker triggeredEnemy, CameraSimpleFollower cameraFollower) {
+        _cameraFollower = cameraFollower;
+
+        _unitsData = new List<CharacterWalker>();
+        _LDPoint = new GameObject("BattleLDPoint").transform;
+        _RUPoint = new GameObject("BattleRUPoint").transform;
+        _LDPoint.SetParent(transform);
+        _RUPoint.SetParent(transform);
+
+        _unitsData.AddRange(charactersContainer.GetCharacters());
+        _unitsData.AddRange(triggeredEnemy.GetAllConnectedEnemies());
+
+        float minXPos = Mathf.Infinity, maxXPos = -Mathf.Infinity;
+        float minZPos = Mathf.Infinity, maxZPos = -Mathf.Infinity;
+
+        for (int i = 0; i < _unitsData.Count; i++) {
+            if (_unitsData[i].transform.position.x < minXPos) {
+                minXPos = _unitsData[i].transform.position.x;
+            }
+            if (_unitsData[i].transform.position.x > maxXPos) {
+                maxXPos = _unitsData[i].transform.position.x;
+            }
+            if (_unitsData[i].transform.position.z < minZPos) {
+                minZPos = _unitsData[i].transform.position.z;
+            }
+            if (_unitsData[i].transform.position.z > maxZPos) {
+                maxZPos = _unitsData[i].transform.position.z;
+            }
+        }
+
+        _LDPoint.transform.position = new Vector3(minXPos - _borderForGeneratedRect, 0f, minZPos - _borderForGeneratedRect);
+        _RUPoint.transform.position = new Vector3(maxXPos + _borderForGeneratedRect, 0f, maxZPos + _borderForGeneratedRect);
+
+        _cameraFollower.SetMovementRestrictions(_LDPoint.position, _RUPoint.position);
+
+        PlaceUnitsOnGrid();
+        GenerateStaticDataForBattle();
+    }
+
+    public void Cleanup() {
+        _unitsData.Clear();
+        Destroy(_LDPoint.gameObject);
+        Destroy(_RUPoint.gameObject);
     }
 
     private void GenerateStaticDataForBattle() {
@@ -71,7 +119,7 @@ public class BattleGridGenerator : MonoBehaviour {
 
         for (int x = 0; x < _width; x++) {
             for (int y = 0; y < _height; y++) {
-                _isWalkableMap[x, y] = _nodesArray[x, y].IsWalkable;
+                _isWalkableMap[x, y] = _nodesArray[x, y].CheckWalkability;
 
                 _viewTexture.SetPixel(x, y, blackCol);
 
@@ -97,34 +145,24 @@ public class BattleGridGenerator : MonoBehaviour {
             + Vector3.up * 10f;
         _decalProjector.size = new Vector3(_width * _globalGrid.NodeRadius * 2f, _height * _globalGrid.NodeRadius * 2f, _decalProjector.size.z);
         SetDecal();
-
-        PlaceUnitsOnGrid();
     }
 
     private void PlaceUnitsOnGrid() {
         for (int i = 0; i < _unitsData.Count; i++) {
-            StartCoroutine(SmoothMovementToUnitNode(_unitsData[i].Unit.transform));
+            StartCoroutine(SmoothMovementToUnitNode(_unitsData[i].transform));
         }
     }
 
     private IEnumerator SmoothMovementToUnitNode(Transform unit) {
         Node nearestNode = _globalGrid.GetNodeFromWorldPoint(unit.position);
 
-        if (!nearestNode.IsWalkable) {
-            List<Node> neighbours = _globalGrid.GetNeighbours(nearestNode, true);
-
-            List<Node> nearestWalkableNodes = new List<Node>();
-
-            foreach (Node neighbour in neighbours) {
-                if (neighbour.IsWalkable) {
-                    nearestWalkableNodes.Add(neighbour);
-                }
-            }
-
-            nearestNode = nearestWalkableNodes[Random.Range(0, nearestWalkableNodes.Count)];
+        if (!nearestNode.CheckWalkability) {
+            nearestNode = _globalGrid.GetFirstNearestWalkableNode(nearestNode);
         }
 
-        Vector3 targetPoint = nearestNode.WorldPosition + Vector3.up;
+        nearestNode.SetPlacedByCharacter(true);
+
+        Vector3 targetPoint = nearestNode.WorldPosition;
         Vector3 startPoint = unit.position;
 
         float t = 0f;
@@ -150,7 +188,7 @@ public class BattleGridGenerator : MonoBehaviour {
         _decalProjector.material.SetFloat("_AppearRoundRange", 1f);
         //_decalProjector.material.SetFloat("_AppearRoundRange", 0f);
 
-        Vector3 unitPosition = _unitsData[_currentUnit].Unit.position.RemoveYCoord();
+        Vector3 unitPosition = _unitsData[_currentUnit].transform.position.RemoveYCoord();
         Vector3 minPos = _nodesArray[0, 0].WorldPosition.RemoveYCoord();
         Vector3 maxPos = _nodesArray[_width - 1, _height - 1].WorldPosition.RemoveYCoord();
 
@@ -163,7 +201,7 @@ public class BattleGridGenerator : MonoBehaviour {
     }
 
     private void ShowUnitWalkingDistance() {
-        Vector3 currentUnityPosition = _unitsData[_currentUnit].Unit.position;
+        Vector3 currentUnityPosition = _unitsData[_currentUnit].transform.position;
 
         Node startNode = _globalGrid.GetNodeFromWorldPoint(currentUnityPosition);
 
@@ -173,7 +211,7 @@ public class BattleGridGenerator : MonoBehaviour {
 
         possibleNodes.Add(_globalGrid.GetNodeFromWorldPoint(currentUnityPosition));
 
-        int unitMaxWalkDistance = _unitsData[_currentUnit].WalkRange;
+        int unitMaxWalkDistance = 5;//_unitsData[_currentUnit].WalkRange;
         int crushProtection = 0;
 
         for (int x = 0; x < _width; x++) {
@@ -195,7 +233,7 @@ public class BattleGridGenerator : MonoBehaviour {
             
             foreach (Node neighbour in neighbours) {
                 if (!resultNodes.Contains(neighbour) && 
-                    neighbour.IsWalkable && 
+                    neighbour.CheckWalkability && 
                     (neighbour.GridX >= _startNodeIDX && neighbour.GridX < _startNodeIDX + _width) && (neighbour.GridY >= _startNodeIDY && neighbour.GridY < _startNodeIDY + _height)) {
                     if (unitMaxWalkDistance >= Mathf.CeilToInt(_globalGrid.GetPathLength(startNode, neighbour))) {
                         resultNodes.Add(neighbour);
@@ -242,12 +280,6 @@ public class BattleGridGenerator : MonoBehaviour {
                 }
             }
         }
-    }
-
-    [System.Serializable]
-    private class UnitTestData {
-        public Transform Unit;
-        public int WalkRange = 5;
     }
 }
 

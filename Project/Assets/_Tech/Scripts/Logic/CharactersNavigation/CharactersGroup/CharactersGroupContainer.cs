@@ -51,4 +51,8 @@ public class CharactersGroupContainer : MonoBehaviour {
                     }
                 }});
     }
+
+    public List<CharacterWalker> GetCharacters() {
+        return _charactersInGroup;
+    }
 }

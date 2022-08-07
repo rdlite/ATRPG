@@ -3,6 +3,10 @@ using UnityEngine;
 
 [System.Serializable]
 public class Node {
+    public bool CheckWalkability {
+        get => IsWalkable && !_isPlacedByCharacter;
+    }
+
     [System.NonSerialized]
     public List<Node> Neighbours;
     [System.NonSerialized]
@@ -15,6 +19,8 @@ public class Node {
     public SerializableV3 _wPos;
     public List<NodeID> _neighboursID;
 
+    private bool _isPlacedByCharacter;
+
     public Node(bool walkable, Vector3 wPos, int gridX, int gridY, int movementPenalty) {
         IsWalkable = walkable;
         WorldPosition = wPos;
@@ -22,6 +28,10 @@ public class Node {
         GridX = gridX;
         GridY = gridY;
         MovementPenalty = movementPenalty;
+    }
+
+    public void SetPlacedByCharacter(bool value) {
+        _isPlacedByCharacter = value;
     }
 
     public void UpdateFCost() {
