@@ -45,3 +45,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _configsContainer: {fileID: 11400000, guid: 4a0a61f5a6d6ea04f84e18d33972c3fc, type: 2}
+  _uiRoot: {fileID: 4505650914796194496, guid: 2c3bd02eadb20c044982e406771502e0, type: 3}

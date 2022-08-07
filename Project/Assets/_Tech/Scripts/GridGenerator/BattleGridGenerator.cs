@@ -3,18 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class BattleGridData {
-    public AStarGrid GlobalGrid;
-    public Texture2D ViewTexture;
-    public Texture2D WalkingPointsTexture;
-    public List<CharacterWalker> Units;
-    public Node[,] NodesGrid;
-    public bool[,] WalkableMap;
-    public LayerMask CharactersLayerMask;
-    public Transform LDPoint, RUPoint;
-    public int Width, Height, StartNodeIDX, StartNodeIDY;
-}
-
 public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private DecalProjector _decalProjector;
     [SerializeField] private LayerMask _charactersMask;
@@ -39,7 +27,8 @@ public class BattleGridGenerator : MonoBehaviour {
     }
 
     public void StartBattle(
-        CharactersGroupContainer charactersContainer, EnemyCharacterWalker triggeredEnemy, CameraSimpleFollower cameraFollower) {
+        CharactersGroupContainer charactersContainer, EnemyCharacterWalker triggeredEnemy, CameraSimpleFollower cameraFollower,
+        UIRoot uiRoot) {
         _battleGridData.Units = new List<CharacterWalker>();
         _battleGridData.LDPoint = new GameObject("BattleLDPoint").transform;
         _battleGridData.RUPoint = new GameObject("BattleRUPoint").transform;
@@ -76,7 +65,9 @@ public class BattleGridGenerator : MonoBehaviour {
         GenerateStaticDataForBattle();
 
         _battlehandler = new BattleHandler();
-        _battlehandler.Init(cameraFollower, _battleGridData);
+        _battlehandler.Init(
+            cameraFollower, _battleGridData, _decalProjector,
+            uiRoot);
     }
 
     public void Cleanup() {
@@ -137,6 +128,7 @@ public class BattleGridGenerator : MonoBehaviour {
             + Vector3.forward * (_battleGridData.GlobalGrid.NodeRadius / 4f)
             + Vector3.up * 10f;
         _decalProjector.size = new Vector3(_battleGridData.Width * _battleGridData.GlobalGrid.NodeRadius * 2f, _battleGridData.Height * _battleGridData.GlobalGrid.NodeRadius * 2f, _decalProjector.size.z);
+        _decalProjector.transform.SetParent(transform);
         SetDecal();
     }
 
@@ -169,22 +161,6 @@ public class BattleGridGenerator : MonoBehaviour {
         }
     }
 
-    private void ShowView() {
-        Color blackCol = Color.black;
-        Color whiteCol = Color.white;
-
-        for (int x = 0; x < _battleGridData.Width; x++) {
-            for (int y = 0; y < _battleGridData.Height; y++) {
-                _battleGridData.ViewTexture.SetPixel(x, y, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
-            }
-        }
-
-        _battleGridData.ViewTexture.Apply();
-        _battleGridData.WalkingPointsTexture.Apply();
-
-        SetDecal();
-    }
-
     private void SetDecal() {
         _decalProjector.material.SetTexture("_MainTex", _battleGridData.ViewTexture);
         _decalProjector.material.SetTexture("_WalkingPointsMap", _battleGridData.WalkingPointsTexture);
@@ -203,6 +179,18 @@ public class BattleGridGenerator : MonoBehaviour {
             }
         }
     }
+}
+
+public class BattleGridData {
+    public AStarGrid GlobalGrid;
+    public Texture2D ViewTexture;
+    public Texture2D WalkingPointsTexture;
+    public List<CharacterWalker> Units;
+    public Node[,] NodesGrid;
+    public bool[,] WalkableMap;
+    public LayerMask CharactersLayerMask;
+    public Transform LDPoint, RUPoint;
+    public int Width, Height, StartNodeIDX, StartNodeIDY;
 }
 
 public class CarveObstacleDataObject {

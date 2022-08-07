@@ -1,11 +1,20 @@
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class BattleHandler {
+    private UIRoot _uiRoot;
+    private DecalProjector _decalProjector;
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
     private bool[] _mouseOverSelectionMap;
+    private CharacterWalker _currentSelectedCharacterWalker;
 
-    public void Init(CameraSimpleFollower cameraFollower, BattleGridData battleGridData) {
+    public void Init(
+        CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
+        UIRoot uiRoot) {
+        _uiRoot = uiRoot;
+        _decalProjector = decalProjector;
         _battleGridData = battleGridData;
         _mouseOverSelectionMap = new bool[_battleGridData.Units.Count];
         _battleRaycaster = new BattleRaycaster(_battleGridData.CharactersLayerMask, cameraFollower);
@@ -18,80 +27,111 @@ public class BattleHandler {
                 _mouseOverSelectionMap[i] = true;
                 _battleGridData.Units[i].SetActiveOutline(true);
             } else if (_battleGridData.Units[i] != currentMouseOverSelectionUnit && _mouseOverSelectionMap[i]) {
-                _mouseOverSelectionMap[i] = false;
-                _battleGridData.Units[i].SetActiveOutline(false);
+                if (!(_currentSelectedCharacterWalker != null && _currentSelectedCharacterWalker == _battleGridData.Units[i])) {
+                    _mouseOverSelectionMap[i] = false;
+                    _battleGridData.Units[i].SetActiveOutline(false);
+                }
             }
+        }
+
+        if (Input.GetMouseButtonDown(0) && currentMouseOverSelectionUnit != null) {
+            SetCharacterSelect(currentMouseOverSelectionUnit);
         }
     }
 
-    //private int _currentUnit;
-    //private void PickUnit() {
-    //    _currentUnit++;
+    private void SetCharacterSelect(CharacterWalker character) {
+        _currentSelectedCharacterWalker?.SetActiveOutline(false);
+        _currentSelectedCharacterWalker = character;
+        _currentSelectedCharacterWalker.SetActiveOutline(true);
 
-    //    if (_currentUnit == _unitsData.Count) {
-    //        _currentUnit = 0;
-    //    }
+        if (_currentSelectedCharacterWalker is PlayerCharacterWalker) {
+            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this);
+        } else {
+            _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel();
+        }
+    }
 
-    //    _circularAppearance = 0f;
-    //    _decalProjector.material.SetFloat("_AppearRoundRange", 1f);
-    //    //_decalProjector.material.SetFloat("_AppearRoundRange", 0f);
+    public void SwitchWalkableViewForCurrentUnit() {
+        if (_currentSelectedCharacterWalker != null) {
+            ShowUnitWalkingDistance();
+        }
+    }
 
-    //    Vector3 unitPosition = _unitsData[_currentUnit].transform.position.RemoveYCoord();
-    //    Vector3 minPos = _nodesArray[0, 0].WorldPosition.RemoveYCoord();
-    //    Vector3 maxPos = _nodesArray[_width - 1, _height - 1].WorldPosition.RemoveYCoord();
+    private void ShowUnitWalkingDistance() {
+        _decalProjector.material.SetFloat("_AppearRoundRange", 1f);
 
-    //    float uvX = Mathf.InverseLerp(minPos.x, maxPos.x, unitPosition.x); 
-    //    float uvY = Mathf.InverseLerp(minPos.z, maxPos.z, unitPosition.z); 
+        Vector3 currentUnityPosition = _currentSelectedCharacterWalker.transform.position;
 
-    //    _decalProjector.material.SetVector("_AppearCenterPointUV", new Vector2(uvX, uvY));
+        Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnityPosition);
 
-    //    ShowUnitWalkingDistance();
-    //}
+        List<Node> possibleNodes = new List<Node>(25);
+        Node[] neighbours;
+        List<Node> resultNodes = new List<Node>(25);
 
-    //private void ShowUnitWalkingDistance() {
-    //    Vector3 currentUnityPosition = _battleGridData.Units[_currentUnit].transform.position;
+        possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnityPosition));
 
-    //    Node startNode = _globalGrid.GetNodeFromWorldPoint(currentUnityPosition);
+        int unitMaxWalkDistance = 5;//_unitsData[_currentUnit].WalkRange;
+        int crushProtection = 0;
 
-    //    List<Node> possibleNodes = new List<Node>(25);
-    //    Node[] neighbours;
-    //    List<Node> resultNodes = new List<Node>(25);
+        for (int x = 0; x < _battleGridData.Width; x++) {
+            for (int y = 0; y < _battleGridData.Height; y++) {
+                _battleGridData.WalkableMap[x, y] = false;
+            }
+        }
 
-    //    possibleNodes.Add(_globalGrid.GetNodeFromWorldPoint(currentUnityPosition));
+        while (possibleNodes.Count > 0) {
+            crushProtection++;
 
-    //    int unitMaxWalkDistance = 5;//_unitsData[_currentUnit].WalkRange;
-    //    int crushProtection = 0;
+            if (crushProtection > 100000) {
+                Debug.Log("CRUSHED, DOLBOEB!!!");
+                break;
+            }
 
-    //    for (int x = 0; x < _width; x++) {
-    //        for (int y = 0; y < _height; y++) {
-    //            _isWalkableMap[x, y] = false;
-    //        }
-    //    }
+            neighbours = _battleGridData.GlobalGrid.GetNeighbours(possibleNodes[0], true).ToArray();
+            possibleNodes.RemoveAt(0);
 
-    //    while (possibleNodes.Count > 0) {
-    //        crushProtection++;
+            foreach (Node neighbour in neighbours) {
+                if (!resultNodes.Contains(neighbour) &&
+                    neighbour.CheckWalkability &&
+                    (
+                        neighbour.GridX >= _battleGridData.StartNodeIDX && 
+                        neighbour.GridX < _battleGridData.StartNodeIDX + _battleGridData.Width) && 
+                        (neighbour.GridY >= _battleGridData.StartNodeIDY && 
+                        neighbour.GridY < _battleGridData.StartNodeIDY + _battleGridData.Height)) {
+                    if (unitMaxWalkDistance >= Mathf.CeilToInt(_battleGridData.GlobalGrid.GetPathLength(startNode, neighbour))) {
+                        resultNodes.Add(neighbour);
+                        possibleNodes.Add(neighbour);
+                        _battleGridData.NodesGrid[neighbour.GridX - _battleGridData.StartNodeIDX, neighbour.GridY - _battleGridData.StartNodeIDY].SetPlacedByCharacter(false);
+                        _battleGridData.WalkableMap[neighbour.GridX - _battleGridData.StartNodeIDX, neighbour.GridY - _battleGridData.StartNodeIDY] = true;
+                    }
+                }
+            }
+        }
 
-    //        if (crushProtection > 100000) {
-    //            print("CRUSHED, DOLBOEB!!!");
-    //            break;
-    //        }
+        ShowView();
+    }
 
-    //        neighbours = _globalGrid.GetNeighbours(possibleNodes[0], true).ToArray();
-    //        possibleNodes.RemoveAt(0);
+    private void ShowView() {
+        Color blackCol = Color.black;
+        Color whiteCol = Color.white;
 
-    //        foreach (Node neighbour in neighbours) {
-    //            if (!resultNodes.Contains(neighbour) &&
-    //                neighbour.CheckWalkability &&
-    //                (neighbour.GridX >= _startNodeIDX && neighbour.GridX < _startNodeIDX + _width) && (neighbour.GridY >= _startNodeIDY && neighbour.GridY < _startNodeIDY + _height)) {
-    //                if (unitMaxWalkDistance >= Mathf.CeilToInt(_globalGrid.GetPathLength(startNode, neighbour))) {
-    //                    resultNodes.Add(neighbour);
-    //                    possibleNodes.Add(neighbour);
-    //                    _isWalkableMap[neighbour.GridX - _startNodeIDX, neighbour.GridY - _startNodeIDY] = true;
-    //                }
-    //            }
-    //        }
-    //    }
+        for (int x = 0; x < _battleGridData.Width; x++) {
+            for (int y = 0; y < _battleGridData.Height; y++) {
+                _battleGridData.ViewTexture.SetPixel(x, y, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+            }
+        }
 
-    //    ShowView();
-    //}
+        _battleGridData.ViewTexture.Apply();
+        _battleGridData.WalkingPointsTexture.Apply();
+
+        SetDecal();
+    }
+
+    private void SetDecal() {
+        _decalProjector.material.SetTexture("_MainTex", _battleGridData.ViewTexture);
+        _decalProjector.material.SetTexture("_WalkingPointsMap", _battleGridData.WalkingPointsTexture);
+        _decalProjector.material.SetFloat("_TextureOffset", 0f);
+        _decalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
+    }
+
 }
