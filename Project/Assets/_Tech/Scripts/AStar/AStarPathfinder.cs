@@ -32,7 +32,7 @@ public class AStarPathfinder {
 
         Vector3[] resultWaypoints = new Vector3[0];
         bool pathSuccess = false;
-        
+
         Node startNode = _grid.GetNodeFromWorldPoint(startPos);
         Node endNode = _grid.GetNodeFromWorldPoint(endPos);
 
@@ -129,13 +129,15 @@ public class AStarPathfinder {
 
         if (startNode == endNode ||
             resultWaypoints.Length == 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask) ||
-            resultWaypoints.Length > 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask) ||
-            resultWaypoints.Length == 1 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[0], startPos) ||
-            resultWaypoints.Length == 2 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[^1], resultWaypoints[^2]) ||
-            resultWaypoints.Length == 2 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[0], startPos)) {
+            resultWaypoints.Length > 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask)) {
             pathSuccess = false;
         }
-        
+
+        //   old rectangular slopes checks
+        //   resultWaypoints.Length == 1 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[0], startPos) ||
+        //   resultWaypoints.Length == 2 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[^1], resultWaypoints[^2]) ||
+        //   resultWaypoints.Length == 2 && _grid.CheckIfointsDelinkedByHeight(resultWaypoints[0], startPos)) {
+
         _pathRequestManager.FinishedProcessingPath(resultWaypoints, pathSuccess);
     }
 

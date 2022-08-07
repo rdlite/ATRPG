@@ -147,7 +147,8 @@ public class BattleGridGenerator : MonoBehaviour {
         }
 
         _circularAppearance = 0f;
-        _decalProjector.material.SetFloat("_AppearRoundRange", 0f);
+        _decalProjector.material.SetFloat("_AppearRoundRange", 1f);
+        //_decalProjector.material.SetFloat("_AppearRoundRange", 0f);
 
         Vector3 unitPosition = _unitsTestData[_currentUnit].Unit.position.RemoveYCoord();
         Vector3 minPos = _nodesArray[0, 0].WorldPosition.RemoveYCoord();

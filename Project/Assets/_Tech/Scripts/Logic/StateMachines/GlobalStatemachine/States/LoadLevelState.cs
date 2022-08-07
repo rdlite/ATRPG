@@ -1,0 +1,47 @@
+using System;
+using UnityEngine;
+using Object = UnityEngine.Object;
+
+public class LoadLevelState : IPayloadState<string> {
+    private GameStateMachine _globalStatemachine;
+    private LevelsLoadingService _levelsLoadingService;
+
+    public LoadLevelState(LevelsLoadingService levelsLoadingService, GameStateMachine globalStatemachine) {
+        _globalStatemachine = globalStatemachine;
+        _levelsLoadingService = levelsLoadingService;
+    }
+
+    public void Enter(string sceneName) {
+        LoadNextLevel(sceneName, InitLoadedLevel);
+    }
+
+    private void LoadNextLevel(string sceneName, Action callback) {
+        _levelsLoadingService.LoadSceneAsync(sceneName, callback);
+    }
+
+    private void InitLoadedLevel() {
+        QualitySettings.SetQualityLevel(3);
+
+        AStarGrid globalGrid = Object.FindObjectOfType<AStarGrid>();
+        OnFieldRaycaster fieldRaycaster = Object.FindObjectOfType<OnFieldRaycaster>();
+        CameraSimpleFollower cameraFollower = Object.FindObjectOfType<CameraSimpleFollower>();
+        Camera mainCamera = Camera.main;
+        CharactersGroupContainer charactersGroupContainer = Object.FindObjectOfType<CharactersGroupContainer>();
+
+        globalGrid.Init();
+
+        charactersGroupContainer.Init(fieldRaycaster, globalGrid);
+        cameraFollower.Init(charactersGroupContainer.MainCharacter.transform, globalGrid.LDPoint, globalGrid.RUPoint);
+        fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
+
+        BetweenStatesDataContainer statesDataContainer = new BetweenStatesDataContainer(fieldRaycaster);
+
+        _globalStatemachine.Enter<WordWalkingState, BetweenStatesDataContainer>(statesDataContainer);
+    }
+
+    public void Exit() { }
+}
+
+public enum LevelLoadType {
+    LastSaved, Restart, Next, First
+}

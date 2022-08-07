@@ -37,7 +37,7 @@ public class AStarGrid : MonoBehaviour {
     private int _penaltyMin = int.MaxValue;
     private int _penaltyMax = int.MinValue;
 
-    private void Awake() {
+    public void Init() {
         if (ReadNavmeshBakedData()) {
             RegenerateBakedField();
         } else {
@@ -234,8 +234,28 @@ public class AStarGrid : MonoBehaviour {
         return _nodesGrid;
     }
 
-    private bool IsSurfaceNodeWalkableBySlope(Vector3 surfaceNormal) {
+    public bool IsSurfaceNodeWalkableBySlope(Vector3 surfaceNormal) {
         return (90f - (90f * Vector3.Dot(Vector3.up, surfaceNormal))) < _maxSurfaceSlope;
+    }
+
+    public Vector3 GetGroundPoint(Vector3 startPoint) {
+        RaycastHit outhit;
+
+        LayerMask walkableMask = new LayerMask();
+        
+        if (_walkableMask == 0) {
+            walkableMask.value = 0;
+
+            foreach (TerrainType terrainType in _regions) {
+                walkableMask.value = walkableMask | terrainType.TerrainMask.value;
+            }
+        }
+
+        if (Physics.Raycast(startPoint + Vector3.up, Vector3.down, out outhit, Mathf.Infinity, walkableMask | _walkableMask)) {
+            return outhit.point;
+        }
+
+        return startPoint;
     }
 
     public Node CheckIfNodeDelinkedByHeightAndReturnLowest(Node nodeA, Node nodeB) {

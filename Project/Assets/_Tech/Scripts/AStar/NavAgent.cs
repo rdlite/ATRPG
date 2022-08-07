@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
 
 public class NavAgent : MonoBehaviour {
     public float MovementSpeed;
@@ -19,6 +18,10 @@ public class NavAgent : MonoBehaviour {
     private Vector3 _prevPosition;
     private int _targetIndex;
     private bool _isMoving;
+
+    private void Start() {
+        transform.position = PathRequestManager.GetGroundCharacterPoint(transform.position);
+    }
 
     public void SetDestination(Vector3 destination, bool isMoveToExactPoint, Action<PathCallbackData> foundCallback) {
         PathRequestManager.RequestPath(transform.position, destination, isMoveToExactPoint, (foundPath, successful) => {

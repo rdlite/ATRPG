@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PathRequestManager {
-    [SerializeField] private AStarGrid _grid;
-
     private static PathRequestManager _instance;
 
     private Queue<PathRequest> _pathRequestQueue = new Queue<PathRequest>();
@@ -19,6 +17,10 @@ public class PathRequestManager {
 
         _aStarGrid = aStarGrid;
         _pathfinder = pathfinder;
+    }
+
+    public static Vector3 GetGroundCharacterPoint(Vector3 characterStartPoint) {
+        return _instance._aStarGrid.GetGroundPoint(characterStartPoint);
     }
 
     public static void RequestPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToExactPoint, Action<Vector3[], bool> callback = null) {

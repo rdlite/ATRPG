@@ -21,7 +21,7 @@ public class OnFieldRaycaster : MonoBehaviour {
         _createdDecals = new List<DecalMovementPointer>();
     }
 
-    private void Update() {
+    public void Tick() {
         if (Input.GetMouseButtonDown(0)) {
             _start1ButtonPresPosition = Input.mousePosition;
         }
@@ -36,7 +36,7 @@ public class OnFieldRaycaster : MonoBehaviour {
     private void TrySendCharacterToPoint(Vector3 screenPosition) {
         RaycastHit groundcastInfo = IsGroundcast(screenPosition);
 
-        if (groundcastInfo.transform != null) {
+        if (groundcastInfo.transform != null && _globalGrid.IsSurfaceNodeWalkableBySlope(groundcastInfo.normal)) {
             Vector3 worldPoint = groundcastInfo.point;
             Vector3 surfaceNormal = groundcastInfo.normal;
             
