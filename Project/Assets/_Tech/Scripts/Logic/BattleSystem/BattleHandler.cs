@@ -3,12 +3,15 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 public class BattleHandler {
+    private const string APPEAR_RANGE = "_AppearRoundRange";
+    private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
     private UIRoot _uiRoot;
     private DecalProjector _decalProjector;
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
     private bool[] _mouseOverSelectionMap;
     private CharacterWalker _currentSelectedCharacterWalker;
+    private float _currentAppearRange = 0f;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
@@ -35,11 +38,22 @@ public class BattleHandler {
         }
 
         if (Input.GetMouseButtonDown(0) && currentMouseOverSelectionUnit != null) {
-            SetCharacterSelect(currentMouseOverSelectionUnit);
+            if (currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
+                SetCharacterSelect(currentMouseOverSelectionUnit);
+            }
+        }
+
+        if (_currentSelectedCharacterWalker != null) {
+            if (_currentAppearRange <= 1f) {
+                _currentAppearRange += Time.deltaTime;
+                _decalProjector.material.SetFloat(APPEAR_RANGE, _currentAppearRange);
+            }
         }
     }
 
     private void SetCharacterSelect(CharacterWalker character) {
+        _decalProjector.gameObject.SetActive(false);
+
         _currentSelectedCharacterWalker?.SetActiveOutline(false);
         _currentSelectedCharacterWalker = character;
         _currentSelectedCharacterWalker.SetActiveOutline(true);
@@ -58,7 +72,9 @@ public class BattleHandler {
     }
 
     private void ShowUnitWalkingDistance() {
-        _decalProjector.material.SetFloat("_AppearRoundRange", 1f);
+        _decalProjector.gameObject.SetActive(true);
+        _currentAppearRange = 0f;
+        _decalProjector.material.SetFloat(APPEAR_RANGE, 0f);
 
         Vector3 currentUnityPosition = _currentSelectedCharacterWalker.transform.position;
 
@@ -107,6 +123,16 @@ public class BattleHandler {
                 }
             }
         }
+
+        Vector3 minPoint = _battleGridData.LDPoint.position;
+        Vector3 maxPoint = _battleGridData.RUPoint.position;
+
+        float xLerpPoint = Mathf.InverseLerp(minPoint.x, maxPoint.x, currentUnityPosition.x);
+        float zLerpPoint = Mathf.InverseLerp(minPoint.z, maxPoint.z, currentUnityPosition.z);
+
+        Debug.Log(xLerpPoint + " " + zLerpPoint);
+
+        _decalProjector.material.SetVector(APPEAR_CENTER_POINT_UV, new Vector2(xLerpPoint, zLerpPoint));
 
         ShowView();
     }

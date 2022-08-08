@@ -47,18 +47,18 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AppearRoundRange: 1
+    - _AppearRoundRange: 1.0064772
     - _DecalAngleFadeSupported: 1
     - _DecalMeshBiasType: 0
     - _DecalMeshDepthBias: 0
     - _DecalMeshViewBias: 0
     - _DelinkViewSubtract: 1
     - _DrawOrder: 0
-    - _FillTransparent: 0.97
+    - _FillTransparent: 1
     - _InlineOpacity: 3
     - _InlinePower: 10
-    - _InlineSmooth0: -0.05
-    - _InlineSmooth1: 0.37
+    - _InlineSmooth0: -2.37
+    - _InlineSmooth1: 1.07
     - _InlineThickness: 0.48
     - _NormalAlpha: 0
     - _OutlineThickness: 0.55
@@ -67,12 +67,12 @@ Material:
     - _Smooth2: -0.5
     - _Smooth3: 0.33
     - _TextureOffset: 0
-    - _WalkPointsOpacity: 0.104
-    - _WalkPointsSize: 0.935
+    - _WalkPointsOpacity: 0.217
+    - _WalkPointsSize: 0.1
     - _WalkPointsTextureOffset: -0.0042
     - _WalkingPointsTextureOffset: 0
     m_Colors:
-    - _AppearCenterPointUV: {r: 0.25925925, g: 0.8620691, b: 0, a: 0}
+    - _AppearCenterPointUV: {r: 0.29489204, g: 0.7276223, b: 0, a: 0}
     - _FillColor: {r: 0, g: 0.89161587, b: 1, a: 1}
     - _InlineAlphaColor: {r: 1, g: 1, b: 1, a: 0.772549}
     - _InlineColor: {r: 0, g: 1, b: 0.9374714, a: 1}
