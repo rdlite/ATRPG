@@ -130,8 +130,6 @@ public class BattleHandler {
         float xLerpPoint = Mathf.InverseLerp(minPoint.x, maxPoint.x, currentUnityPosition.x);
         float zLerpPoint = Mathf.InverseLerp(minPoint.z, maxPoint.z, currentUnityPosition.z);
 
-        Debug.Log(xLerpPoint + " " + zLerpPoint);
-
         _decalProjector.material.SetVector(APPEAR_CENTER_POINT_UV, new Vector2(xLerpPoint, zLerpPoint));
 
         ShowView();
@@ -143,7 +141,11 @@ public class BattleHandler {
 
         for (int x = 0; x < _battleGridData.Width; x++) {
             for (int y = 0; y < _battleGridData.Height; y++) {
-                _battleGridData.ViewTexture.SetPixel(x, y, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+                //_battleGridData.ViewTexture.SetPixel(x, y, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
             }
         }
 

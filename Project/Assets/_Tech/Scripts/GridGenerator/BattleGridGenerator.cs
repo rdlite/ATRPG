@@ -92,7 +92,7 @@ public class BattleGridGenerator : MonoBehaviour {
         _battleGridData.NodesGrid = _battleGridData.GlobalGrid.GetNodesFiledWithinWorldPoints(_battleGridData.LDPoint.position, _battleGridData.RUPoint.position);
         _battleGridData.WalkableMap = new bool[_battleGridData.Width, _battleGridData.Height];
 
-        _battleGridData.ViewTexture = new Texture2D(_battleGridData.Width, _battleGridData.Height);
+        _battleGridData.ViewTexture = new Texture2D(_battleGridData.Width * _battleGridData.ViewTextureResolution, _battleGridData.Height * _battleGridData.ViewTextureResolution);
         _battleGridData.WalkingPointsTexture = new Texture2D(_battleGridData.Width * _additionalResolutionForWalkingPoint, _battleGridData.Height * _additionalResolutionForWalkingPoint);
 
         for (int x = 0; x < _battleGridData.Width * _additionalResolutionForWalkingPoint; x++) {
@@ -105,12 +105,16 @@ public class BattleGridGenerator : MonoBehaviour {
             for (int y = 0; y < _battleGridData.Height; y++) {
                 _battleGridData.WalkableMap[x, y] = _battleGridData.NodesGrid[x, y].CheckWalkability;
 
-                _battleGridData.ViewTexture.SetPixel(x, y, blackCol);
-
                 _battleGridData.WalkingPointsTexture.SetPixel(
                     x * _additionalResolutionForWalkingPoint,
                     y * _additionalResolutionForWalkingPoint,
                     whiteCol);
+            }
+        }
+
+        for (int x = 0; x < _battleGridData.Width * _battleGridData.ViewTextureResolution; x++) {
+            for (int y = 0; y < _battleGridData.Height * _battleGridData.ViewTextureResolution; y++) {
+                _battleGridData.ViewTexture.SetPixel(x, y, blackCol);
             }
         }
 
@@ -191,6 +195,7 @@ public class BattleGridData {
     public LayerMask CharactersLayerMask;
     public Transform LDPoint, RUPoint;
     public int Width, Height, StartNodeIDX, StartNodeIDY;
+    public int ViewTextureResolution = 2;
 }
 
 public class CarveObstacleDataObject {
