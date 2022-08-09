@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class GamePreloader : MonoBehaviour, ICoroutineService {
     [SerializeField] private ConfigsContainer _configsContainer;
+    [SerializeField] private AssetsContainer _assetsContaner;
     [SerializeField] private UIRoot _uiRoot;
 
     private GameService _gameService;
@@ -16,7 +17,8 @@ public class GamePreloader : MonoBehaviour, ICoroutineService {
         DontDestroyOnLoad(gameObject);
 
         _gameService = new GameService(
-            this, _configsContainer, _uiRoot);
+            this, _configsContainer, _uiRoot,
+            _assetsContaner);
     }
 
     private void Update() {

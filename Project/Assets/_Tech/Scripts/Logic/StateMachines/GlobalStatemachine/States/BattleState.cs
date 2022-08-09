@@ -2,9 +2,11 @@
 
 public class BattleState : IPayloadState<BetweenStatesDataContainer>, IUpdateState {
     private BetweenStatesDataContainer _sceneData;
+    private AssetsContainer _assetsContainer;
     private UIRoot _uiRoot;
 
-    public BattleState(UIRoot uiRoot) {
+    public BattleState(UIRoot uiRoot, AssetsContainer assetsContainer) {
+        _assetsContainer = assetsContainer;
         _uiRoot = uiRoot;
     }
 
@@ -13,7 +15,7 @@ public class BattleState : IPayloadState<BetweenStatesDataContainer>, IUpdateSta
         sceneData.CharactersGroupContainer.StopCharacters();
         sceneData.BattleGridGenerator.StartBattle(
             sceneData.CharactersGroupContainer, sceneData.EnemyDetected, sceneData.Camera,
-            _uiRoot);
+            _uiRoot, _assetsContainer);
         _uiRoot.EnablePanel(UIRoot.UIPanelType.BattleState);
     }
 

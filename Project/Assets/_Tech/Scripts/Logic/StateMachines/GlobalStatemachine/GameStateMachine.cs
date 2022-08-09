@@ -4,7 +4,8 @@ using System.Collections.Generic;
 public class GameStateMachine : UpdateStateMachine
 {
     public GameStateMachine(
-        ICoroutineService coroutineService, ConfigsContainer configsContainer, UIRoot uiRoot)
+        ICoroutineService coroutineService, ConfigsContainer configsContainer, UIRoot uiRoot,
+        AssetsContainer assetsContainer)
     {
         _states = new Dictionary<Type, IExitableState>() {
             [typeof(BootstrapState)] = new BootstrapState(
@@ -13,7 +14,7 @@ public class GameStateMachine : UpdateStateMachine
                 ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer),
             [typeof(WordWalkingState)] = new WordWalkingState(
                 this, uiRoot),
-            [typeof(BattleState)] = new BattleState(uiRoot)
+            [typeof(BattleState)] = new BattleState(uiRoot, assetsContainer)
         };
     }
 }

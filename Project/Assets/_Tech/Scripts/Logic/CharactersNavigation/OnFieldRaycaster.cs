@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class OnFieldRaycaster : MonoBehaviour {
     [SerializeField] private LayerMask _groundCheck, _raycastRestrictionMask;
@@ -22,15 +23,23 @@ public class OnFieldRaycaster : MonoBehaviour {
     }
 
     public void Tick() {
-        if (Input.GetMouseButtonDown(0)) {
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
             _start1ButtonPresPosition = Input.mousePosition;
         }
 
-        if (Input.GetMouseButtonUp(0)) {
+        if (Input.GetMouseButtonUp(0) && !IsPointerOverUIObject()) {
             if (Vector2.Distance(_start1ButtonPresPosition, Input.mousePosition) < _minDeltaForTouch) {
                 TrySendCharacterToPoint(Input.mousePosition);
             }
         }
+    }
+
+    private bool IsPointerOverUIObject() {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
     }
 
     private void TrySendCharacterToPoint(Vector3 screenPosition) {

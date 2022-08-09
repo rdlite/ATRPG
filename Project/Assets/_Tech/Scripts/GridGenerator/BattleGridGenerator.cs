@@ -28,7 +28,7 @@ public class BattleGridGenerator : MonoBehaviour {
 
     public void StartBattle(
         CharactersGroupContainer charactersContainer, EnemyCharacterWalker triggeredEnemy, CameraSimpleFollower cameraFollower,
-        UIRoot uiRoot) {
+        UIRoot uiRoot, AssetsContainer assetsContainer) {
         _battleGridData.Units = new List<CharacterWalker>();
         _battleGridData.LDPoint = new GameObject("BattleLDPoint").transform;
         _battleGridData.RUPoint = new GameObject("BattleRUPoint").transform;
@@ -67,7 +67,7 @@ public class BattleGridGenerator : MonoBehaviour {
         _battlehandler = new BattleHandler();
         _battlehandler.Init(
             cameraFollower, _battleGridData, _decalProjector,
-            uiRoot);
+            uiRoot, assetsContainer);
     }
 
     public void Cleanup() {

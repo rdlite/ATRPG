@@ -2,19 +2,23 @@
 using UnityEngine.UI;
 
 public class BattlePanel : UIPanel {
-    [SerializeField] private GameObject _walkButton;
+    [SerializeField] private AbilityButton _walkButton;
 
     protected override void LocalInit() {
 
     }
 
     public void EnableUnitPanel(BattleHandler battleHadler) {
-        _walkButton.SetActive(true);
-        _walkButton.GetComponent<Button>().onClick.RemoveAllListeners();
-        _walkButton.GetComponent<Button>().onClick.AddListener(() => battleHadler.SwitchWalkableViewForCurrentUnit());
+        _walkButton.gameObject.SetActive(true);
+        _walkButton.OnClick += battleHadler.SwitchWalking;
+        _walkButton.OnPointerEnter += battleHadler.ShowWalkingDistance;
+        _walkButton.OnPointerExit += battleHadler.WalkingPointerExit;
     }
 
-    public void DisableUnitsPanel() {
-        _walkButton.SetActive(false);
+    public void DisableUnitsPanel(BattleHandler battleHadler) {
+        _walkButton.gameObject.SetActive(false);
+        _walkButton.OnClick -= battleHadler.SwitchWalking;
+        _walkButton.OnPointerEnter -= battleHadler.ShowWalkingDistance;
+        _walkButton.OnPointerExit -= battleHadler.WalkingPointerExit;
     }
 }

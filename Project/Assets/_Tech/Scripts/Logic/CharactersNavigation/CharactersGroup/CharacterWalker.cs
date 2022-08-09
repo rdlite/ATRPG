@@ -3,6 +3,7 @@ using UnityEngine;
 public abstract class CharacterWalker : MonoBehaviour {
     [SerializeField] protected NavAgent _agent;
     [SerializeField] protected Collider _collider;
+    [SerializeField] protected Transform _overCharacterPoint;
     [SerializeField] protected float _distanceToStartWalkingAnimation = 5f;
 
     protected int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
@@ -79,5 +80,9 @@ public abstract class CharacterWalker : MonoBehaviour {
         _collider.enabled = true;
         _isCurrentlyMoving = false;
         _animator.SetBool(IS_MOVING_HASH, false);
+    }
+
+    public Vector3 GetOverCharacterPoint() {
+        return _overCharacterPoint.transform.position;
     }
 }

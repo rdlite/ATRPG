@@ -41,3 +41,6 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: OverWorldUI
+    uniqueID: 3521711329
+    locked: 0

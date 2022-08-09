@@ -5,17 +5,21 @@ using UnityEngine.Rendering.Universal;
 public class BattleHandler {
     private const string APPEAR_RANGE = "_AppearRoundRange";
     private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
+    private AssetsContainer _assetsContainer;
     private UIRoot _uiRoot;
     private DecalProjector _decalProjector;
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
     private bool[] _mouseOverSelectionMap;
     private CharacterWalker _currentSelectedCharacterWalker;
+    private GameObject _createdCharacterSelection;
     private float _currentAppearRange = 0f;
+    private bool _isCurrentlyShowWalkingDistance;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
-        UIRoot uiRoot) {
+        UIRoot uiRoot, AssetsContainer assetsContainer) {
+        _assetsContainer = assetsContainer;
         _uiRoot = uiRoot;
         _decalProjector = decalProjector;
         _battleGridData = battleGridData;
@@ -52,23 +56,42 @@ public class BattleHandler {
     }
 
     private void SetCharacterSelect(CharacterWalker character) {
+        _isCurrentlyShowWalkingDistance = false;
+        CreateCharacterSelection(character);
+
         _decalProjector.gameObject.SetActive(false);
 
         _currentSelectedCharacterWalker?.SetActiveOutline(false);
         _currentSelectedCharacterWalker = character;
         _currentSelectedCharacterWalker.SetActiveOutline(true);
 
+        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
+
         if (_currentSelectedCharacterWalker is PlayerCharacterWalker) {
             _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this);
-        } else {
-            _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel();
         }
     }
 
-    public void SwitchWalkableViewForCurrentUnit() {
-        if (_currentSelectedCharacterWalker != null) {
-            ShowUnitWalkingDistance();
+    public void SwitchWalking() {
+        _isCurrentlyShowWalkingDistance = !_isCurrentlyShowWalkingDistance;
+
+        if (!_isCurrentlyShowWalkingDistance) {
+            HideWalkingDistance();
         }
+    }
+
+    public void ShowWalkingDistance() {
+        ShowUnitWalkingDistance();
+    }
+
+    public void WalkingPointerExit() {
+        if (!_isCurrentlyShowWalkingDistance) {
+            HideWalkingDistance();
+        }
+    }
+
+    public void HideWalkingDistance() {
+        _decalProjector.gameObject.SetActive(false);
     }
 
     private void ShowUnitWalkingDistance() {
@@ -76,15 +99,15 @@ public class BattleHandler {
         _currentAppearRange = 0f;
         _decalProjector.material.SetFloat(APPEAR_RANGE, 0f);
 
-        Vector3 currentUnityPosition = _currentSelectedCharacterWalker.transform.position;
+        Vector3 currentUnitPosition = _currentSelectedCharacterWalker.transform.position;
 
-        Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnityPosition);
+        Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition);
 
         List<Node> possibleNodes = new List<Node>(25);
         Node[] neighbours;
         List<Node> resultNodes = new List<Node>(25);
 
-        possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnityPosition));
+        possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition));
 
         int unitMaxWalkDistance = 5;//_unitsData[_currentUnit].WalkRange;
         int crushProtection = 0;
@@ -92,6 +115,16 @@ public class BattleHandler {
         for (int x = 0; x < _battleGridData.Width; x++) {
             for (int y = 0; y < _battleGridData.Height; y++) {
                 _battleGridData.WalkableMap[x, y] = false;
+            }
+        }
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+
+            if (unitNode == startNode) {
+                unitNode.SetPlacedByCharacter(false);
+            } else {
+                unitNode.SetPlacedByCharacter(true);
             }
         }
 
@@ -127,8 +160,8 @@ public class BattleHandler {
         Vector3 minPoint = _battleGridData.LDPoint.position;
         Vector3 maxPoint = _battleGridData.RUPoint.position;
 
-        float xLerpPoint = Mathf.InverseLerp(minPoint.x, maxPoint.x, currentUnityPosition.x);
-        float zLerpPoint = Mathf.InverseLerp(minPoint.z, maxPoint.z, currentUnityPosition.z);
+        float xLerpPoint = Mathf.InverseLerp(minPoint.x, maxPoint.x, currentUnitPosition.x);
+        float zLerpPoint = Mathf.InverseLerp(minPoint.z, maxPoint.z, currentUnitPosition.z);
 
         _decalProjector.material.SetVector(APPEAR_CENTER_POINT_UV, new Vector2(xLerpPoint, zLerpPoint));
 
@@ -162,4 +195,13 @@ public class BattleHandler {
         _decalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
     }
 
+    private void CreateCharacterSelection(CharacterWalker characterWalker) {
+        if (_createdCharacterSelection != null) {
+            Object.Destroy(_createdCharacterSelection);
+        }
+
+        _createdCharacterSelection = Object.Instantiate(_assetsContainer.BattleOverCharacterSelectionPrefab);
+        _createdCharacterSelection.transform.position = characterWalker.GetOverCharacterPoint();
+        _createdCharacterSelection.transform.SetParent(characterWalker.transform);
+    }
 }
