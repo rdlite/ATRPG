@@ -141,6 +141,87 @@ public class AStarPathfinder {
         _pathRequestManager.FinishedProcessingPath(resultWaypoints, pathSuccess);
     }
 
+    public Vector3[] CalculatePath(Node startNode, Node endNode) {
+        Vector3[] resultWaypoints = new Vector3[0];
+        bool pathSuccess = false;
+
+        if (!startNode.CheckWalkability) {
+            startNode = _grid.GetFirstNearestWalkableNode(startNode);
+        }
+
+        if (!endNode.CheckWalkability) {
+            endNode = _grid.GetFirstNearestWalkableNode(endNode);
+        }
+
+        int gridW = _grid.GridWidth;
+        int gridH = _grid.GridHeight;
+
+        for (int x = 0; x < gridW; x++) {
+            for (int y = 0; y < gridH; y++) {
+                _listOpenSetContains[x, y] = false;
+                _listCloseSetContains[x, y] = false;
+            }
+        }
+
+        _openSet.Clear();
+        _openSet.Add(startNode);
+        _listOpenSetContains[startNode.GridX, startNode.GridY] = true;
+
+        Node currentCheckNode = null;
+        int opensetCount = 0;
+
+        while (_openSet.Count > 0) {
+
+            Node currentNode = _openSet[0];
+
+            opensetCount = _openSet.Count;
+
+            for (int i = 0; i < opensetCount; i++) {
+                currentCheckNode = _openSet[i];
+
+                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost) {
+                    currentNode = currentCheckNode;
+                }
+            }
+
+            _listOpenSetContains[currentNode.GridX, currentNode.GridY] = false;
+            _openSet.Remove(currentNode);
+            _listCloseSetContains[currentNode.GridX, currentNode.GridY] = true;
+
+            if (currentNode == endNode) {
+                pathSuccess = true;
+
+                break;
+            }
+
+            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true)) {
+                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                    continue;
+                }
+
+                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode);
+
+                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                    neighbourNode.gCost = newMovementCostToNeighbour;
+                    neighbourNode.hCost = GetDistance(neighbourNode, endNode);
+                    neighbourNode.UpdateFCost();
+                    neighbourNode.Parent = currentNode;
+
+                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                        _openSet.Add(neighbourNode);
+                        _listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY] = true;
+                    }
+                }
+            }
+        }
+
+        if (pathSuccess) {
+            resultWaypoints = RetracePathWithStartPoint(startNode, endNode);
+        }
+
+        return resultWaypoints;
+    }
+
     public float GetPathLength(Node startNode, Node endNode) {
         int gridW = _grid.GridWidth;
         int gridH = _grid.GridHeight;
@@ -217,6 +298,23 @@ public class AStarPathfinder {
 
         return waypoints;
     }
+    
+    private Vector3[] RetracePathWithStartPoint(Node startNode, Node endNode) {
+        List<Node> path = new List<Node>();
+        Node currentNode = endNode;
+
+        while (currentNode != startNode) {
+            path.Add(currentNode);
+            currentNode = currentNode.Parent;
+        }
+
+        path.Add(startNode);
+
+        Vector3[] waypoints = ConvertPathByExactPoints(path);
+        Array.Reverse(waypoints);
+
+        return waypoints;
+    }
 
     private float RetracePathLength(Node startNode, Node endNode) {
         Node currentNode = endNode;
@@ -232,6 +330,16 @@ public class AStarPathfinder {
         }
 
         return length;
+    }
+
+    private Vector3[] ConvertPathByExactPoints(List<Node> path) {
+        List<Vector3> result = new List<Vector3>();
+
+        for (int i = 0; i < path.Count; i++) {
+            result.Add(path[i].WorldPosition);
+        }
+
+        return result.ToArray();
     }
 
     private Vector3[] ConvertPath(List<Node> path) {

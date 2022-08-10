@@ -47,7 +47,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AppearRoundRange: 1.0029764
+    - _AppearRoundRange: 1.0199996
     - _DecalAngleFadeSupported: 1
     - _DecalMeshBiasType: 0
     - _DecalMeshDepthBias: 0
@@ -74,7 +74,7 @@ Material:
     - _WalkPointsTextureOffset: -0.0042
     - _WalkingPointsTextureOffset: 0
     m_Colors:
-    - _AppearCenterPointUV: {r: 0.2727746, g: 0.7162641, b: 0, a: 0}
+    - _AppearCenterPointUV: {r: 0.27388772, g: 0.716854, b: 0, a: 0}
     - _FillColor: {r: 0, g: 0.89161587, b: 1, a: 1}
     - _InlineAlphaColor: {r: 1, g: 1, b: 1, a: 0.772549}
     - _InlineColor: {r: 0, g: 1, b: 0.9374714, a: 1}

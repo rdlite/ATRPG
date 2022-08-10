@@ -46,9 +46,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _decalProjector: {fileID: 5662913889548663088, guid: 7f710596a88294e419dbb68a1afa08b3,
     type: 3}
+  _movementLinePrefab: {fileID: 3408749020958452516, guid: 4d4449a1300d71440809da056894462e,
+    type: 3}
   _charactersMask:
     serializedVersion: 2
     m_Bits: 2048
+  _groundLayerMask:
+    serializedVersion: 2
+    m_Bits: 384
   _startPoint: {fileID: 5052610839338524693}
   _circularAppearanceSpeed: 3.5
   _borderForGeneratedRect: 10

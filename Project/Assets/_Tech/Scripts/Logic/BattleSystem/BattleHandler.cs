@@ -5,26 +5,29 @@ using UnityEngine.Rendering.Universal;
 public class BattleHandler {
     private const string APPEAR_RANGE = "_AppearRoundRange";
     private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
+    private bool[] _mouseOverSelectionMap;
     private AssetsContainer _assetsContainer;
     private UIRoot _uiRoot;
     private DecalProjector _decalProjector;
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
-    private bool[] _mouseOverSelectionMap;
     private CharacterWalker _currentSelectedCharacterWalker;
     private GameObject _createdCharacterSelection;
+    private LineRenderer _movementLinePrefab;
+    private LineRenderer _createdLinePrefab;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
-        UIRoot uiRoot, AssetsContainer assetsContainer) {
+        UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab) {
+        _movementLinePrefab = movementLinePrefab;
         _assetsContainer = assetsContainer;
         _uiRoot = uiRoot;
         _decalProjector = decalProjector;
         _battleGridData = battleGridData;
         _mouseOverSelectionMap = new bool[_battleGridData.Units.Count];
-        _battleRaycaster = new BattleRaycaster(_battleGridData.CharactersLayerMask, cameraFollower);
+        _battleRaycaster = new BattleRaycaster(_battleGridData.CharactersLayerMask, cameraFollower, _battleGridData.GroundLayerMask);
     }
 
     public void Tick() {
@@ -53,11 +56,40 @@ public class BattleHandler {
                 _decalProjector.material.SetFloat(APPEAR_RANGE, _currentAppearRange);
             }
         }
+
+        if (_isCurrentlyShowWalkingDistance) {
+            DrawWalkLine();
+        }
+    }
+
+    private void DrawWalkLine() {
+        Vector3 groundPoint = _battleRaycaster.GetRaycastPoint();
+
+        Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedCharacterWalker.transform.position);
+        Node endNode = _battleGridData.GlobalGrid.GetFirstNearestWalkableNode(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(groundPoint));
+
+        Vector3[] path = _battleGridData.GlobalGrid.GetPathPoints(startNode, endNode);
+        if (_createdLinePrefab != null) {
+            Object.Destroy(_createdLinePrefab.gameObject);
+        }
+
+        if (path.Length != 0) {
+            _createdLinePrefab = Object.Instantiate(_movementLinePrefab);
+            _createdLinePrefab.positionCount = path.Length;
+
+            for (int i = 0; i < path.Length; i++) {
+                _createdLinePrefab.SetPosition(i, path[i] + Vector3.up * .1f);
+            }
+        }
     }
 
     private void SetCharacterSelect(CharacterWalker character) {
         _isCurrentlyShowWalkingDistance = false;
         CreateCharacterSelection(character);
+
+        if (_createdLinePrefab != null) {
+            Object.Destroy(_createdLinePrefab.gameObject);
+        }
 
         _decalProjector.gameObject.SetActive(false);
 
@@ -109,7 +141,7 @@ public class BattleHandler {
 
         possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition));
 
-        int unitMaxWalkDistance = 5;//_unitsData[_currentUnit].WalkRange;
+        int unitMaxWalkDistance = 20;//_unitsData[_currentUnit].WalkRange;
         int crushProtection = 0;
 
         for (int x = 0; x < _battleGridData.Width; x++) {
@@ -117,7 +149,7 @@ public class BattleHandler {
                 _battleGridData.WalkableMap[x, y] = false;
             }
         }
-
+        
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
             Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
 
@@ -143,9 +175,9 @@ public class BattleHandler {
                 if (!resultNodes.Contains(neighbour) &&
                     neighbour.CheckWalkability &&
                     (
-                        neighbour.GridX >= _battleGridData.StartNodeIDX && 
-                        neighbour.GridX < _battleGridData.StartNodeIDX + _battleGridData.Width) && 
-                        (neighbour.GridY >= _battleGridData.StartNodeIDY && 
+                        neighbour.GridX >= _battleGridData.StartNodeIDX &&
+                        neighbour.GridX < _battleGridData.StartNodeIDX + _battleGridData.Width) &&
+                        (neighbour.GridY >= _battleGridData.StartNodeIDY &&
                         neighbour.GridY < _battleGridData.StartNodeIDY + _battleGridData.Height)) {
                     if (unitMaxWalkDistance >= Mathf.CeilToInt(_battleGridData.GlobalGrid.GetPathLength(startNode, neighbour))) {
                         resultNodes.Add(neighbour);
@@ -154,6 +186,12 @@ public class BattleHandler {
                         _battleGridData.WalkableMap[neighbour.GridX - _battleGridData.StartNodeIDX, neighbour.GridY - _battleGridData.StartNodeIDY] = true;
                     }
                 }
+            }
+        }
+
+        for (int x = 0; x < _battleGridData.Width; x++) {
+            for (int y = 0; y < _battleGridData.Height; y++) {
+                _battleGridData.NodesGrid[x, y].SetPlacedByCharacter(!_battleGridData.WalkableMap[x, y]);
             }
         }
 

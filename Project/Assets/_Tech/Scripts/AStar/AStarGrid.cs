@@ -370,9 +370,12 @@ public class AStarGrid : MonoBehaviour {
             return node;
         }
 
-        int checksAmount = 12;
         float findRadius = .4f;
         float step = .2f;
+
+        int checksAmount = 4;
+        bool isLastCircle = false;
+        List<Node> nearestNodes = new List<Node>();
 
         while (true) {
             for (int i = 0; i < checksAmount; i++) {
@@ -384,12 +387,32 @@ public class AStarGrid : MonoBehaviour {
 
                 Node nodeCheck = GetNodeFromWorldPoint(checkWPos);
                 if (nodeCheck.CheckWalkability && !CheckIfointsDelinkedByHeight(nodeCheck.WorldPosition, node.WorldPosition)) {
-                    return nodeCheck;
+                    isLastCircle = true;
+                    nearestNodes.Add(nodeCheck);
                 }
             }
 
+            if (isLastCircle) {
+                break;
+            }
+
+            checksAmount++;
+
             findRadius += step;
         }
+
+        float minDist = Mathf.Infinity;
+        Node nearestNode = node;
+
+        for (int i = 0; i < nearestNodes.Count; i++) {
+            float distance = Vector3.Distance(nearestNodes[i].WorldPosition.RemoveYCoord(), node.WorldPosition.RemoveYCoord());
+            if (distance < minDist) {
+                minDist = distance;
+                nearestNode = nearestNodes[i];
+            }
+        }
+
+        return nearestNode;
     }
 
     public List<Node> GetUniqueNodesInRange(float circleRange, Vector3 centerPoint, Vector3 excludePoint, int nodesAmount, float maxDistance) {
@@ -471,6 +494,10 @@ public class AStarGrid : MonoBehaviour {
 
     public Node[,] GetNodesGrid() {
         return _nodesGrid;
+    }
+
+    public Vector3[] GetPathPoints(Node startPoint, Node endPoint) {
+        return _pathfinder.CalculatePath(startPoint, endPoint);
     }
 
     public List<Node> GetNeighbours(Node node, bool isDiagonalMovement) {

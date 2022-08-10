@@ -5,7 +5,9 @@ using UnityEngine.Rendering.Universal;
 
 public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private DecalProjector _decalProjector;
+    [SerializeField] private LineRenderer _movementLinePrefab;
     [SerializeField] private LayerMask _charactersMask;
+    [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private Transform _startPoint;
     [SerializeField] private float _circularAppearanceSpeed = 5f;
     [SerializeField] private float _borderForGeneratedRect = 10f;
@@ -19,6 +21,7 @@ public class BattleGridGenerator : MonoBehaviour {
     public void Init(AStarGrid globalGrid) {
         _battleGridData = new BattleGridData();
         _battleGridData.CharactersLayerMask = _charactersMask;
+        _battleGridData.GroundLayerMask = _groundLayerMask;
         _battleGridData.GlobalGrid = globalGrid;
     }
 
@@ -67,7 +70,7 @@ public class BattleGridGenerator : MonoBehaviour {
         _battlehandler = new BattleHandler();
         _battlehandler.Init(
             cameraFollower, _battleGridData, _decalProjector,
-            uiRoot, assetsContainer);
+            uiRoot, assetsContainer, _movementLinePrefab);
     }
 
     public void Cleanup() {
@@ -193,6 +196,7 @@ public class BattleGridData {
     public Node[,] NodesGrid;
     public bool[,] WalkableMap;
     public LayerMask CharactersLayerMask;
+    public LayerMask GroundLayerMask;
     public Transform LDPoint, RUPoint;
     public int Width, Height, StartNodeIDX, StartNodeIDY;
     public int ViewTextureResolution = 2;
