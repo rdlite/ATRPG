@@ -4,6 +4,7 @@ public abstract class CharacterWalker : MonoBehaviour {
     [SerializeField] protected NavAgent _agent;
     [SerializeField] protected Collider _collider;
     [SerializeField] protected Transform _overCharacterPoint;
+    [SerializeField] protected GameObject _selectionAboveCharacter;
     [SerializeField] protected float _distanceToStartWalkingAnimation = 5f;
 
     protected int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
@@ -13,6 +14,7 @@ public abstract class CharacterWalker : MonoBehaviour {
     protected OnFieldRaycaster _fieldRaycaster;
     protected Animator _animator;
     protected SceneAbstractEntitiesMediator _abstractEntityMediator;
+    protected GameObject _createdCharacterSelection;
     protected float _defaultSpeed;
     protected bool _isCurrentlyMoving;
 
@@ -59,6 +61,16 @@ public abstract class CharacterWalker : MonoBehaviour {
         }
     }
 
+    private void Update() {
+        MoveSelection();
+    }
+
+    private void MoveSelection() {
+        if (_createdCharacterSelection != null) {
+            _createdCharacterSelection.transform.position = GetOverCharacterPoint();
+        }
+    }
+
     public virtual void AbortMovement() {
         StopMove();
         _agent.StopMovement();
@@ -84,5 +96,17 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     public Vector3 GetOverCharacterPoint() {
         return _overCharacterPoint.transform.position;
+    }
+
+    public void CreateSelectionAbove() {
+        DestroySelection();
+
+        _createdCharacterSelection = Instantiate(_selectionAboveCharacter);
+    }
+
+    public void DestroySelection() {
+        if (_createdCharacterSelection != null) {
+            Destroy(_createdCharacterSelection);
+        }
     }
 }

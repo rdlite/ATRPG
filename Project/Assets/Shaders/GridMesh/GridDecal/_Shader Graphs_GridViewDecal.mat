@@ -21,6 +21,10 @@ Material:
   m_SavedProperties:
     serializedVersion: 3
     m_TexEnvs:
+    - _CurrentMovementPointsTexture:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - _DelinkingNodesMap:
         m_Texture: {fileID: 2800000, guid: cbaeed03e5416aa4bae23110b63a0c7d, type: 3}
         m_Scale: {x: 1, y: 1}
@@ -47,7 +51,11 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AppearRoundRange: 1.0199996
+    - _AppearRoundRange: 1.0078496
+    - _CurrentMovementPointSmooth0: 0.02
+    - _CurrentMovementPointSmooth1: 0.13
+    - _CurrentMovementPointsOpacity: 0.21
+    - _CurrentMovementPointsSize: 0.97
     - _DecalAngleFadeSupported: 1
     - _DecalMeshBiasType: 0
     - _DecalMeshDepthBias: 0
@@ -74,7 +82,7 @@ Material:
     - _WalkPointsTextureOffset: -0.0042
     - _WalkingPointsTextureOffset: 0
     m_Colors:
-    - _AppearCenterPointUV: {r: 0.27388772, g: 0.716854, b: 0, a: 0}
+    - _AppearCenterPointUV: {r: 0.38770142, g: 0.67000806, b: 0, a: 0}
     - _FillColor: {r: 0, g: 0.89161587, b: 1, a: 1}
     - _InlineAlphaColor: {r: 1, g: 1, b: 1, a: 0.772549}
     - _InlineColor: {r: 0, g: 1, b: 0.9374714, a: 1}

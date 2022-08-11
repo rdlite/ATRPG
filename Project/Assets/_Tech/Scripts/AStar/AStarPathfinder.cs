@@ -37,12 +37,12 @@ public class AStarPathfinder {
         Node endNode = _grid.GetNodeFromWorldPoint(endPos);
 
         if (!startNode.CheckWalkability) {
-            startNode = _grid.GetFirstNearestWalkableNode(startNode);
+            startNode = _grid.GetFirstNearestWalkableNode(startNode, true);
             startPos = startNode.WorldPosition;
         }
 
         if (!endNode.CheckWalkability) {
-            endNode = _grid.GetFirstNearestWalkableNode(endNode);
+            endNode = _grid.GetFirstNearestWalkableNode(endNode,true);
         }
 
         int gridW = _grid.GridWidth;
@@ -146,11 +146,11 @@ public class AStarPathfinder {
         bool pathSuccess = false;
 
         if (!startNode.CheckWalkability) {
-            startNode = _grid.GetFirstNearestWalkableNode(startNode);
+            startNode = _grid.GetFirstNearestWalkableNode(startNode, true);
         }
 
         if (!endNode.CheckWalkability) {
-            endNode = _grid.GetFirstNearestWalkableNode(endNode);
+            endNode = _grid.GetFirstNearestWalkableNode(endNode, true);
         }
 
         int gridW = _grid.GridWidth;

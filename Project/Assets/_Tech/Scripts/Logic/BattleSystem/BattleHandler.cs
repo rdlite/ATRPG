@@ -12,7 +12,6 @@ public class BattleHandler {
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
     private CharacterWalker _currentSelectedCharacterWalker;
-    private GameObject _createdCharacterSelection;
     private LineRenderer _movementLinePrefab;
     private LineRenderer _createdLinePrefab;
     private float _currentAppearRange = 0f;
@@ -58,34 +57,59 @@ public class BattleHandler {
         }
 
         if (_isCurrentlyShowWalkingDistance) {
-            DrawWalkLine();
+            TryDrawWalkLine();
         }
     }
 
-    private void DrawWalkLine() {
+    private Node _prevMovementNode;
+    private void TryDrawWalkLine() {
         Vector3 groundPoint = _battleRaycaster.GetRaycastPoint();
 
         Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedCharacterWalker.transform.position);
-        Node endNode = _battleGridData.GlobalGrid.GetFirstNearestWalkableNode(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(groundPoint));
+        Node endNodeCheckInWorld = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(groundPoint);
 
-        Vector3[] path = _battleGridData.GlobalGrid.GetPathPoints(startNode, endNode);
-        if (_createdLinePrefab != null) {
-            Object.Destroy(_createdLinePrefab.gameObject);
-        }
+        _currentSelectedCharacterWalker.transform.rotation = Quaternion.Slerp(_currentSelectedCharacterWalker.transform.rotation,
+            Quaternion.LookRotation(groundPoint.RemoveYCoord() - _currentSelectedCharacterWalker.transform.position.RemoveYCoord(), Vector3.up),
+            20f * Time.deltaTime);
 
-        if (path.Length != 0) {
-            _createdLinePrefab = Object.Instantiate(_movementLinePrefab);
-            _createdLinePrefab.positionCount = path.Length;
+        if (_prevMovementNode != endNodeCheckInWorld) {
+             Node endNode = _battleGridData.GlobalGrid.GetFirstNearestWalkableNode(
+            endNodeCheckInWorld,
+            false,
+            _battleGridData.StartNodeIDX, _battleGridData.StartNodeIDX + _battleGridData.Width - 1, _battleGridData.StartNodeIDY, _battleGridData.StartNodeIDY + _battleGridData.Height - 1);
 
-            for (int i = 0; i < path.Length; i++) {
-                _createdLinePrefab.SetPosition(i, path[i] + Vector3.up * .1f);
+            Vector3[] path = _battleGridData.GlobalGrid.GetPathPoints(startNode, endNode);
+            if (_createdLinePrefab != null) {
+                Object.Destroy(_createdLinePrefab.gameObject);
+            }
+
+            if (path.Length != 0) {
+                _createdLinePrefab = Object.Instantiate(_movementLinePrefab);
+                _createdLinePrefab.positionCount = path.Length;
+
+                for (int i = 0; i < path.Length; i++) {
+                    _createdLinePrefab.SetPosition(i, path[i] + Vector3.up * .1f);
+                }
+
+                for (int x = 0; x < _battleGridData.NodesGrid.GetLength(0); x++) {
+                    for (int y = 0; y < _battleGridData.NodesGrid.GetLength(1); y++) {
+                        _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
+                    }
+                }
+
+                _battleGridData.CurrentMovementPointsTexture.SetPixel((startNode.GridX - _battleGridData.StartNodeIDX) * 2, (startNode.GridY - _battleGridData.StartNodeIDY) * 2, Color.white);
+                _battleGridData.CurrentMovementPointsTexture.SetPixel((endNode.GridX - _battleGridData.StartNodeIDX) * 2, (endNode.GridY - _battleGridData.StartNodeIDY) * 2, Color.white);
+
+                _battleGridData.CurrentMovementPointsTexture.Apply();
+                SetDecal();
             }
         }
+        
+        _prevMovementNode = endNodeCheckInWorld;
     }
 
     private void SetCharacterSelect(CharacterWalker character) {
         _isCurrentlyShowWalkingDistance = false;
-        CreateCharacterSelection(character);
 
         if (_createdLinePrefab != null) {
             Object.Destroy(_createdLinePrefab.gameObject);
@@ -93,9 +117,11 @@ public class BattleHandler {
 
         _decalProjector.gameObject.SetActive(false);
 
+        _currentSelectedCharacterWalker?.DestroySelection();
         _currentSelectedCharacterWalker?.SetActiveOutline(false);
         _currentSelectedCharacterWalker = character;
         _currentSelectedCharacterWalker.SetActiveOutline(true);
+        _currentSelectedCharacterWalker.CreateSelectionAbove();
 
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
@@ -109,11 +135,14 @@ public class BattleHandler {
 
         if (!_isCurrentlyShowWalkingDistance) {
             HideWalkingDistance();
+            Object.Destroy(_createdLinePrefab.gameObject);
         }
     }
 
     public void ShowWalkingDistance() {
-        ShowUnitWalkingDistance();
+        if (!_isCurrentlyShowWalkingDistance) {
+            ShowUnitWalkingDistance();
+        }
     }
 
     public void WalkingPointerExit() {
@@ -147,6 +176,8 @@ public class BattleHandler {
         for (int x = 0; x < _battleGridData.Width; x++) {
             for (int y = 0; y < _battleGridData.Height; y++) {
                 _battleGridData.WalkableMap[x, y] = false;
+                _battleGridData.NodesGrid[x, y].SetPlacedByCharacter(false);
+                _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
             }
         }
         
@@ -217,11 +248,14 @@ public class BattleHandler {
                 _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
                 _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
                 _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+
+                _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
             }
         }
 
         _battleGridData.ViewTexture.Apply();
         _battleGridData.WalkingPointsTexture.Apply();
+        _battleGridData.CurrentMovementPointsTexture.Apply();
 
         SetDecal();
     }
@@ -229,17 +263,12 @@ public class BattleHandler {
     private void SetDecal() {
         _decalProjector.material.SetTexture("_MainTex", _battleGridData.ViewTexture);
         _decalProjector.material.SetTexture("_WalkingPointsMap", _battleGridData.WalkingPointsTexture);
+        _decalProjector.material.SetTexture("_CurrentMovementPointsTexture", _battleGridData.CurrentMovementPointsTexture);
         _decalProjector.material.SetFloat("_TextureOffset", 0f);
         _decalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
     }
 
     private void CreateCharacterSelection(CharacterWalker characterWalker) {
-        if (_createdCharacterSelection != null) {
-            Object.Destroy(_createdCharacterSelection);
-        }
-
-        _createdCharacterSelection = Object.Instantiate(_assetsContainer.BattleOverCharacterSelectionPrefab);
-        _createdCharacterSelection.transform.position = characterWalker.GetOverCharacterPoint();
-        _createdCharacterSelection.transform.SetParent(characterWalker.transform);
+        characterWalker.CreateSelectionAbove();
     }
 }

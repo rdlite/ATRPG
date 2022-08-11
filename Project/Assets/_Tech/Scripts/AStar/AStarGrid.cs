@@ -361,17 +361,25 @@ public class AStarGrid : MonoBehaviour {
         }
     }
 
-    public Node GetFirstNearestWalkableNode(Node node) {
-        return FindNearestWalkableNode(node);
+    public Node GetFirstNearestWalkableNode(Node node, bool isCheckHeight, int minXBorder = -1, int maxXBorder = -1, int minYBorder = -1, int maxYBorder = -1) {
+        return FindNearestWalkableNode(node, isCheckHeight, minXBorder, maxXBorder, minYBorder, maxYBorder);
     }
 
-    private Node FindNearestWalkableNode(Node node) {
-        if (node.CheckWalkability) {
+    private bool IsInsideBorders(Node node, int minX, int maxX, int minY, int maxY) {
+        if (minX == -1) {
+            return true;
+        }
+
+        return node.GridX >= minX && node.GridX <= maxX && node.GridY >= minY && node.GridY <= maxY;
+    }
+
+    private Node FindNearestWalkableNode(Node node, bool isCheckHeight, int minX = -1, int maxX = -1, int minY = -1, int maxY = -1) {
+        if (node.CheckWalkability && IsInsideBorders(node, minX, maxX, minY, maxY)) {
             return node;
         }
 
         float findRadius = .4f;
-        float step = .2f;
+        float step = 1f;
 
         int checksAmount = 4;
         bool isLastCircle = false;
@@ -386,7 +394,9 @@ public class AStarGrid : MonoBehaviour {
                 Vector3 checkWPos = node.WorldPosition + new Vector3(Mathf.Cos(circlePoint), 0f, Mathf.Sin(circlePoint)) * findRadius;
 
                 Node nodeCheck = GetNodeFromWorldPoint(checkWPos);
-                if (nodeCheck.CheckWalkability && !CheckIfointsDelinkedByHeight(nodeCheck.WorldPosition, node.WorldPosition)) {
+                bool isDelinkedByHeight = isCheckHeight && CheckIfointsDelinkedByHeight(nodeCheck.WorldPosition, node.WorldPosition);
+
+                if (nodeCheck.CheckWalkability && !isDelinkedByHeight && IsInsideBorders(nodeCheck, minX, maxX, minY, maxY)) {
                     isLastCircle = true;
                     nearestNodes.Add(nodeCheck);
                 }
@@ -396,7 +406,12 @@ public class AStarGrid : MonoBehaviour {
                 break;
             }
 
-            checksAmount++;
+            checksAmount += 4;
+
+            if (checksAmount > 1000) {
+                print("DOLBOEB");
+                break;
+            }
 
             findRadius += step;
         }

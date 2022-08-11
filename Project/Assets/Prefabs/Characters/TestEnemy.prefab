@@ -54,6 +54,8 @@ MonoBehaviour:
   _agent: {fileID: 2577137321308798024}
   _collider: {fileID: 1760743379826749261}
   _overCharacterPoint: {fileID: 6849609087746001742}
+  _selectionAboveCharacter: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
+    type: 3}
   _distanceToStartWalkingAnimation: 5
 --- !u!114 &2577137321308798024
 MonoBehaviour:
