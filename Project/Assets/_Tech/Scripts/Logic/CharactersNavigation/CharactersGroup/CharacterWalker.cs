@@ -45,23 +45,21 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     protected abstract void LocalInit();
 
-    public void GoToPoint(Vector3 worldPos, bool isMoveToExactPoint, System.Action<PathCallbackData> callback) {
-        _agent.SetDestination(worldPos, isMoveToExactPoint, (val) => {
+    public void GoToPoint(Vector3 worldPos, bool isMoveToExactPoint, bool isIgnorePenalty = false, System.Action<PathCallbackData> callback = null) {
+        _agent.SetDestination(worldPos, isMoveToExactPoint, isIgnorePenalty, (val) => {
             callback?.Invoke(val);
             _animator.SetFloat(MOVEMENT_MAGNITUDE, _agent.GetPathLength() > _distanceToStartWalkingAnimation ? 1f : .5f);
             _agent.MovementSpeed = _agent.GetPathLength() > _distanceToStartWalkingAnimation ? _defaultSpeed : _defaultSpeed / 2f;
         });
     }
 
-    public virtual void Tick() {
+    protected virtual void Update() {
         if (!_isCurrentlyMoving && _agent.IsWalkingByPath) {
             StartMove();
         } else if (_isCurrentlyMoving && !_agent.IsWalkingByPath) {
             StopMove();
         }
-    }
 
-    private void Update() {
         MoveSelection();
     }
 
@@ -82,13 +80,13 @@ public abstract class CharacterWalker : MonoBehaviour {
         }
     }
 
-    protected virtual void StartMove() {
+    public virtual void StartMove() {
         _collider.enabled = false;
         _isCurrentlyMoving = true;
         _animator.SetBool(IS_MOVING_HASH, true);
     }
 
-    protected virtual void StopMove() {
+    public virtual void StopMove() {
         _collider.enabled = true;
         _isCurrentlyMoving = false;
         _animator.SetBool(IS_MOVING_HASH, false);

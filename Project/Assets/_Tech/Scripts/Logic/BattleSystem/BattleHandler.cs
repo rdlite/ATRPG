@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.Rendering.Universal;
 
 public class BattleHandler {
@@ -12,6 +13,7 @@ public class BattleHandler {
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
     private CharacterWalker _currentSelectedCharacterWalker;
+    private CameraSimpleFollower _cameraFollower;
     private LineRenderer _movementLinePrefab;
     private LineRenderer _createdLinePrefab;
     private float _currentAppearRange = 0f;
@@ -20,13 +22,14 @@ public class BattleHandler {
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab) {
+        _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
         _assetsContainer = assetsContainer;
         _uiRoot = uiRoot;
         _decalProjector = decalProjector;
         _battleGridData = battleGridData;
         _mouseOverSelectionMap = new bool[_battleGridData.Units.Count];
-        _battleRaycaster = new BattleRaycaster(_battleGridData.CharactersLayerMask, cameraFollower, _battleGridData.GroundLayerMask);
+        _battleRaycaster = new BattleRaycaster(_battleGridData.CharactersLayerMask, _cameraFollower, _battleGridData.GroundLayerMask);
     }
 
     public void Tick() {
@@ -43,7 +46,7 @@ public class BattleHandler {
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && currentMouseOverSelectionUnit != null) {
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && currentMouseOverSelectionUnit != null) {
             if (currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
                 SetCharacterSelect(currentMouseOverSelectionUnit);
             }
@@ -57,10 +60,23 @@ public class BattleHandler {
         }
 
         if (_isCurrentlyShowWalkingDistance) {
-            TryDrawWalkLine();
+            if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
+                SetCharacterDestination();
+            } else {
+                TryDrawWalkLine();
+            }
         }
     }
 
+    private bool IsPointerOverUIObject() {
+        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
+        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
+        return results.Count > 0;
+    }
+
+    // WALK MODULE
     private Node _prevMovementNode;
     private void TryDrawWalkLine() {
         Vector3 groundPoint = _battleRaycaster.GetRaycastPoint();
@@ -106,28 +122,6 @@ public class BattleHandler {
         }
         
         _prevMovementNode = endNodeCheckInWorld;
-    }
-
-    private void SetCharacterSelect(CharacterWalker character) {
-        _isCurrentlyShowWalkingDistance = false;
-
-        if (_createdLinePrefab != null) {
-            Object.Destroy(_createdLinePrefab.gameObject);
-        }
-
-        _decalProjector.gameObject.SetActive(false);
-
-        _currentSelectedCharacterWalker?.DestroySelection();
-        _currentSelectedCharacterWalker?.SetActiveOutline(false);
-        _currentSelectedCharacterWalker = character;
-        _currentSelectedCharacterWalker.SetActiveOutline(true);
-        _currentSelectedCharacterWalker.CreateSelectionAbove();
-
-        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
-
-        if (_currentSelectedCharacterWalker is PlayerCharacterWalker) {
-            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this);
-        }
     }
 
     public void SwitchWalking() {
@@ -180,7 +174,7 @@ public class BattleHandler {
                 _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
             }
         }
-        
+
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
             Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
 
@@ -237,6 +231,38 @@ public class BattleHandler {
         ShowView();
     }
 
+    private void SetCharacterDestination() {
+        _cameraFollower.SetTarget(_currentSelectedCharacterWalker.transform);
+        _isCurrentlyShowWalkingDistance = false;
+        HideWalkingDistance();
+        Object.Destroy(_createdLinePrefab.gameObject);
+        _currentSelectedCharacterWalker.StartMove();
+        _currentSelectedCharacterWalker.GoToPoint(_prevMovementNode.WorldPosition, false, true, null);
+    }
+    //
+
+    private void SetCharacterSelect(CharacterWalker character) {
+        _isCurrentlyShowWalkingDistance = false;
+
+        if (_createdLinePrefab != null) {
+            Object.Destroy(_createdLinePrefab.gameObject);
+        }
+
+        _decalProjector.gameObject.SetActive(false);
+
+        _currentSelectedCharacterWalker?.DestroySelection();
+        _currentSelectedCharacterWalker?.SetActiveOutline(false);
+        _currentSelectedCharacterWalker = character;
+        _currentSelectedCharacterWalker.SetActiveOutline(true);
+        _currentSelectedCharacterWalker.CreateSelectionAbove();
+
+        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
+
+        if (_currentSelectedCharacterWalker is PlayerCharacterWalker) {
+            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this);
+        }
+    }
+
     private void ShowView() {
         Color blackCol = Color.black;
         Color whiteCol = Color.white;
@@ -266,9 +292,5 @@ public class BattleHandler {
         _decalProjector.material.SetTexture("_CurrentMovementPointsTexture", _battleGridData.CurrentMovementPointsTexture);
         _decalProjector.material.SetFloat("_TextureOffset", 0f);
         _decalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
-    }
-
-    private void CreateCharacterSelection(CharacterWalker characterWalker) {
-        characterWalker.CreateSelectionAbove();
     }
 }

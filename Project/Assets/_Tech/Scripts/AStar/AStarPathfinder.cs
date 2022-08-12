@@ -22,12 +22,12 @@ public class AStarPathfinder {
         _listCloseSetContains = new bool[_grid.GridWidth, _grid.GridHeight];
     }
 
-    public void StartFindPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToNodePoint) {
+    public void StartFindPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToNodePoint, bool isIgnorePenalty) {
         _isMoveToNodePoint = isMoveToNodePoint;
-        _grid.StartCoroutine(Pathfinding(wPosStart, wPosEnd));
+        _grid.StartCoroutine(Pathfinding(wPosStart, wPosEnd, isIgnorePenalty));
     }
 
-    private IEnumerator Pathfinding(Vector3 startPos, Vector3 endPos) {
+    private IEnumerator Pathfinding(Vector3 startPos, Vector3 endPos, bool isIgnorePenalty) {
         _exactEndPos = endPos;
 
         Vector3[] resultWaypoints = new Vector3[0];
@@ -107,7 +107,7 @@ public class AStarPathfinder {
                     continue;
                 }
 
-                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode) + neighbourNode.MovementPenalty;
+                int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode) + (isIgnorePenalty ? 0 : neighbourNode.MovementPenalty);
 
                 if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
                     neighbourNode.gCost = newMovementCostToNeighbour;

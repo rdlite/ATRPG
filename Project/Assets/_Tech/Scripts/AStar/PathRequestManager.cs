@@ -23,8 +23,8 @@ public class PathRequestManager {
         return _instance._aStarGrid.GetGroundPoint(characterStartPoint);
     }
 
-    public static void RequestPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToExactPoint, Action<Vector3[], bool> callback = null) {
-        PathRequest newRequest = new PathRequest(wPosStart, wPosEnd, isMoveToExactPoint, callback);
+    public static void RequestPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToExactPoint, bool isIgnorePenalty, Action<Vector3[], bool> callback = null) {
+        PathRequest newRequest = new PathRequest(wPosStart, wPosEnd, isMoveToExactPoint, isIgnorePenalty, callback);
         _instance._pathRequestQueue.Enqueue(newRequest);
         _instance.TryProcessNext();
     }
@@ -39,16 +39,18 @@ public class PathRequestManager {
         if (!_isProcessingPath && _pathRequestQueue.Count > 0) {
             _currentPathRequest = _pathRequestQueue.Dequeue();
             _isProcessingPath = true;
-            _pathfinder.StartFindPath(_currentPathRequest.PathStart, _currentPathRequest.PathEnd, _currentPathRequest.IsMoveToExactPoint);
+            _pathfinder.StartFindPath(_currentPathRequest.PathStart, _currentPathRequest.PathEnd, _currentPathRequest.IsMoveToExactPoint, _currentPathRequest.IsIgnorePenalty);
         }
     }
 
     private struct PathRequest {
         public Vector3 PathStart, PathEnd;
+        public bool IsIgnorePenalty;
         public bool IsMoveToExactPoint;
         public Action<Vector3[], bool> Callback;
 
-        public PathRequest(Vector3 pathStart, Vector3 pathEnd, bool isMoveToExactPoint, Action<Vector3[], bool> callback) {
+        public PathRequest(Vector3 pathStart, Vector3 pathEnd, bool isMoveToExactPoint, bool isIgnorePenalty, Action<Vector3[], bool> callback) {
+            IsIgnorePenalty = isIgnorePenalty;
             IsMoveToExactPoint = isMoveToExactPoint;
             PathStart = pathStart;
             PathEnd = pathEnd;

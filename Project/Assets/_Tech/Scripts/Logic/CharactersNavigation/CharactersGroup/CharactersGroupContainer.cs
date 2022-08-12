@@ -22,9 +22,7 @@ public class CharactersGroupContainer : MonoBehaviour {
     }
 
     public void Tick() {
-        foreach (CharacterWalker character in _charactersInGroup) {
-            character.Tick();
-        }
+
     }
 
     public void StopCharacters() {
@@ -34,7 +32,7 @@ public class CharactersGroupContainer : MonoBehaviour {
     }
 
     public void SendCharactersToPoint(Vector3 worldPoint, Vector3 endPointNormal, Action<Vector3, Vector3, Transform, bool> successfulCallback) {
-        MainCharacter.GoToPoint(worldPoint, false,
+        MainCharacter.GoToPoint(worldPoint, false, false,
             (callbackData) => {
                 if (callbackData.IsSuccessful) {
                     float circleRange = 4f;
@@ -46,7 +44,7 @@ public class CharactersGroupContainer : MonoBehaviour {
 
                     foreach (CharacterWalker character in _charactersInGroup) {
                         if (character != MainCharacter) {
-                            character.GoToPoint(uniqueNodes[0].WorldPosition + Random.insideUnitSphere * .1f, false, null);
+                            character.GoToPoint(uniqueNodes[0].WorldPosition + Random.insideUnitSphere * .1f, false, false, null);
                             successfulCallback?.Invoke(uniqueNodes[0].WorldPosition, endPointNormal, character.transform, false);
                             uniqueNodes.RemoveAt(0);
                         }

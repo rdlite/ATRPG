@@ -23,8 +23,8 @@ public class NavAgent : MonoBehaviour {
         transform.position = PathRequestManager.GetGroundCharacterPoint(transform.position);
     }
 
-    public void SetDestination(Vector3 destination, bool isMoveToExactPoint, Action<PathCallbackData> foundCallback) {
-        PathRequestManager.RequestPath(transform.position, destination, isMoveToExactPoint, (foundPath, successful) => {
+    public void SetDestination(Vector3 destination, bool isMoveToExactPoint, bool isIgnorePenalty, Action<PathCallbackData> foundCallback) {
+        PathRequestManager.RequestPath(transform.position, destination, isMoveToExactPoint, isIgnorePenalty,(foundPath, successful) => {
             if (foundPath != null && foundPath.Length > 0) {
                 OnPathFound(foundPath, successful);
 

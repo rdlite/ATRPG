@@ -11,8 +11,8 @@ public class PlayerCharacterWalker : CharacterWalker {
         _characterDetectorTrigger.OnCharacterExitedGromTrigger += CharacterLostInVew;
     }
 
-    public override void Tick() {
-        base.Tick();
+    protected override void Update() {
+        base.Update();
 
         if (_isMainChar && Input.GetMouseButtonDown(1)) {
             _agent.StopMovement();

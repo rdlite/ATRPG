@@ -13,7 +13,7 @@ public class CameraSimpleFollower : MonoBehaviour {
     private const string VERTICAL_AXIS = "Vertical";
     private const string MOUSE_SCROLLWHEEL = "Mouse ScrollWheel";
     private Vector3 _cameraGlobalLDPoint;
-    private Vector3 _cameraGlobalRUPoint; 
+    private Vector3 _cameraGlobalRUPoint;
     private Vector3 _cameraBattleFieldLDPoint;
     private Vector3 _cameraBattleFieldRUPoint;
     private Transform _target;
@@ -24,10 +24,10 @@ public class CameraSimpleFollower : MonoBehaviour {
     private bool _isRestrictedMovement;
 
     public void Init(Transform target, Vector3 cameraGlobalLDPoint, Vector3 cameraGlobalRUPoint) {
-        _isSnapping = true;
         _cameraGlobalLDPoint = cameraGlobalLDPoint;
         _cameraGlobalRUPoint = cameraGlobalRUPoint;
-        _target = target;
+
+        SetTarget(target);
 
         _freeMovementVelocity = new Vector2(0f, 0f);
 
@@ -35,6 +35,11 @@ public class CameraSimpleFollower : MonoBehaviour {
 
         _freeMovementPoint = new GameObject("CameraSnappingPoint").transform;
         _freeMovementPoint.transform.position = _target.transform.position;
+    }
+
+    public void SetTarget(Transform newTarget) {
+        _target = newTarget;
+        _isSnapping = true;
     }
 
     public void SetMovementRestrictions(Vector3 ldPosition, Vector3 ruPosition) {
@@ -53,7 +58,7 @@ public class CameraSimpleFollower : MonoBehaviour {
                 _isSnapping = false;
             }
 
-            transform.position = _target.position + _offset * _currentZooming;
+            transform.position = Vector3.Lerp(transform.position, _target.position + _offset * _currentZooming, 15f * Time.deltaTime);
             _freeMovementPoint.transform.position = _target.transform.position;
         } else {
             if (Input.GetKeyDown(KeyCode.C)) {
