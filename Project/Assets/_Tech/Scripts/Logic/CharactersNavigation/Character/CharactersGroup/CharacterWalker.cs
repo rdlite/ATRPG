@@ -17,6 +17,7 @@ public abstract class CharacterWalker : MonoBehaviour {
     protected CharacterAnimator _animator;
     protected float _defaultSpeed;
     protected bool _isCurrentlyMoving;
+    private SelectionData _selectionData;
 
     public void Init(
         OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer) {
@@ -28,16 +29,14 @@ public abstract class CharacterWalker : MonoBehaviour {
 
         _childOutlines = GetComponentsInChildren<Outline>(true);
 
-        SelectionData selectionData = null;
-
         if (this is EnemyCharacterWalker) {
-            selectionData = _configsContainer.CharactersSelectionData.EnemySelection;
-        } else if (this is PlayerCharacterWalker){
-            selectionData = _configsContainer.CharactersSelectionData.PlayerSelection;
+            _selectionData = _configsContainer.CharactersSelectionData.EnemySelection;
+        } else if (this is PlayerCharacterWalker) {
+            _selectionData = _configsContainer.CharactersSelectionData.PlayerSelection;
         }
 
         for (int i = 0; i < _childOutlines.Length; i++) {
-            _childOutlines[i].SetOutlineValues(selectionData);
+            _childOutlines[i].SetOutlineValues(_selectionData);
         }
 
         LocalInit();
@@ -112,5 +111,9 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     public CharacterStatsConfig GetStatsConfig() {
         return _statsData;
+    }
+
+    public Color GetCharacterColor() {
+        return _selectionData.OutlineColor;
     }
 }

@@ -3131,7 +3131,11 @@ MonoBehaviour:
   _zoom: 1.25
   _zoomSpeed: 1
   _zoomSmooth: 10
-  _rotationLerpMovement: 10
+  _rotationLerpMovement: 5
+  _maxZoomXRotation: 60
+  _minZoomXRotation: 45
+  _zoomClamp: {x: 0.6, y: 1.7}
+  _zZoomingPosition: {x: 5, y: 0}
   _freeMovementSpeed: 20
   _freeMovementLerpSpeed: 4
 --- !u!4 &1875813860 stripped

@@ -122,12 +122,13 @@ public class NavAgent : MonoBehaviour {
         while (true) {
             bool isFPSBelowCap = (1 / Time.deltaTime) < 40;
 
-            float distanceOffsetLerp = Mathf.Lerp(.25f, .1f, Mathf.InverseLerp(40, 60, 1 / Time.deltaTime));
+            float distanceOffsetLerp = Mathf.Lerp(1f / 4f, 1f / 100f, Mathf.InverseLerp(40, 120, 1f / Time.deltaTime));
 
             if (isFPSBelowCap && (transform.position - currentWaypoint).sqrMagnitude <= .1f || !isFPSBelowCap && (transform.position - currentWaypoint).sqrMagnitude <= distanceOffsetLerp) {
                 _targetIndex++;
 
                 if (_targetIndex >= _path.Length) {
+                    transform.position = currentWaypoint;
                     FoundTarget();
                     yield break;
                 }

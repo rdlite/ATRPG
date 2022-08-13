@@ -14,3 +14,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   BattleOverCharacterSelectionPrefab: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
     type: 3}
+  UnderCharacterDecalPrefab: {fileID: 2248940014966254410, guid: db2ea6fbe38253849b27e6badd066bf2,
+    type: 3}

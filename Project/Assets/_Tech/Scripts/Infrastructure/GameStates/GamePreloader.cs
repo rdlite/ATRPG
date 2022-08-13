@@ -23,6 +23,13 @@ public class GamePreloader : MonoBehaviour, ICoroutineService {
 
     private void Update() {
         _gameService.GameUpdate();
+        if (Input.GetKeyDown(KeyCode.F)) {
+            Application.targetFrameRate -= 10;
+            if (Application.targetFrameRate <= 10) {
+                Application.targetFrameRate = 120;
+            }
+            print(Application.targetFrameRate);
+        }
     }
 
     private void FixedUpdate() {

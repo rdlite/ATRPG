@@ -70,7 +70,8 @@ public class BattleGridGenerator : MonoBehaviour {
         _battlehandler = new BattleHandler();
         _battlehandler.Init(
             cameraFollower, _battleGridData, _decalProjector,
-            uiRoot, assetsContainer, _movementLinePrefab);
+            uiRoot, assetsContainer, _movementLinePrefab,
+            transform);
     }
 
     public void Cleanup() {

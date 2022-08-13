@@ -7,6 +7,10 @@ public class CameraSimpleFollower : MonoBehaviour {
     [Range(.4f, 2f), SerializeField] private float _zoom = 1f;
     [SerializeField] private float _zoomSpeed = 1f, _zoomSmooth = 10f;
     [SerializeField] private float _rotationLerpMovement = 10f;
+    [SerializeField] private float _maxZoomXRotation = 60f;
+    [SerializeField] private float _minZoomXRotation = 45f;
+    [SerializeField] private Vector2 _zoomClamp;
+    [SerializeField] private Vector2 _zZoomingPosition;
     [SerializeField] private float _freeMovementSpeed = 5f, _freeMovementLerpSpeed = 2f;
 
     private const string HORIZONTAL_AXIS = "Horizontal";
@@ -19,11 +23,14 @@ public class CameraSimpleFollower : MonoBehaviour {
     private Transform _target;
     private Transform _freeMovementPoint;
     private Vector2 _freeMovementVelocity;
+    private Vector3 _defaultOffset;
     private float _currentZooming;
     private bool _isSnapping;
     private bool _isRestrictedMovement;
 
     public void Init(Transform target, Vector3 cameraGlobalLDPoint, Vector3 cameraGlobalRUPoint) {
+        _defaultOffset = _offset;
+
         _cameraGlobalLDPoint = cameraGlobalLDPoint;
         _cameraGlobalRUPoint = cameraGlobalRUPoint;
 
@@ -84,8 +91,10 @@ public class CameraSimpleFollower : MonoBehaviour {
         transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, _targetRotation, _rotationLerpMovement * Time.deltaTime);
 
         _zoom -= Input.GetAxis(MOUSE_SCROLLWHEEL) * _zoomSpeed;
-        _zoom = Mathf.Clamp(_zoom, .4f, 2f);
+        _zoom = Mathf.Clamp(_zoom, _zoomClamp.x, _zoomClamp.y);
         _currentZooming = Mathf.Lerp(_currentZooming, _zoom, _zoomSmooth * Time.deltaTime);
+        _targetRotation = Vector3.Lerp(new Vector3(_minZoomXRotation, _targetRotation.y, _targetRotation.z), new Vector3(_maxZoomXRotation, _targetRotation.y, _targetRotation.z), Mathf.InverseLerp(_zoomClamp.x, _zoomClamp.y, _zoom));
+        _offset.z = _defaultOffset.z + Mathf.Lerp(_zZoomingPosition.x, _zZoomingPosition.y, Mathf.InverseLerp(_zoomClamp.x, _zoomClamp.y, _zoom));
     }
 
     private bool IsPressedMovementKeys() {

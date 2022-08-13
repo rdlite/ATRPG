@@ -6,6 +6,7 @@ using UnityEngine.Rendering.Universal;
 public class BattleHandler {
     private const string APPEAR_RANGE = "_AppearRoundRange";
     private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
+    private DecalProjector[] _createdUnderCharactersDecals;
     private bool[] _mouseOverSelectionMap;
     private AssetsContainer _assetsContainer;
     private UIRoot _uiRoot;
@@ -13,16 +14,20 @@ public class BattleHandler {
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
     private CharacterWalker _currentSelectedCharacterWalker;
+    private CharacterWalker _currentMouseOverSelectionUnit;
     private CameraSimpleFollower _cameraFollower;
     private LineRenderer _movementLinePrefab;
     private LineRenderer _createdLinePrefab;
+    private BattleTurnsHandler _turnsHandler;
+    private CharacterWalker v;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
     private bool _isRestrictedForDoAnything;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
-        UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab) {
+        UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
+        Transform battleGeneratorTransform) {
         _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
         _assetsContainer = assetsContainer;
@@ -30,19 +35,36 @@ public class BattleHandler {
         _decalProjector = decalProjector;
         _battleGridData = battleGridData;
         _mouseOverSelectionMap = new bool[_battleGridData.Units.Count];
-        _battleRaycaster = new BattleRaycaster(_battleGridData.CharactersLayerMask, _cameraFollower, _battleGridData.GroundLayerMask);
+        _battleRaycaster = new BattleRaycaster(
+            _battleGridData.CharactersLayerMask, _cameraFollower, _battleGridData.GroundLayerMask);
+
+        _turnsHandler = new BattleTurnsHandler(
+            _battleGridData, _uiRoot, this);
+
+        _createdUnderCharactersDecals = new DecalProjector[_battleGridData.Units.Count];
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            _createdUnderCharactersDecals[i] = Object.Instantiate(_assetsContainer.UnderCharacterDecalPrefab);
+            _createdUnderCharactersDecals[i].gameObject.SetActive(false);
+            _createdUnderCharactersDecals[i].transform.SetParent(battleGeneratorTransform);
+        }
+
+        _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
+        _uiRoot.GetPanel<BattlePanel>().SignOnBackButton(BackButtonPressed);
     }
 
     public void Tick() {
-        CharacterWalker currentMouseOverSelectionUnit = _battleRaycaster.GetCurrentMouseOverSelectionUnit();
-        for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            if (_battleGridData.Units[i] == currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i]) {
-                _mouseOverSelectionMap[i] = true;
-                _battleGridData.Units[i].SetActiveOutline(true);
-            } else if (_battleGridData.Units[i] != currentMouseOverSelectionUnit && _mouseOverSelectionMap[i]) {
-                if (!(_currentSelectedCharacterWalker != null && _currentSelectedCharacterWalker == _battleGridData.Units[i])) {
-                    _mouseOverSelectionMap[i] = false;
-                    _battleGridData.Units[i].SetActiveOutline(false);
+        if (Time.frameCount % 4 == 0) {
+            _currentMouseOverSelectionUnit = _battleRaycaster.GetCurrentMouseOverSelectionUnit();
+            for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                if (_battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i]) {
+                    _mouseOverSelectionMap[i] = true;
+                    _battleGridData.Units[i].SetActiveOutline(true);
+                } else if (_battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverSelectionMap[i]) {
+                    if (!(_currentSelectedCharacterWalker != null && _currentSelectedCharacterWalker == _battleGridData.Units[i])) {
+                        _mouseOverSelectionMap[i] = false;
+                        _battleGridData.Units[i].SetActiveOutline(false);
+                    }
                 }
             }
         }
@@ -51,9 +73,9 @@ public class BattleHandler {
             return;
         }
 
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && currentMouseOverSelectionUnit != null) {
-            if (currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
-                SetCharacterSelect(currentMouseOverSelectionUnit);
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && _currentMouseOverSelectionUnit != null) {
+            if (_currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
+                SetCharacterSelect(_currentMouseOverSelectionUnit);
             }
         }
 
@@ -66,7 +88,7 @@ public class BattleHandler {
 
         if (_isCurrentlyShowWalkingDistance) {
             if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedCharacterWalker != null) {
-                HideWalkingDistance();
+                HideWalkingDistance(true);
                 return;
             }
 
@@ -86,8 +108,26 @@ public class BattleHandler {
         return results.Count > 0;
     }
 
+    public void FocusCameraToNearestAllyUnit(CharacterWalker unitToCheck) {
+        float nearestLength = Mathf.Infinity;
+        CharacterWalker nearestChar = null;
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            if (unitToCheck != _currentSelectedCharacterWalker && _battleGridData.Units[i] != unitToCheck && _battleGridData.Units[i] is PlayerCharacterWalker && _turnsHandler.IsCanUnitWalk(_battleGridData.Units[i])) {
+                float distance = Vector3.Distance(_battleGridData.Units[i].transform.position, unitToCheck.transform.position);
+
+                if (distance < nearestLength) {
+                    nearestLength = distance;
+                    nearestChar = _battleGridData.Units[i];
+                }
+            }
+        }
+
+        SetCharacterSelect(nearestChar);
+        _cameraFollower.SetTarget(nearestChar.transform);
+    }
+
     // WALK MODULE
-    private bool _isPointerInMovementButton;
     private Node _prevMovementNode;
     private Node _endMovementNode;
     private void TryDrawWalkLine() {
@@ -139,7 +179,7 @@ public class BattleHandler {
     }
 
     public void SwitchWalking() {
-        if (_isRestrictedForDoAnything) {
+        if (_isRestrictedForDoAnything || !_turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker) || !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker)) {
             return;
         }
 
@@ -150,26 +190,18 @@ public class BattleHandler {
         }
 
         if (!_isCurrentlyShowWalkingDistance) {
-            HideWalkingDistance();
+            HideWalkingDistance(false);
         }
     }
 
-    private void StopWalking() {
-        _isCurrentlyShowWalkingDistance = false;
-        _currentSelectedCharacterWalker = null;
-        HideWalkingDistance();
-    }
-
     private void ShowWalkingDistance() {
-        if (!_isCurrentlyShowWalkingDistance) {
+        if (!_isCurrentlyShowWalkingDistance || !_turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker)) {
             ShowUnitWalkingDistance();
         }
     }
 
     public void WalkingPointerEnter() {
-        _isPointerInMovementButton = true;
-
-        if (_isRestrictedForDoAnything) {
+        if (_isRestrictedForDoAnything || !_turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker)) {
             return;
         }
 
@@ -177,26 +209,38 @@ public class BattleHandler {
     }
 
     public void WalkingPointerExit() {
-        _isPointerInMovementButton = false;
-
         if (_isRestrictedForDoAnything) {
             return;
         }
 
         if (!_isCurrentlyShowWalkingDistance) {
-            HideWalkingDistance();
+            HideWalkingDistance(true);
         }
     }
 
-    private void HideWalkingDistance() {
+    private void HideWalkingDistance(bool isHideUnderPointers) {
         _isCurrentlyShowWalkingDistance = false;
         _decalProjector.gameObject.SetActive(false);
+
+        if (isHideUnderPointers) {
+            SetActiveUnderCharactersDecals(false);
+        }
+
         if (_createdLinePrefab != null) {
             Object.Destroy(_createdLinePrefab.gameObject);
         }
     }
 
     private void ShowUnitWalkingDistance() {
+        SetActiveUnderCharactersDecals(true);
+        
+        float unitMaxWalkDistance = _turnsHandler.GetLastLengthForUnit(_currentSelectedCharacterWalker);
+
+        if (unitMaxWalkDistance < 1f) {
+            HideWalkingDistance(false);
+            return;
+        }
+        
         _decalProjector.gameObject.SetActive(true);
         _currentAppearRange = 0f;
         _decalProjector.material.SetFloat(APPEAR_RANGE, 0f);
@@ -208,10 +252,8 @@ public class BattleHandler {
         List<Node> possibleNodes = new List<Node>(25);
         Node[] neighbours;
         List<Node> resultNodes = new List<Node>(25);
-
         possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition));
 
-        float unitMaxWalkDistance = _currentSelectedCharacterWalker.GetStatsConfig().MovementLength;
         int crushProtection = 0;
 
         for (int x = 0; x < _battleGridData.Width; x++) {
@@ -280,24 +322,51 @@ public class BattleHandler {
         ShowView();
     }
 
+    private void SetActiveUnderCharactersDecals(bool value) {
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            _createdUnderCharactersDecals[i].gameObject.SetActive(_battleGridData.Units[i] != _currentSelectedCharacterWalker && value);
+            _createdUnderCharactersDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 2f;
+            _createdUnderCharactersDecals[i].material = Object.Instantiate(_createdUnderCharactersDecals[i].material);
+            _createdUnderCharactersDecals[i].material.SetColor("_Color", _battleGridData.Units[i].GetCharacterColor().SetTransparency(1f));
+        }
+    }
+
     private void SetCharacterDestination() {
         _cameraFollower.SetTarget(_currentSelectedCharacterWalker.transform);
         _isCurrentlyShowWalkingDistance = false;
         _isRestrictedForDoAnything = true;
-        HideWalkingDistance();
+        HideWalkingDistance(true);
+        _turnsHandler.SetCurrentWalker(_currentSelectedCharacterWalker);
         _currentSelectedCharacterWalker.StartMove();
+        _turnsHandler.RemovePossibleLengthForUnit(_currentSelectedCharacterWalker, _battleGridData.GlobalGrid.GetPathLength(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedCharacterWalker.transform.position), _endMovementNode));
         _currentSelectedCharacterWalker.GoToPoint(_endMovementNode.WorldPosition, false, true, null, CharacterEndedAction);
     }
 
     private void CharacterEndedAction() {
-        HideWalkingDistance();
+        HideWalkingDistance(true);
         _isRestrictedForDoAnything = false;
     }
     // END WALK MODULE
 
-    private void SetCharacterSelect(CharacterWalker character) {
-        _isCurrentlyShowWalkingDistance = false;
+    private void WaitButtonPressed() {
+        if (_isRestrictedForDoAnything) {
+            return;
+        }
 
+        _turnsHandler.SetUnitWalked(_currentSelectedCharacterWalker);
+
+        DestroySelectionOnCurrentUnit();
+        _currentSelectedCharacterWalker = null;
+        HideWalkingDistance(true);
+        _turnsHandler.WaitButtonPressed();
+    }
+
+    private void BackButtonPressed() {
+        SetCharacterSelect(_turnsHandler.GetCurrentUnitWalker());
+        _cameraFollower.SetTarget(_currentSelectedCharacterWalker.transform);
+    }
+
+    private void SetCharacterSelect(CharacterWalker character) {
         if (_createdLinePrefab != null) {
             Object.Destroy(_createdLinePrefab.gameObject);
         }
@@ -312,8 +381,14 @@ public class BattleHandler {
 
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
-        if (_currentSelectedCharacterWalker is PlayerCharacterWalker) {
+        if (_currentSelectedCharacterWalker is PlayerCharacterWalker && _turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker) && _turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker)) {
             _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this);
+        } 
+
+        if (_turnsHandler.IsHaveCurrentWalkingUnit() && !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker)) {
+            _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(true);
+        } else {
+            _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(false);
         }
     }
 
