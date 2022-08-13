@@ -12,6 +12,7 @@ public class NavAgent : MonoBehaviour {
     [SerializeField] private float _faceForwardSpeed = 10f;
     [SerializeField] private float _stoppingDistance = 1f;
 
+    private event Action CurrentReachCallback;
     private Vector3[] _path;
     private Coroutine _movementRoutine;
     private Vector3 _prevTargetPoint;
@@ -23,10 +24,12 @@ public class NavAgent : MonoBehaviour {
         transform.position = PathRequestManager.GetGroundCharacterPoint(transform.position);
     }
 
-    public void SetDestination(Vector3 destination, bool isMoveToExactPoint, bool isIgnorePenalty, Action<PathCallbackData> foundCallback) {
+    public void SetDestination(
+        Vector3 destination, bool isMoveToExactPoint, bool isIgnorePenalty, 
+        Action<PathCallbackData> foundCallback, Action onReachCallback = null) {
         PathRequestManager.RequestPath(transform.position, destination, isMoveToExactPoint, isIgnorePenalty,(foundPath, successful) => {
             if (foundPath != null && foundPath.Length > 0) {
-                OnPathFound(foundPath, successful);
+                OnPathFound(foundPath, successful, onReachCallback);
 
                 Vector3 endPointForwardDirection = Vector3.zero;
 
@@ -46,7 +49,7 @@ public class NavAgent : MonoBehaviour {
         StopAllCoroutines();
     }
 
-    private void OnPathFound(Vector3[] foundPath, bool successful) {
+    private void OnPathFound(Vector3[] foundPath, bool successful, Action onReachCallback) {
         if (successful) {
             _path = SmoothPath(foundPath);
 
@@ -56,7 +59,7 @@ public class NavAgent : MonoBehaviour {
 
             _isMoving = true;
 
-            _movementRoutine = StartCoroutine(FollowPath());
+            _movementRoutine = StartCoroutine(FollowPath(onReachCallback));
         }
     }
 
@@ -104,8 +107,10 @@ public class NavAgent : MonoBehaviour {
         }
     }
 
-    private IEnumerator FollowPath() {
+    private IEnumerator FollowPath(Action onReachCallback) {
         _targetIndex = 0;
+
+        CurrentReachCallback += onReachCallback;
 
         if (_path.Length == 0) {
             FoundTarget();
@@ -156,6 +161,18 @@ public class NavAgent : MonoBehaviour {
     }
 
     private void FoundTarget() {
+        if (CurrentReachCallback != null) {
+            CurrentReachCallback.Invoke();
+
+            Delegate[] dary = CurrentReachCallback.GetInvocationList();
+
+            if (dary != null) {
+                foreach (Delegate del in dary) {
+                    CurrentReachCallback -= (Action)del;
+                }
+            }
+        }
+
         _isMoving = false;
     }
 

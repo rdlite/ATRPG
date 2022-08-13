@@ -52,6 +52,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed24bdba4c62d5643856379b30e3d4c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _statsData: {fileID: 11400000, guid: 8d1d207c16485504e80c033475481796, type: 2}
   _agent: {fileID: 8753632802380966424}
   _collider: {fileID: 4816486399591938333}
   _overCharacterPoint: {fileID: 6832818575804325920}

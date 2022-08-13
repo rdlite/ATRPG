@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Characters selection config
   m_EditorClassIdentifier: 
   _selectionDatas:
-  - Thickness: 2
+  - Thickness: 1
     OutlineColor: {r: 0.514151, g: 1, b: 0.6151307, a: 0.68235296}
-  - Thickness: 2
+  - Thickness: 1
     OutlineColor: {r: 1, g: 0.46846846, b: 0.3820755, a: 0.6862745}

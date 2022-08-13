@@ -1,20 +1,20 @@
+using System;
 using UnityEngine;
 
 public abstract class CharacterWalker : MonoBehaviour {
+    [SerializeField] protected CharacterStatsConfig _statsData;
     [SerializeField] protected NavAgent _agent;
     [SerializeField] protected Collider _collider;
     [SerializeField] protected Transform _overCharacterPoint;
     [SerializeField] protected GameObject _selectionAboveCharacter;
     [SerializeField] protected float _distanceToStartWalkingAnimation = 5f;
 
-    protected int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
-    protected int MOVEMENT_MAGNITUDE = Animator.StringToHash("MovementMagnitude");
     protected Outline[] _childOutlines;
-    private ConfigsContainer _configsContainer;
+    protected ConfigsContainer _configsContainer;
     protected OnFieldRaycaster _fieldRaycaster;
-    protected Animator _animator;
     protected SceneAbstractEntitiesMediator _abstractEntityMediator;
     protected GameObject _createdCharacterSelection;
+    protected CharacterAnimator _animator;
     protected float _defaultSpeed;
     protected bool _isCurrentlyMoving;
 
@@ -22,8 +22,8 @@ public abstract class CharacterWalker : MonoBehaviour {
         OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer) {
         _configsContainer = configsContainer;
         _fieldRaycaster = fieldRaycaster;
-        _animator = GetComponentInChildren<Animator>(true);
-        _defaultSpeed = _agent.MovementSpeed;
+        _animator = new CharacterAnimator(GetComponentInChildren<Animator>(true));
+        _defaultSpeed = _statsData.MovementSpeed;
         _abstractEntityMediator = abstractEntitiesMediator;
 
         _childOutlines = GetComponentsInChildren<Outline>(true);
@@ -45,12 +45,14 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     protected abstract void LocalInit();
 
-    public void GoToPoint(Vector3 worldPos, bool isMoveToExactPoint, bool isIgnorePenalty = false, System.Action<PathCallbackData> callback = null) {
+    public void GoToPoint(
+        Vector3 worldPos, bool isMoveToExactPoint, bool isIgnorePenalty = false,
+        Action<PathCallbackData> callback = null, Action onReachCallback = null) {
         _agent.SetDestination(worldPos, isMoveToExactPoint, isIgnorePenalty, (val) => {
             callback?.Invoke(val);
-            _animator.SetFloat(MOVEMENT_MAGNITUDE, _agent.GetPathLength() > _distanceToStartWalkingAnimation ? 1f : .5f);
+            _animator.SetMovementMagnitude(_agent.GetPathLength() > _distanceToStartWalkingAnimation ? 1f : .5f);
             _agent.MovementSpeed = _agent.GetPathLength() > _distanceToStartWalkingAnimation ? _defaultSpeed : _defaultSpeed / 2f;
-        });
+        }, onReachCallback);
     }
 
     protected virtual void Update() {
@@ -83,13 +85,13 @@ public abstract class CharacterWalker : MonoBehaviour {
     public virtual void StartMove() {
         _collider.enabled = false;
         _isCurrentlyMoving = true;
-        _animator.SetBool(IS_MOVING_HASH, true);
+        _animator.SetMovementAnimation(true);
     }
 
     public virtual void StopMove() {
         _collider.enabled = true;
         _isCurrentlyMoving = false;
-        _animator.SetBool(IS_MOVING_HASH, false);
+        _animator.SetMovementAnimation(false);
     }
 
     public Vector3 GetOverCharacterPoint() {
@@ -106,5 +108,9 @@ public abstract class CharacterWalker : MonoBehaviour {
         if (_createdCharacterSelection != null) {
             Destroy(_createdCharacterSelection);
         }
+    }
+
+    public CharacterStatsConfig GetStatsConfig() {
+        return _statsData;
     }
 }

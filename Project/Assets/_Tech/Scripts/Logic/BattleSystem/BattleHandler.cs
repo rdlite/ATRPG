@@ -18,6 +18,7 @@ public class BattleHandler {
     private LineRenderer _createdLinePrefab;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
+    private bool _isRestrictedForDoAnything;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
@@ -46,6 +47,10 @@ public class BattleHandler {
             }
         }
 
+        if (_isRestrictedForDoAnything) {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && currentMouseOverSelectionUnit != null) {
             if (currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
                 SetCharacterSelect(currentMouseOverSelectionUnit);
@@ -60,6 +65,11 @@ public class BattleHandler {
         }
 
         if (_isCurrentlyShowWalkingDistance) {
+            if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedCharacterWalker != null) {
+                HideWalkingDistance();
+                return;
+            }
+
             if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
                 SetCharacterDestination();
             } else {
@@ -77,7 +87,9 @@ public class BattleHandler {
     }
 
     // WALK MODULE
+    private bool _isPointerInMovementButton;
     private Node _prevMovementNode;
+    private Node _endMovementNode;
     private void TryDrawWalkLine() {
         Vector3 groundPoint = _battleRaycaster.GetRaycastPoint();
 
@@ -100,6 +112,8 @@ public class BattleHandler {
             }
 
             if (path.Length != 0) {
+                _endMovementNode = endNode;
+
                 _createdLinePrefab = Object.Instantiate(_movementLinePrefab);
                 _createdLinePrefab.positionCount = path.Length;
 
@@ -125,28 +139,61 @@ public class BattleHandler {
     }
 
     public void SwitchWalking() {
+        if (_isRestrictedForDoAnything) {
+            return;
+        }
+
         _isCurrentlyShowWalkingDistance = !_isCurrentlyShowWalkingDistance;
+
+        if (_isCurrentlyShowWalkingDistance && !_decalProjector.gameObject.activeSelf) {
+            ShowUnitWalkingDistance();
+        }
 
         if (!_isCurrentlyShowWalkingDistance) {
             HideWalkingDistance();
-            Object.Destroy(_createdLinePrefab.gameObject);
         }
     }
 
-    public void ShowWalkingDistance() {
+    private void StopWalking() {
+        _isCurrentlyShowWalkingDistance = false;
+        _currentSelectedCharacterWalker = null;
+        HideWalkingDistance();
+    }
+
+    private void ShowWalkingDistance() {
         if (!_isCurrentlyShowWalkingDistance) {
             ShowUnitWalkingDistance();
         }
     }
 
+    public void WalkingPointerEnter() {
+        _isPointerInMovementButton = true;
+
+        if (_isRestrictedForDoAnything) {
+            return;
+        }
+
+        ShowWalkingDistance();
+    }
+
     public void WalkingPointerExit() {
+        _isPointerInMovementButton = false;
+
+        if (_isRestrictedForDoAnything) {
+            return;
+        }
+
         if (!_isCurrentlyShowWalkingDistance) {
             HideWalkingDistance();
         }
     }
 
-    public void HideWalkingDistance() {
+    private void HideWalkingDistance() {
+        _isCurrentlyShowWalkingDistance = false;
         _decalProjector.gameObject.SetActive(false);
+        if (_createdLinePrefab != null) {
+            Object.Destroy(_createdLinePrefab.gameObject);
+        }
     }
 
     private void ShowUnitWalkingDistance() {
@@ -164,7 +211,7 @@ public class BattleHandler {
 
         possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition));
 
-        int unitMaxWalkDistance = 20;//_unitsData[_currentUnit].WalkRange;
+        float unitMaxWalkDistance = _currentSelectedCharacterWalker.GetStatsConfig().MovementLength;
         int crushProtection = 0;
 
         for (int x = 0; x < _battleGridData.Width; x++) {
@@ -204,7 +251,7 @@ public class BattleHandler {
                         neighbour.GridX < _battleGridData.StartNodeIDX + _battleGridData.Width) &&
                         (neighbour.GridY >= _battleGridData.StartNodeIDY &&
                         neighbour.GridY < _battleGridData.StartNodeIDY + _battleGridData.Height)) {
-                    if (unitMaxWalkDistance >= Mathf.CeilToInt(_battleGridData.GlobalGrid.GetPathLength(startNode, neighbour))) {
+                    if (unitMaxWalkDistance >= _battleGridData.GlobalGrid.GetPathLength(startNode, neighbour)) {
                         resultNodes.Add(neighbour);
                         possibleNodes.Add(neighbour);
                         _battleGridData.NodesGrid[neighbour.GridX - _battleGridData.StartNodeIDX, neighbour.GridY - _battleGridData.StartNodeIDY].SetPlacedByCharacter(false);
@@ -216,7 +263,9 @@ public class BattleHandler {
 
         for (int x = 0; x < _battleGridData.Width; x++) {
             for (int y = 0; y < _battleGridData.Height; y++) {
-                _battleGridData.NodesGrid[x, y].SetPlacedByCharacter(!_battleGridData.WalkableMap[x, y]);
+                bool isBlocked = !_battleGridData.WalkableMap[x, y] || (x == 0 || y == 0 || (x == _battleGridData.Width - 1) || (y == _battleGridData.Height - 1));
+
+                _battleGridData.NodesGrid[x, y].SetPlacedByCharacter(isBlocked);
             }
         }
 
@@ -234,12 +283,17 @@ public class BattleHandler {
     private void SetCharacterDestination() {
         _cameraFollower.SetTarget(_currentSelectedCharacterWalker.transform);
         _isCurrentlyShowWalkingDistance = false;
+        _isRestrictedForDoAnything = true;
         HideWalkingDistance();
-        Object.Destroy(_createdLinePrefab.gameObject);
         _currentSelectedCharacterWalker.StartMove();
-        _currentSelectedCharacterWalker.GoToPoint(_prevMovementNode.WorldPosition, false, true, null);
+        _currentSelectedCharacterWalker.GoToPoint(_endMovementNode.WorldPosition, false, true, null, CharacterEndedAction);
     }
-    //
+
+    private void CharacterEndedAction() {
+        HideWalkingDistance();
+        _isRestrictedForDoAnything = false;
+    }
+    // END WALK MODULE
 
     private void SetCharacterSelect(CharacterWalker character) {
         _isCurrentlyShowWalkingDistance = false;
@@ -263,17 +317,24 @@ public class BattleHandler {
         }
     }
 
+    private void DestroySelectionOnCurrentUnit() {
+        _currentSelectedCharacterWalker?.DestroySelection();
+        _currentSelectedCharacterWalker?.SetActiveOutline(false);
+    }
+
     private void ShowView() {
         Color blackCol = Color.black;
         Color whiteCol = Color.white;
 
         for (int x = 0; x < _battleGridData.Width; x++) {
             for (int y = 0; y < _battleGridData.Height; y++) {
+                bool isBorder = x == 0 || y == 0 || x == _battleGridData.Width - 1 || y == _battleGridData.Height - 1;
+
                 //_battleGridData.ViewTexture.SetPixel(x, y, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
-                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
-                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
-                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
-                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
+                _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
 
                 _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
             }

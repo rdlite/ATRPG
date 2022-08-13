@@ -183,7 +183,7 @@ public class BattleGridGenerator : MonoBehaviour {
         if (Application.isPlaying && _isDebug) {
             for (int x = 0; x < _battleGridData.Width; x++) {
                 for (int y = 0; y < _battleGridData.Height; y++) {
-                    Gizmos.color = _battleGridData.WalkableMap[x, y] ? Color.green : Color.red;
+                    Gizmos.color = _battleGridData.NodesGrid[x, y].CheckWalkability ? Color.green : Color.red;
 
                     Gizmos.DrawSphere(_battleGridData.NodesGrid[x, y].WorldPosition, .15f);
                 }
