@@ -16,3 +16,4 @@ MonoBehaviour:
   MovementLength: 7
   HP: 14
   Defense: 13
+  DefaultAttackDamage: 5

@@ -19,6 +19,12 @@ public class BattleTurnsHandler {
         RefreshUnitsData();
     }
 
+    public void StartTurns() {
+        if (_turnsContainer[0].IconType == TurnsUILayout.IconType.Enemy) {
+            AIEndedTurn();
+        }
+    }
+
     public void WaitButtonPressed() {
         SetCurrentWalker(null);
 
@@ -26,7 +32,12 @@ public class BattleTurnsHandler {
             StartNewRound();
         }
 
-        if (_turnsContainer[1].Unit is PlayerCharacterWalker) {
+        if (_turnsContainer[1].IconType == TurnsUILayout.IconType.Enemy) {
+            _turnsContainer.RemoveAt(1);
+            _uiRoot.GetPanel<BattlePanel>().DestroyFirstIcon();
+            AIEndedTurn();
+            return;
+        } else if (_turnsContainer[1].Unit is PlayerCharacterWalker) {
             _battleHandler.FocusCameraToNearestAllyUnit(_turnsContainer[0].Unit);
         }
 
@@ -34,6 +45,10 @@ public class BattleTurnsHandler {
         _uiRoot.GetPanel<BattlePanel>().DestroyFirstIcon();
 
         TryFillTurns();
+    }
+
+    public void AIEndedTurn() {
+        WaitButtonPressed();
     }
 
     public void SetCurrentWalker(CharacterWalker unit) {
@@ -96,13 +111,16 @@ public class BattleTurnsHandler {
     }
 
     private void GenerateOneRound() {
-        for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            bool isPlayerTurn = _battleGridData.Units[i] is PlayerCharacterWalker;
+        List<CharacterWalker> listRandomize = new List<CharacterWalker>(_battleGridData.Units);
 
-            if (isPlayerTurn) {
-                _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player);
-                _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[i]));
-            }
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            CharacterWalker randomCharacter = listRandomize[Random.Range(0, listRandomize.Count)];
+            listRandomize.Remove(randomCharacter);
+
+            bool isPlayerTurn = randomCharacter is PlayerCharacterWalker;
+
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy);
+            _turnsContainer.Add(new TurnData(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, randomCharacter));
         }
 
         _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound);

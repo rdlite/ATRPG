@@ -11,7 +11,8 @@ public class GameStateMachine : UpdateStateMachine
             [typeof(BootstrapState)] = new BootstrapState(
                 this, coroutineService, uiRoot),
             [typeof(LoadLevelState)] = new LoadLevelState(
-                ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer),
+                ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer,
+                assetsContainer),
             [typeof(WordWalkingState)] = new WordWalkingState(
                 this, uiRoot),
             [typeof(BattleState)] = new BattleState(uiRoot, assetsContainer)

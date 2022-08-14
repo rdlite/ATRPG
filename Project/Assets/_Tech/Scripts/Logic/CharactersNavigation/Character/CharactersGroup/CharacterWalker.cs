@@ -14,13 +14,19 @@ public abstract class CharacterWalker : MonoBehaviour {
     protected OnFieldRaycaster _fieldRaycaster;
     protected SceneAbstractEntitiesMediator _abstractEntityMediator;
     protected GameObject _createdCharacterSelection;
+    protected OverCharacterWorldDataPanel _createdOverCharacterData;
     protected CharacterAnimator _animator;
+    protected AssetsContainer _assetsContainer;
     protected float _defaultSpeed;
     protected bool _isCurrentlyMoving;
+    private CameraSimpleFollower _mainCamera;
     private SelectionData _selectionData;
 
     public void Init(
-        OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer) {
+        OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer,
+        AssetsContainer assetsContainer, CameraSimpleFollower mainCamera) {
+        _mainCamera = mainCamera;
+        _assetsContainer = assetsContainer;
         _configsContainer = configsContainer;
         _fieldRaycaster = fieldRaycaster;
         _animator = new CharacterAnimator(GetComponentInChildren<Animator>(true));
@@ -62,11 +68,19 @@ public abstract class CharacterWalker : MonoBehaviour {
         }
 
         MoveSelection();
+        MoveDataAbove();
     }
 
     private void MoveSelection() {
         if (_createdCharacterSelection != null) {
             _createdCharacterSelection.transform.position = GetOverCharacterPoint();
+        }
+    }
+
+    private void MoveDataAbove() {
+        if (_createdOverCharacterData != null) {
+            _createdOverCharacterData.transform.position = Vector3.Lerp(_createdOverCharacterData.transform.position, GetOverCharacterPoint() + Vector3.up * (_createdCharacterSelection == null ? .5f : 1f), 13f * Time.deltaTime);
+            _createdOverCharacterData.transform.forward = _mainCamera.transform.forward;
         }
     }
 
@@ -115,5 +129,18 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     public Color GetCharacterColor() {
         return _selectionData.OutlineColor;
+    }
+
+    public void CreateOverUnitData() {
+        DestroyOverUnitData();
+        _createdOverCharacterData = Instantiate(_assetsContainer.BattleOverCharacterDataPrefab);
+        _createdOverCharacterData.transform.position = GetOverCharacterPoint() + Vector3.up * 1.25f;
+        _createdOverCharacterData.Init(this);
+    }
+
+    public void DestroyOverUnitData() {
+        if (_createdOverCharacterData != null) {
+            Destroy(_createdOverCharacterData.gameObject);
+        }
     }
 }

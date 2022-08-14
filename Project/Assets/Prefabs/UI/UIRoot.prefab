@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6466416438339630092}
   - component: {fileID: 1316873210599338655}
   - component: {fileID: 4505650914796194496}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UIRoot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -361,20 +361,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4407487931257337043, guid: 744fbd75af03d164fa2cea7d18d00cf8,
-        type: 3}
-      propertyPath: m_PresetInfoIsWorld
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 7999617540118166713, guid: 744fbd75af03d164fa2cea7d18d00cf8,
         type: 3}
       propertyPath: m_Name
       value: WorldWalkingPanel
-      objectReference: {fileID: 0}
-    - target: {fileID: 7999617540118166713, guid: 744fbd75af03d164fa2cea7d18d00cf8,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 744fbd75af03d164fa2cea7d18d00cf8, type: 3}

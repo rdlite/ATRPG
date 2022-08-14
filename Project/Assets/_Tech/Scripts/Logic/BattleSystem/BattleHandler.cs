@@ -7,7 +7,7 @@ public class BattleHandler {
     private const string APPEAR_RANGE = "_AppearRoundRange";
     private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
     private DecalProjector[] _createdUnderCharactersDecals;
-    private bool[] _mouseOverSelectionMap;
+    private bool[] _mouseOverSelectionMap, _mouseOverDataSelectionMap;
     private AssetsContainer _assetsContainer;
     private UIRoot _uiRoot;
     private DecalProjector _decalProjector;
@@ -35,6 +35,7 @@ public class BattleHandler {
         _decalProjector = decalProjector;
         _battleGridData = battleGridData;
         _mouseOverSelectionMap = new bool[_battleGridData.Units.Count];
+        _mouseOverDataSelectionMap = new bool[_battleGridData.Units.Count];
         _battleRaycaster = new BattleRaycaster(
             _battleGridData.CharactersLayerMask, _cameraFollower, _battleGridData.GroundLayerMask);
 
@@ -51,6 +52,8 @@ public class BattleHandler {
 
         _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().SignOnBackButton(BackButtonPressed);
+
+        _turnsHandler.StartTurns();
     }
 
     public void Tick() {
@@ -65,6 +68,16 @@ public class BattleHandler {
                         _mouseOverSelectionMap[i] = false;
                         _battleGridData.Units[i].SetActiveOutline(false);
                     }
+                }
+            }
+
+            for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                if (_battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverDataSelectionMap[i]) {
+                    _mouseOverDataSelectionMap[i] = true;
+                    CreateOverUnitData(_battleGridData.Units[i]);
+                } else if (_battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverDataSelectionMap[i]) {
+                    _mouseOverDataSelectionMap[i] = false;
+                    DestroyOverUnitData(_battleGridData.Units[i]);
                 }
             }
         }
@@ -113,7 +126,7 @@ public class BattleHandler {
         CharacterWalker nearestChar = null;
 
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            if (unitToCheck != _currentSelectedCharacterWalker && _battleGridData.Units[i] != unitToCheck && _battleGridData.Units[i] is PlayerCharacterWalker && _turnsHandler.IsCanUnitWalk(_battleGridData.Units[i])) {
+            if (_battleGridData.Units[i] is PlayerCharacterWalker && _turnsHandler.IsCanUnitWalk(_battleGridData.Units[i])) {
                 float distance = Vector3.Distance(_battleGridData.Units[i].transform.position, unitToCheck.transform.position);
 
                 if (distance < nearestLength) {
@@ -382,7 +395,7 @@ public class BattleHandler {
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
         if (_currentSelectedCharacterWalker is PlayerCharacterWalker && _turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker) && _turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker)) {
-            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this);
+            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedCharacterWalker);
         } 
 
         if (_turnsHandler.IsHaveCurrentWalkingUnit() && !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker)) {
@@ -395,6 +408,14 @@ public class BattleHandler {
     private void DestroySelectionOnCurrentUnit() {
         _currentSelectedCharacterWalker?.DestroySelection();
         _currentSelectedCharacterWalker?.SetActiveOutline(false);
+    }
+
+    private void CreateOverUnitData(CharacterWalker unit) {
+        unit.CreateOverUnitData();
+    }
+
+    private void DestroyOverUnitData(CharacterWalker unit) {
+        unit.DestroyOverUnitData();
     }
 
     private void ShowView() {
