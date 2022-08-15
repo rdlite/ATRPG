@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class TurnsUILayout : MonoBehaviour{
     [SerializeField] private GameObject _playerTurnIcon, _enemyTurnIcon, _restartRoundIcon;
@@ -17,9 +18,13 @@ public class TurnsUILayout : MonoBehaviour{
         _prefabsType_map.Add(IconType.RestartRound, _restartRoundIcon);
     }
 
-    public void CreateNewIcon(IconType type) {
+    public void CreateNewIcon(IconType type, BattleHandler battleHandler, CharacterWalker characterWalker) {
         GameObject newIcon = Instantiate(_prefabsType_map[type], _parentLayout);
         newIcon.transform.localScale = _prefabsType_map[type].transform.localScale;
+        if (newIcon.GetComponent<EventTriggerButtonMediator>() != null && type == IconType.Enemy) {
+            newIcon.GetComponent<EventTriggerButtonMediator>().OnPointerEnter += () => battleHandler.OnTurnButtonEntered(characterWalker);
+            newIcon.GetComponent<EventTriggerButtonMediator>().OnPointerExit += () => battleHandler.OnTurnButtonExit(characterWalker);
+        }
         _createdIcons.Add(newIcon);
     }
 

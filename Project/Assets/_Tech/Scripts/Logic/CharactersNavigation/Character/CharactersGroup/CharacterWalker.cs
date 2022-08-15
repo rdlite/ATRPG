@@ -132,10 +132,11 @@ public abstract class CharacterWalker : MonoBehaviour {
     }
 
     public void CreateOverUnitData() {
-        DestroyOverUnitData();
-        _createdOverCharacterData = Instantiate(_assetsContainer.BattleOverCharacterDataPrefab);
-        _createdOverCharacterData.transform.position = GetOverCharacterPoint() + Vector3.up * 1.25f;
-        _createdOverCharacterData.Init(this);
+        if (_createdOverCharacterData == null) {
+            _createdOverCharacterData = Instantiate(_assetsContainer.BattleOverCharacterDataPrefab);
+            _createdOverCharacterData.transform.position = GetOverCharacterPoint() + Vector3.up * 1.25f;
+            _createdOverCharacterData.Init(this);
+        }
     }
 
     public void DestroyOverUnitData() {

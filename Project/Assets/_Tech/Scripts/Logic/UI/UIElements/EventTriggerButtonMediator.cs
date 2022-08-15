@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-public class AbilityButton : MonoBehaviour {
+public class EventTriggerButtonMediator : MonoBehaviour {
     public event Action OnPointerEnter, OnPointerExit, OnClick;
 
     public void RaisePointerEnterEvent() {

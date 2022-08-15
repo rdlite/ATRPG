@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class BattlePanel : UIPanel {
-    [SerializeField] private AbilityButton _walkButton;
+    [SerializeField] private EventTriggerButtonMediator _walkButton;
     [SerializeField] private Button _waitButton, _backToCurrentUnitButton;
     [SerializeField] private TurnsUILayout _turnsLayoutHandler;
     [SerializeField] private CharacterStatsPanel _characterStatsPanel;
@@ -17,8 +17,8 @@ public class BattlePanel : UIPanel {
         _characterStatsPanel.Init();
     }
 
-    public void AddTurnIcon(TurnsUILayout.IconType type) {
-        _turnsLayoutHandler.CreateNewIcon(type);
+    public void AddTurnIcon(TurnsUILayout.IconType type, BattleHandler battleHadler, CharacterWalker unit) {
+        _turnsLayoutHandler.CreateNewIcon(type, battleHadler, unit);
     }
 
     public bool CheckIfNeedNewTurnIcons() {

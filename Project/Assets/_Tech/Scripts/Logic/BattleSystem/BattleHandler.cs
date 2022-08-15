@@ -60,7 +60,7 @@ public class BattleHandler {
         if (Time.frameCount % 4 == 0) {
             _currentMouseOverSelectionUnit = _battleRaycaster.GetCurrentMouseOverSelectionUnit();
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                if (_battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i]) {
+                if (_battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i] && !IsPointerOverUIObject()) {
                     _mouseOverSelectionMap[i] = true;
                     _battleGridData.Units[i].SetActiveOutline(true);
                 } else if (_battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverSelectionMap[i]) {
@@ -72,7 +72,7 @@ public class BattleHandler {
             }
 
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                if (_battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverDataSelectionMap[i]) {
+                if (_battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverDataSelectionMap[i] && !IsPointerOverUIObject()) {
                     _mouseOverDataSelectionMap[i] = true;
                     CreateOverUnitData(_battleGridData.Units[i]);
                 } else if (_battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverDataSelectionMap[i]) {
@@ -84,12 +84,6 @@ public class BattleHandler {
 
         if (_isRestrictedForDoAnything) {
             return;
-        }
-
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && _currentMouseOverSelectionUnit != null) {
-            if (_currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
-                SetCharacterSelect(_currentMouseOverSelectionUnit);
-            }
         }
 
         if (_currentSelectedCharacterWalker != null) {
@@ -107,8 +101,15 @@ public class BattleHandler {
 
             if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
                 SetCharacterDestination();
+                return;
             } else {
                 TryDrawWalkLine();
+            }
+        }
+
+        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && _currentMouseOverSelectionUnit != null) {
+            if (_currentMouseOverSelectionUnit != _currentSelectedCharacterWalker) {
+                SetCharacterSelect(_currentMouseOverSelectionUnit);
             }
         }
     }
@@ -360,6 +361,16 @@ public class BattleHandler {
         _isRestrictedForDoAnything = false;
     }
     // END WALK MODULE
+
+    public void OnTurnButtonEntered(CharacterWalker unit) {
+        unit.SetActiveOutline(true);
+        unit.CreateOverUnitData();
+    }
+
+    public void OnTurnButtonExit(CharacterWalker unit) {
+        unit.SetActiveOutline(false);
+        unit.DestroyOverUnitData();
+    }
 
     private void WaitButtonPressed() {
         if (_isRestrictedForDoAnything) {

@@ -128,7 +128,11 @@ public class NavAgent : MonoBehaviour {
                 _targetIndex++;
 
                 if (_targetIndex >= _path.Length) {
-                    transform.position = currentWaypoint;
+                    while (transform.position.RemoveYCoord() != currentWaypoint.RemoveYCoord()) {
+                        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, Time.deltaTime * MovementSpeed);
+                        yield return null;
+                    }
+
                     FoundTarget();
                     yield break;
                 }
@@ -137,6 +141,11 @@ public class NavAgent : MonoBehaviour {
             }
 
             if (Vector2.Distance(transform.position.GetYRemovedV2(), _path[_path.Length - 1].GetYRemovedV2()) < _stoppingDistance) {
+                while (transform.position.RemoveYCoord() != _path[_path.Length - 1].RemoveYCoord()) {
+                    transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, Time.deltaTime * MovementSpeed);
+                    yield return null;
+                }
+
                 FoundTarget();
                 yield break;
             }

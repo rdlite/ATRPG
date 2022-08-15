@@ -85,7 +85,7 @@ public class CameraSimpleFollower : MonoBehaviour {
                     Mathf.Clamp(_freeMovementPoint.position.x, minXPos, maxXPos),
                     _freeMovementPoint.position.y,
                     Mathf.Clamp(_freeMovementPoint.position.z, minZPos, maxZPos));
-            transform.position = _freeMovementPoint.position + _offset * _currentZooming;
+            transform.position = Vector3.Lerp(transform.position, _freeMovementPoint.position + _offset * _currentZooming, 15f * Time.deltaTime);
         }
 
         transform.eulerAngles = Vector3.Lerp(transform.eulerAngles, _targetRotation, _rotationLerpMovement * Time.deltaTime);
