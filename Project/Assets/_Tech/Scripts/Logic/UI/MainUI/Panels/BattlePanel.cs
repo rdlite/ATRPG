@@ -3,8 +3,8 @@ using UnityEngine;
 using UnityEngine.UI;
 
 public class BattlePanel : UIPanel {
-    [SerializeField] private EventTriggerButtonMediator _walkButton;
-    [SerializeField] private Button _waitButton, _backToCurrentUnitButton;
+    [SerializeField] private Button _backToCurrentUnitButton;
+    [SerializeField] private AbilityButton _waitButton, _walkButton;
     [SerializeField] private TurnsUILayout _turnsLayoutHandler;
     [SerializeField] private CharacterStatsPanel _characterStatsPanel;
 
@@ -30,33 +30,41 @@ public class BattlePanel : UIPanel {
     }
 
     public void SignOnWaitButton(Action callback) {
-        _waitButton.onClick.AddListener(() => callback?.Invoke());
+        _waitButton.Button.onClick.AddListener(() => callback?.Invoke());
     }
     
     public void SignOnBackButton(Action callback) {
         _backToCurrentUnitButton.onClick.AddListener(() => callback?.Invoke());
     }
 
-    public void EnableUnitPanel(BattleHandler battleHadler, CharacterWalker character) {
+    public void EnableUnitPanel(BattleHandler battleHadler, CharacterWalker character, UnitPanelState state) {
         _characterStatsPanel.SetData(character);
         _characterStatsPanel.gameObject.SetActive(true);
         _walkButton.gameObject.SetActive(true);
         _waitButton.gameObject.SetActive(true);
-        _walkButton.OnClick += battleHadler.SwitchWalking;
-        _walkButton.OnPointerEnter += battleHadler.WalkingPointerEnter;
-        _walkButton.OnPointerExit += battleHadler.WalkingPointerExit;
+
+        _waitButton.SetActiveView(state == UnitPanelState.UseTurn);
+        _walkButton.SetActiveView(state == UnitPanelState.UseTurn);
+
+        _walkButton.EventsMediator.OnClick += battleHadler.SwitchWalking;
+        _walkButton.EventsMediator.OnPointerEnter += battleHadler.WalkingPointerEnter;
+        _walkButton.EventsMediator.OnPointerExit += battleHadler.WalkingPointerExit;
     }
 
     public void DisableUnitsPanel(BattleHandler battleHadler) {
         _characterStatsPanel.gameObject.SetActive(false);
-        _walkButton.gameObject.SetActive(false);
-        _waitButton.gameObject.SetActive(false);
-        _walkButton.OnClick -= battleHadler.SwitchWalking;
-        _walkButton.OnPointerEnter -= battleHadler.WalkingPointerEnter;
-        _walkButton.OnPointerExit -= battleHadler.WalkingPointerExit;
+        _walkButton.SetActiveObject(false);
+        _waitButton.SetActiveObject(false);
+        _walkButton.EventsMediator.OnClick -= battleHadler.SwitchWalking;
+        _walkButton.EventsMediator.OnPointerEnter -= battleHadler.WalkingPointerEnter;
+        _walkButton.EventsMediator.OnPointerExit -= battleHadler.WalkingPointerExit;
     }
 
     public void SetActiveBackToUnitButton(bool value) {
         _backToCurrentUnitButton.gameObject.SetActive(value);
     }
+}
+
+public enum UnitPanelState {
+    UseTurn, ViewTurn, CompletelyDeactivate
 }

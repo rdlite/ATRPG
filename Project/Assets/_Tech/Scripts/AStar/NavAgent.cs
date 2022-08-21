@@ -120,20 +120,13 @@ public class NavAgent : MonoBehaviour {
         Vector3 currentWaypoint = _path[0] + Vector3.up * _baseOffset;
 
         while (true) {
-            bool isFPSBelowCap = (1 / Time.deltaTime) < 40;
-
-            float distanceOffsetLerp = Mathf.Lerp(1f / 4f, 1f / 100f, Mathf.InverseLerp(40, 120, 1f / Time.deltaTime));
-
-            if (isFPSBelowCap && (transform.position - currentWaypoint).sqrMagnitude <= .1f || !isFPSBelowCap && (transform.position - currentWaypoint).sqrMagnitude <= distanceOffsetLerp) {
+            if ((transform.position.RemoveYCoord() - currentWaypoint.RemoveYCoord()).magnitude <= Time.deltaTime * MovementSpeed * 2f || transform.position == currentWaypoint) {
                 _targetIndex++;
 
                 if (_targetIndex >= _path.Length) {
-                    while (transform.position.RemoveYCoord() != currentWaypoint.RemoveYCoord()) {
-                        transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, Time.deltaTime * MovementSpeed);
-                        yield return null;
-                    }
-
+                    transform.position = currentWaypoint;
                     FoundTarget();
+
                     yield break;
                 }
 
@@ -150,11 +143,7 @@ public class NavAgent : MonoBehaviour {
                 yield break;
             }
 
-            if (isFPSBelowCap) {
-                transform.position = Vector3.MoveTowards(transform.position, currentWaypoint, Time.deltaTime * MovementSpeed);
-            } else {
-                transform.position += (currentWaypoint - transform.position).normalized * (Time.deltaTime * MovementSpeed);
-            }
+            transform.position += (currentWaypoint - transform.position).normalized * (Time.deltaTime * MovementSpeed);
 
             Vector3 movementDirection = (currentWaypoint - transform.position);
             movementDirection.y = 0f;

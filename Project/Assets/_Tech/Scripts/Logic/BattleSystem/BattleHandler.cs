@@ -27,7 +27,7 @@ public class BattleHandler {
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
-        Transform battleGeneratorTransform) {
+        Transform battleGeneratorTransform, ICoroutineService coroutineService) {
         _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
         _assetsContainer = assetsContainer;
@@ -40,7 +40,8 @@ public class BattleHandler {
             _battleGridData.CharactersLayerMask, _cameraFollower, _battleGridData.GroundLayerMask);
 
         _turnsHandler = new BattleTurnsHandler(
-            _battleGridData, _uiRoot, this);
+            _battleGridData, _uiRoot, this,
+            coroutineService, cameraFollower);
 
         _createdUnderCharactersDecals = new DecalProjector[_battleGridData.Units.Count];
 
@@ -48,6 +49,7 @@ public class BattleHandler {
             _createdUnderCharactersDecals[i] = Object.Instantiate(_assetsContainer.UnderCharacterDecalPrefab);
             _createdUnderCharactersDecals[i].gameObject.SetActive(false);
             _createdUnderCharactersDecals[i].transform.SetParent(battleGeneratorTransform);
+            _battleGridData.Units[i].WithdrawWeapon();
         }
 
         _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
@@ -382,7 +384,7 @@ public class BattleHandler {
         DestroySelectionOnCurrentUnit();
         _currentSelectedCharacterWalker = null;
         HideWalkingDistance(true);
-        _turnsHandler.WaitButtonPressed();
+        _turnsHandler.CallNextTurn();
     }
 
     private void BackButtonPressed() {
@@ -403,11 +405,16 @@ public class BattleHandler {
         _currentSelectedCharacterWalker.SetActiveOutline(true);
         _currentSelectedCharacterWalker.CreateSelectionAbove();
 
-        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
+        UnitPanelState viewState = UnitPanelState.CompletelyDeactivate;
+        
+        if (_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker) && _turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker)) {
+            viewState = UnitPanelState.UseTurn;
+        } else {
+            viewState = UnitPanelState.ViewTurn;
+        }
 
-        if (_currentSelectedCharacterWalker is PlayerCharacterWalker && _turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker) && _turnsHandler.IsCanUnitWalk(_currentSelectedCharacterWalker)) {
-            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedCharacterWalker);
-        } 
+        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
+        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedCharacterWalker, viewState);
 
         if (_turnsHandler.IsHaveCurrentWalkingUnit() && !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedCharacterWalker)) {
             _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(true);
@@ -427,6 +434,12 @@ public class BattleHandler {
 
     private void DestroyOverUnitData(CharacterWalker unit) {
         unit.DestroyOverUnitData();
+    }
+
+    public void SetEnemyTurn() {
+        _currentSelectedCharacterWalker?.DestroySelection();
+        _currentSelectedCharacterWalker?.SetActiveOutline(false);
+        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
     }
 
     private void ShowView() {

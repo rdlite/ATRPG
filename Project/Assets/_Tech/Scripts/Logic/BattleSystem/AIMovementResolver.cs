@@ -1,0 +1,33 @@
+using System.Collections;
+using UnityEngine;
+
+public class AIMovementResolver {
+    private ICoroutineService _coroutineService;
+    private CameraSimpleFollower _camera;
+    private BattleGridData _battleGridData;
+    private BattleHandler _battleHandler;
+    private BattleTurnsHandler _turnsHandler;
+
+    public AIMovementResolver(
+        BattleGridData battleGridData, BattleHandler battleHandler, BattleTurnsHandler turnsHandler,
+        CameraSimpleFollower camera, ICoroutineService coroutineService) {
+        _coroutineService = coroutineService;
+        _camera = camera;
+        _battleGridData = battleGridData;
+        _battleHandler = battleHandler;
+        _turnsHandler = turnsHandler;
+    }
+
+    public void MoveUnit(CharacterWalker characterToMove) {
+        _battleHandler.SetEnemyTurn();
+        _coroutineService.StartCoroutine(TurnSequence(characterToMove));
+    }
+
+    private IEnumerator TurnSequence(CharacterWalker characterToMove) {
+        _camera.SetTarget(characterToMove.transform);
+
+        yield return new WaitForSeconds(3f);
+
+        _turnsHandler.AIEndedTurn();
+    }
+}

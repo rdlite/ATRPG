@@ -12,10 +12,11 @@ public class GameStateMachine : UpdateStateMachine
                 this, coroutineService, uiRoot),
             [typeof(LoadLevelState)] = new LoadLevelState(
                 ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer,
-                assetsContainer),
+                assetsContainer, coroutineService),
             [typeof(WordWalkingState)] = new WordWalkingState(
                 this, uiRoot),
-            [typeof(BattleState)] = new BattleState(uiRoot, assetsContainer)
+            [typeof(BattleState)] = new BattleState(
+                uiRoot, assetsContainer, coroutineService)
         };
     }
 }

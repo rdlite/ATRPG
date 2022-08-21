@@ -8,47 +8,58 @@ public class BattleTurnsHandler {
     private UIRoot _uiRoot;
     private BattleGridData _battleGridData;
     private CharacterWalker _currentWalkingUnit;
+    private AIMovementResolver _aiMovementResolver;
 
     public BattleTurnsHandler(
-        BattleGridData battleGridData, UIRoot ui, BattleHandler battleHandler) {
+        BattleGridData battleGridData, UIRoot ui, BattleHandler battleHandler,
+        ICoroutineService coroutineService, CameraSimpleFollower camera) {
         _battleHandler = battleHandler;
         _uiRoot = ui;
         _battleGridData = battleGridData;
         _turnsContainer = new List<TurnData>();
+
+        _aiMovementResolver = new AIMovementResolver(
+            battleGridData, battleHandler, this,
+            camera, coroutineService);
+
         TryFillTurns();
         RefreshUnitsData();
     }
 
     public void StartTurns() {
         if (_turnsContainer[0].IconType == TurnsUILayout.IconType.Enemy) {
-            AIEndedTurn();
+            StartAITurn(_turnsContainer[0].Unit);
         }
     }
 
-    public void WaitButtonPressed() {
+    public void CallNextTurn() {
         SetCurrentWalker(null);
 
-        if (_turnsContainer[1].IconType == TurnsUILayout.IconType.RestartRound) {
-            StartNewRound();
-        }
-
-        if (_turnsContainer[1].IconType == TurnsUILayout.IconType.Enemy) {
-            _turnsContainer.RemoveAt(1);
-            _uiRoot.GetPanel<BattlePanel>().DestroyFirstIcon();
-            AIEndedTurn();
-            return;
-        } else if (_turnsContainer[1].Unit is PlayerCharacterWalker) {
-            _battleHandler.FocusCameraToNearestAllyUnit(_turnsContainer[0].Unit);
-        }
+        CharacterWalker endCharacter = _turnsContainer[0].Unit;
 
         _turnsContainer.RemoveAt(0);
         _uiRoot.GetPanel<BattlePanel>().DestroyFirstIcon();
 
+        if (_turnsContainer[0].IconType == TurnsUILayout.IconType.RestartRound) {
+            StartNewRound();
+        }
+
+        if (_turnsContainer[0].IconType == TurnsUILayout.IconType.Enemy) {
+            StartAITurn(_turnsContainer[0].Unit);
+            return;
+        } else if (_turnsContainer[0].Unit is PlayerCharacterWalker) {
+            _battleHandler.FocusCameraToNearestAllyUnit(endCharacter);
+        }
+
         TryFillTurns();
     }
 
+    private void StartAITurn(CharacterWalker unit) {
+        _aiMovementResolver.MoveUnit(unit);
+    }
+
     public void AIEndedTurn() {
-        WaitButtonPressed();
+        CallNextTurn();
     }
 
     public void SetCurrentWalker(CharacterWalker unit) {
@@ -68,7 +79,7 @@ public class BattleTurnsHandler {
     }
 
     private void StartNewRound() {
-        _turnsContainer.RemoveAt(1);
+        _turnsContainer.RemoveAt(0);
         _uiRoot.GetPanel<BattlePanel>().DestroyFirstIcon();
         RefreshUnitsData();
     }
@@ -111,6 +122,22 @@ public class BattleTurnsHandler {
     }
 
     private void GenerateOneRound() {
+        // FOR DEBUG REASONS
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^2]));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[0]));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[0]);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[1]));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[1]);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[2]));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[2]);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[3]));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[3]);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^1]));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
+
         List<CharacterWalker> listRandomize = new List<CharacterWalker>(_battleGridData.Units);
 
         for (int i = 0; i < _battleGridData.Units.Count; i++) {

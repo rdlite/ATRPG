@@ -12,13 +12,14 @@ public class CharactersGroupContainer : MonoBehaviour {
 
     public void Init(
         OnFieldRaycaster fieldRaycaster, AStarGrid grid, SceneAbstractEntitiesMediator abstractEntitiesMediator,
-        ConfigsContainer configsContainer, AssetsContainer assetsContainer, CameraSimpleFollower cameraFollower) {
+        ConfigsContainer configsContainer, AssetsContainer assetsContainer, CameraSimpleFollower cameraFollower,
+        ICoroutineService coroutineService) {
         _grid = grid;
 
         foreach (CharacterWalker character in _charactersInGroup) {
             character.Init(
                 fieldRaycaster, abstractEntitiesMediator, configsContainer,
-                assetsContainer, cameraFollower);
+                assetsContainer, cameraFollower, coroutineService);
         }
     }
 

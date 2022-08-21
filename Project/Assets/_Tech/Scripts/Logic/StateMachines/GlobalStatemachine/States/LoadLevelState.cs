@@ -3,6 +3,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 public class LoadLevelState : IPayloadState<string> {
+    private ICoroutineService _coroutineService;
     private AssetsContainer _assetsContainer;
     private ConfigsContainer _configsContainer;
     private GameStateMachine _globalStatemachine;
@@ -10,7 +11,8 @@ public class LoadLevelState : IPayloadState<string> {
 
     public LoadLevelState(
         LevelsLoadingService levelsLoadingService, GameStateMachine globalStatemachine, ConfigsContainer configsContainer,
-         AssetsContainer assetsContainer) {
+         AssetsContainer assetsContainer, ICoroutineService coroutineService) {
+        _coroutineService = coroutineService;
         _assetsContainer = assetsContainer;
         _configsContainer = configsContainer;
         _globalStatemachine = globalStatemachine;
@@ -41,7 +43,8 @@ public class LoadLevelState : IPayloadState<string> {
 
         charactersGroupContainer.Init(
             fieldRaycaster, globalGrid, abstractEntitiesMediator,
-            _configsContainer, _assetsContainer, cameraFollower);
+            _configsContainer, _assetsContainer, cameraFollower,
+            _coroutineService);
         cameraFollower.Init(charactersGroupContainer.MainCharacter.transform, globalGrid.LDPoint, globalGrid.RUPoint);
         fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
 
@@ -55,7 +58,7 @@ public class LoadLevelState : IPayloadState<string> {
         foreach (EnemyCharacterWalker enemyWalker in enemyWalkers) {
             enemyWalker.Init(
                 fieldRaycaster, abstractEntitiesMediator, _configsContainer,
-                _assetsContainer, cameraFollower);
+                _assetsContainer, cameraFollower, _coroutineService);
         }
         
         foreach (EnemyContainer enemyContainer in enemyContainers) {

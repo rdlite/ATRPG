@@ -24,12 +24,12 @@ public abstract class CharacterWalker : MonoBehaviour {
 
     public void Init(
         OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer,
-        AssetsContainer assetsContainer, CameraSimpleFollower mainCamera) {
+        AssetsContainer assetsContainer, CameraSimpleFollower mainCamera, ICoroutineService coroutineService) {
         _mainCamera = mainCamera;
         _assetsContainer = assetsContainer;
         _configsContainer = configsContainer;
         _fieldRaycaster = fieldRaycaster;
-        _animator = new CharacterAnimator(GetComponentInChildren<Animator>(true));
+        _animator = new CharacterAnimator(GetComponentInChildren<Animator>(true), coroutineService);
         _defaultSpeed = _statsData.MovementSpeed;
         _abstractEntityMediator = abstractEntitiesMediator;
 
@@ -143,5 +143,10 @@ public abstract class CharacterWalker : MonoBehaviour {
         if (_createdOverCharacterData != null) {
             Destroy(_createdOverCharacterData.gameObject);
         }
+    }
+
+    //ANIMATOR METHODS
+    public void WithdrawWeapon() {
+        _animator.WithdrawWeapon();
     }
 }
