@@ -10,8 +10,8 @@ public class CharacterStatsPanel : MonoBehaviour {
         _defenseSlider.Init();
     }
 
-    public void SetData(CharacterWalker character) {
-        _healthSlider.UpdateValue(character.GetStatsConfig().HP, character.GetStatsConfig().HP);
-        _defenseSlider.UpdateValue(character.GetStatsConfig().Defense, character.GetStatsConfig().Defense);
+    public void SetData(UnitBase character) {
+        _healthSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentHealth(), character.GetUnitHealthContainer().GetCurrentHealth());
+        _defenseSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentDefense(), character.GetUnitHealthContainer().GetCurrentDefense());
     }
 }

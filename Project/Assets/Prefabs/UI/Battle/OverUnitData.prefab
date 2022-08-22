@@ -224,7 +224,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7914015320142672425}
   - component: {fileID: 7914015320142672430}
-  - component: {fileID: 3456901931017911727}
+  - component: {fileID: 4774673520247284859}
   m_Layer: 5
   m_Name: OverUnitData
   m_TagString: Untagged
@@ -274,7 +274,7 @@ Canvas:
   m_SortingLayerID: -773255967
   m_SortingOrder: 10
   m_TargetDisplay: 0
---- !u!114 &3456901931017911727
+--- !u!114 &4774673520247284859
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -283,7 +283,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 7914015320142672426}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 215806b24a1ec7e4798f08189e05d97b, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c89fb7024ecb68439dc4edcdca6bb37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _healthSlider: {fileID: 6209179488930062898}

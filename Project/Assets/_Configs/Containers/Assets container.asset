@@ -12,9 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc0e6c8332541f64d944d9a3908fd4f4, type: 3}
   m_Name: Assets container
   m_EditorClassIdentifier: 
-  BattleOverCharacterSelectionPrefab: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
+  BattleOverUnitSelectionPrefab: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
     type: 3}
-  BattleOverCharacterDataPrefab: {fileID: 3456901931017911727, guid: 8d86d7b3e47411b44ad89d71da197b95,
+  BattleOverUnitDataPrefab: {fileID: 4774673520247284859, guid: 8d86d7b3e47411b44ad89d71da197b95,
     type: 3}
-  UnderCharacterDecalPrefab: {fileID: 2248940014966254410, guid: db2ea6fbe38253849b27e6badd066bf2,
+  UnderUnitDecalPrefab: {fileID: 2248940014966254410, guid: db2ea6fbe38253849b27e6badd066bf2,
     type: 3}
+  WeaponPrefabsContainer: {fileID: 11400000, guid: 3916b8be3eb3cd14397642793d68fc9a,
+    type: 2}

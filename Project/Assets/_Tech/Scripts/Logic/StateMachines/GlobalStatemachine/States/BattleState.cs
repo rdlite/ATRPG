@@ -14,7 +14,7 @@ public class BattleState : IPayloadState<BetweenStatesDataContainer>, IUpdateSta
 
     public void Enter(BetweenStatesDataContainer sceneData) {
         _sceneData = sceneData;
-        sceneData.CharactersGroupContainer.StopCharacters();
+        sceneData.CharactersGroupContainer.StopUnits();
         sceneData.BattleGridGenerator.StartBattle(
             sceneData.CharactersGroupContainer, sceneData.EnemyDetected, sceneData.Camera,
             _uiRoot, _assetsContainer, _coroutineService);

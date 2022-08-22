@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class BattlePanel : UIPanel {
     [SerializeField] private Button _backToCurrentUnitButton;
-    [SerializeField] private AbilityButton _waitButton, _walkButton;
+    [SerializeField] private AbilityButton _waitButton, _walkButton, _attackButton;
     [SerializeField] private TurnsUILayout _turnsLayoutHandler;
     [SerializeField] private CharacterStatsPanel _characterStatsPanel;
 
@@ -17,7 +17,7 @@ public class BattlePanel : UIPanel {
         _characterStatsPanel.Init();
     }
 
-    public void AddTurnIcon(TurnsUILayout.IconType type, BattleHandler battleHadler, CharacterWalker unit) {
+    public void AddTurnIcon(TurnsUILayout.IconType type, BattleHandler battleHadler, UnitBase unit) {
         _turnsLayoutHandler.CreateNewIcon(type, battleHadler, unit);
     }
 
@@ -37,7 +37,7 @@ public class BattlePanel : UIPanel {
         _backToCurrentUnitButton.onClick.AddListener(() => callback?.Invoke());
     }
 
-    public void EnableUnitPanel(BattleHandler battleHadler, CharacterWalker character, UnitPanelState state) {
+    public void EnableUnitPanel(BattleHandler battleHadler, UnitBase character, UnitPanelState state) {
         _characterStatsPanel.SetData(character);
         _characterStatsPanel.gameObject.SetActive(true);
         _walkButton.gameObject.SetActive(true);

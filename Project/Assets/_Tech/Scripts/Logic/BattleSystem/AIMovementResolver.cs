@@ -18,12 +18,12 @@ public class AIMovementResolver {
         _turnsHandler = turnsHandler;
     }
 
-    public void MoveUnit(CharacterWalker characterToMove) {
+    public void MoveUnit(UnitBase characterToMove) {
         _battleHandler.SetEnemyTurn();
         _coroutineService.StartCoroutine(TurnSequence(characterToMove));
     }
 
-    private IEnumerator TurnSequence(CharacterWalker characterToMove) {
+    private IEnumerator TurnSequence(UnitBase characterToMove) {
         _camera.SetTarget(characterToMove.transform);
 
         yield return new WaitForSeconds(3f);

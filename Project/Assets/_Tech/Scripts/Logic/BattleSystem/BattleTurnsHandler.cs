@@ -3,11 +3,11 @@ using UnityEngine;
 
 public class BattleTurnsHandler {
     private List<TurnData> _turnsContainer;
-    private Dictionary<CharacterWalker, CurrentRoundUnitsData> _unitsRoundData_map;
+    private Dictionary<UnitBase, CurrentRoundUnitsData> _unitsRoundData_map;
     private BattleHandler _battleHandler;
     private UIRoot _uiRoot;
     private BattleGridData _battleGridData;
-    private CharacterWalker _currentWalkingUnit;
+    private UnitBase _currentWalkingUnit;
     private AIMovementResolver _aiMovementResolver;
 
     public BattleTurnsHandler(
@@ -35,7 +35,7 @@ public class BattleTurnsHandler {
     public void CallNextTurn() {
         SetCurrentWalker(null);
 
-        CharacterWalker endCharacter = _turnsContainer[0].Unit;
+        UnitBase endUnit = _turnsContainer[0].Unit;
 
         _turnsContainer.RemoveAt(0);
         _uiRoot.GetPanel<BattlePanel>().DestroyFirstIcon();
@@ -47,14 +47,14 @@ public class BattleTurnsHandler {
         if (_turnsContainer[0].IconType == TurnsUILayout.IconType.Enemy) {
             StartAITurn(_turnsContainer[0].Unit);
             return;
-        } else if (_turnsContainer[0].Unit is PlayerCharacterWalker) {
-            _battleHandler.FocusCameraToNearestAllyUnit(endCharacter);
+        } else if (_turnsContainer[0].Unit is PlayerUnit) {
+            _battleHandler.FocusCameraToNearestAllyUnit(endUnit);
         }
 
         TryFillTurns();
     }
 
-    private void StartAITurn(CharacterWalker unit) {
+    private void StartAITurn(UnitBase unit) {
         _aiMovementResolver.MoveUnit(unit);
     }
 
@@ -62,11 +62,11 @@ public class BattleTurnsHandler {
         CallNextTurn();
     }
 
-    public void SetCurrentWalker(CharacterWalker unit) {
+    public void SetCurrentWalker(UnitBase unit) {
         _currentWalkingUnit = unit;
     }
 
-    public CharacterWalker GetCurrentUnitWalker() {
+    public UnitBase GetCurrentUnitWalker() {
         return _currentWalkingUnit;
     }
 
@@ -74,7 +74,7 @@ public class BattleTurnsHandler {
         return _currentWalkingUnit != null;
     }
 
-    public bool IsItCurrentWalkingUnit(CharacterWalker unit) {
+    public bool IsItCurrentWalkingUnit(UnitBase unit) {
         return _currentWalkingUnit == null || _currentWalkingUnit == unit;
     }
 
@@ -90,34 +90,34 @@ public class BattleTurnsHandler {
         }
     }
 
-    public bool IsCanUnitWalk(CharacterWalker unit) {
+    public bool IsCanUnitWalk(UnitBase unit) {
         return _unitsRoundData_map[unit].IsCanWalk;
     }
 
-    public void SetUnitWalked(CharacterWalker unit) {
+    public void SetUnitWalked(UnitBase unit) {
         _unitsRoundData_map[unit].IsCanWalk = false;
     }
 
-    public void RemovePossibleLengthForUnit(CharacterWalker unit, float length) {
+    public void RemovePossibleLengthForUnit(UnitBase unit, float length) {
         _unitsRoundData_map[unit].MovementLengthLast -= length;
     }
 
-    public float GetLastLengthForUnit(CharacterWalker unit) {
+    public float GetLastLengthForUnit(UnitBase unit) {
         return _unitsRoundData_map[unit].MovementLengthLast;
     }
 
     private void RefreshUnitsData() {
         if (_unitsRoundData_map == null) {
-            _unitsRoundData_map = new Dictionary<CharacterWalker, CurrentRoundUnitsData>();
+            _unitsRoundData_map = new Dictionary<UnitBase, CurrentRoundUnitsData>();
 
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                _unitsRoundData_map.Add(_battleGridData.Units[i], new CurrentRoundUnitsData(_battleGridData.Units[i].GetStatsConfig().MovementLength));
+                _unitsRoundData_map.Add(_battleGridData.Units[i], new CurrentRoundUnitsData(_battleGridData.Units[i].GetMovementLength()));
             }
         }
 
         foreach (var unitData in _unitsRoundData_map) {
             unitData.Value.IsCanWalk = true;
-            unitData.Value.MovementLengthLast = unitData.Key.GetStatsConfig().MovementLength;
+            unitData.Value.MovementLengthLast = unitData.Key.GetMovementLength();
         }
     }
 
@@ -138,16 +138,16 @@ public class BattleTurnsHandler {
         //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
         //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
 
-        List<CharacterWalker> listRandomize = new List<CharacterWalker>(_battleGridData.Units);
+        List<UnitBase> listRandomize = new List<UnitBase>(_battleGridData.Units);
 
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            CharacterWalker randomCharacter = listRandomize[Random.Range(0, listRandomize.Count)];
-            listRandomize.Remove(randomCharacter);
+            UnitBase randomUnit = listRandomize[Random.Range(0, listRandomize.Count)];
+            listRandomize.Remove(randomUnit);
 
-            bool isPlayerTurn = randomCharacter is PlayerCharacterWalker;
+            bool isPlayerTurn = randomUnit is PlayerUnit;
 
-            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, _battleHandler, randomCharacter);
-            _turnsContainer.Add(new TurnData(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, randomCharacter));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, _battleHandler, randomUnit);
+            _turnsContainer.Add(new TurnData(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, randomUnit));
         }
 
         _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
@@ -156,9 +156,9 @@ public class BattleTurnsHandler {
 
     private class TurnData {
         public TurnsUILayout.IconType IconType;
-        public CharacterWalker Unit;
+        public UnitBase Unit;
 
-        public TurnData(TurnsUILayout.IconType iconType, CharacterWalker unit) {
+        public TurnData(TurnsUILayout.IconType iconType, UnitBase unit) {
             IconType = iconType;
             Unit = unit;
         }

@@ -35,7 +35,7 @@ public class LoadLevelState : IPayloadState<string> {
         OnFieldRaycaster fieldRaycaster = Object.FindObjectOfType<OnFieldRaycaster>();
         CameraSimpleFollower cameraFollower = Object.FindObjectOfType<CameraSimpleFollower>();
         Camera mainCamera = Camera.main;
-        CharactersGroupContainer charactersGroupContainer = Object.FindObjectOfType<CharactersGroupContainer>();
+        PlayerUnitsGroupContainer charactersGroupContainer = Object.FindObjectOfType<PlayerUnitsGroupContainer>();
         SceneAbstractEntitiesMediator abstractEntitiesMediator = new SceneAbstractEntitiesMediator();
 
         globalGrid.Init();
@@ -52,10 +52,10 @@ public class LoadLevelState : IPayloadState<string> {
             fieldRaycaster, charactersGroupContainer, battleGridGenerator,
             cameraFollower);
 
-        EnemyCharacterWalker[] enemyWalkers = Object.FindObjectsOfType<EnemyCharacterWalker>();
+        EnemyUnit[] enemyWalkers = Object.FindObjectsOfType<EnemyUnit>();
         EnemyContainer[] enemyContainers = Object.FindObjectsOfType<EnemyContainer>();
 
-        foreach (EnemyCharacterWalker enemyWalker in enemyWalkers) {
+        foreach (EnemyUnit enemyWalker in enemyWalkers) {
             enemyWalker.Init(
                 fieldRaycaster, abstractEntitiesMediator, _configsContainer,
                 _assetsContainer, cameraFollower, _coroutineService);

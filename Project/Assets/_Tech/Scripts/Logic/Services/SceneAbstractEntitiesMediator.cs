@@ -11,7 +11,7 @@ public class SceneAbstractEntitiesMediator {
         _globalStateMachine = globalStateMachine;
     }
 
-    public void TryEnterToBattleState(EnemyCharacterWalker enemyDetected) {
+    public void TryEnterToBattleState(EnemyUnit enemyDetected) {
         _betweenStatesDataContainer.EnemyDetected = enemyDetected;
         _globalStateMachine.Enter<BattleState, BetweenStatesDataContainer>(_betweenStatesDataContainer);
     }

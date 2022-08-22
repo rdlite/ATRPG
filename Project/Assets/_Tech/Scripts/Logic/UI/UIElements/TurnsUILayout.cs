@@ -18,7 +18,7 @@ public class TurnsUILayout : MonoBehaviour{
         _prefabsType_map.Add(IconType.RestartRound, _restartRoundIcon);
     }
 
-    public void CreateNewIcon(IconType type, BattleHandler battleHandler, CharacterWalker characterWalker) {
+    public void CreateNewIcon(IconType type, BattleHandler battleHandler, UnitBase characterWalker) {
         GameObject newIcon = Instantiate(_prefabsType_map[type], _parentLayout);
         newIcon.transform.localScale = _prefabsType_map[type].transform.localScale;
         if (newIcon.GetComponent<EventTriggerButtonMediator>() != null && type == IconType.Enemy) {

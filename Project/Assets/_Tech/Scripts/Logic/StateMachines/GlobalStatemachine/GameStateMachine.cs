@@ -23,13 +23,13 @@ public class GameStateMachine : UpdateStateMachine
 
 public class BetweenStatesDataContainer {
     public OnFieldRaycaster FieldRaycaster;
-    public CharactersGroupContainer CharactersGroupContainer;
-    public EnemyCharacterWalker EnemyDetected;
+    public PlayerUnitsGroupContainer CharactersGroupContainer;
+    public EnemyUnit EnemyDetected;
     public BattleGridGenerator BattleGridGenerator;
     public CameraSimpleFollower Camera;
 
     public BetweenStatesDataContainer(
-        OnFieldRaycaster fieldRaycaster, CharactersGroupContainer charactersGroupContainer, BattleGridGenerator battleGridGenerator,
+        OnFieldRaycaster fieldRaycaster, PlayerUnitsGroupContainer charactersGroupContainer, BattleGridGenerator battleGridGenerator,
         CameraSimpleFollower camera) {
         Camera = camera;
         CharactersGroupContainer = charactersGroupContainer;

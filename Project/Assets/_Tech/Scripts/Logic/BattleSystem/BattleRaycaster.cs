@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class BattleRaycaster {
     private Camera _camera;
-    private LayerMask _charactersLayerMask;
+    private LayerMask _unitsLayerMask;
     private LayerMask _groundLayerMask;
 
-    public BattleRaycaster(LayerMask charactersLayerMask, CameraSimpleFollower cameraFollower, LayerMask groundLayerMask) {
+    public BattleRaycaster(LayerMask unitsLayerMask, CameraSimpleFollower cameraFollower, LayerMask groundLayerMask) {
         _camera = cameraFollower.GetComponent<Camera>();
-        _charactersLayerMask = charactersLayerMask;
+        _unitsLayerMask = unitsLayerMask;
         _groundLayerMask = groundLayerMask;
     }
 
@@ -20,13 +20,13 @@ public class BattleRaycaster {
         return Vector3.zero;
     }
 
-    public CharacterWalker GetCurrentMouseOverSelectionUnit() {
+    public UnitBase GetCurrentMouseOverSelectionUnit() {
         RaycastHit hitInfo;
-        Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, _charactersLayerMask);
-        CharacterWalker character = null;
+        Physics.Raycast(_camera.ScreenPointToRay(Input.mousePosition), out hitInfo, Mathf.Infinity, _unitsLayerMask);
+        UnitBase unit = null;
         if (hitInfo.transform != null) {
-            character = hitInfo.transform.GetComponent<CharacterWalker>();
+            unit = hitInfo.transform.GetComponent<UnitBase>();
         }
-        return character;
+        return unit;
     }
 }

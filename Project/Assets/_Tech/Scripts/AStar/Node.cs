@@ -30,7 +30,7 @@ public class Node {
         MovementPenalty = movementPenalty;
     }
 
-    public void SetPlacedByCharacter(bool value) {
+    public void SetPlacedByUnit(bool value) {
         _isPlacedByCharacter = value;
     }
 

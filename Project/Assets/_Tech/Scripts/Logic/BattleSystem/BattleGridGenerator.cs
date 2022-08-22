@@ -6,7 +6,7 @@ using UnityEngine.Rendering.Universal;
 public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private DecalProjector _decalProjector;
     [SerializeField] private LineRenderer _movementLinePrefab;
-    [SerializeField] private LayerMask _charactersMask;
+    [SerializeField] private LayerMask _unitsMask;
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private Transform _startPoint;
     [SerializeField] private float _borderForGeneratedRect = 10f;
@@ -18,7 +18,7 @@ public class BattleGridGenerator : MonoBehaviour {
 
     public void Init(AStarGrid globalGrid) {
         _battleGridData = new BattleGridData();
-        _battleGridData.CharactersLayerMask = _charactersMask;
+        _battleGridData.UnitsLayerMask = _unitsMask;
         _battleGridData.GroundLayerMask = _groundLayerMask;
         _battleGridData.GlobalGrid = globalGrid;
     }
@@ -28,15 +28,15 @@ public class BattleGridGenerator : MonoBehaviour {
     }
 
     public void StartBattle(
-        CharactersGroupContainer charactersContainer, EnemyCharacterWalker triggeredEnemy, CameraSimpleFollower cameraFollower,
+        PlayerUnitsGroupContainer playerUnitsContainer, EnemyUnit triggeredEnemy, CameraSimpleFollower cameraFollower,
         UIRoot uiRoot, AssetsContainer assetsContainer, ICoroutineService coroutineService) {
-        _battleGridData.Units = new List<CharacterWalker>();
+        _battleGridData.Units = new List<UnitBase>();
         _battleGridData.LDPoint = new GameObject("BattleLDPoint").transform;
         _battleGridData.RUPoint = new GameObject("BattleRUPoint").transform;
         _battleGridData.LDPoint.SetParent(transform);
         _battleGridData.RUPoint.SetParent(transform);
 
-        _battleGridData.Units.AddRange(charactersContainer.GetCharacters());
+        _battleGridData.Units.AddRange(playerUnitsContainer.GetUnits());
         _battleGridData.Units.AddRange(triggeredEnemy.GetAllConnectedEnemies());
 
         float minXPos = Mathf.Infinity, maxXPos = -Mathf.Infinity;
@@ -152,7 +152,7 @@ public class BattleGridGenerator : MonoBehaviour {
             nearestNode = _battleGridData.GlobalGrid.GetFirstNearestWalkableNode(nearestNode, true);
         }
 
-        nearestNode.SetPlacedByCharacter(true);
+        nearestNode.SetPlacedByUnit(true);
 
         Vector3 targetPoint = nearestNode.WorldPosition;
         Vector3 startPoint = unit.position;
@@ -194,10 +194,10 @@ public class BattleGridData {
     public Texture2D ViewTexture;
     public Texture2D WalkingPointsTexture;
     public Texture2D CurrentMovementPointsTexture;
-    public List<CharacterWalker> Units;
+    public List<UnitBase> Units;
     public Node[,] NodesGrid;
     public bool[,] WalkableMap;
-    public LayerMask CharactersLayerMask;
+    public LayerMask UnitsLayerMask;
     public LayerMask GroundLayerMask;
     public Transform LDPoint, RUPoint;
     public int Width, Height, StartNodeIDX, StartNodeIDY;
