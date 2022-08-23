@@ -6,5 +6,6 @@ public class AssetsContainer : ScriptableObject {
     public GameObject BattleOverUnitSelectionPrefab;
     public OverUnitWorldDataPanel BattleOverUnitDataPrefab;
     public DecalProjector UnderUnitDecalPrefab;
+    public DecalProjector AttackUnderUnitDecalPrefab;
     public WeaponPrefabsContainer WeaponPrefabsContainer;
 }

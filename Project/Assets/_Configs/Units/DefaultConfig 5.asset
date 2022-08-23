@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: DefaultConfig 5
   m_EditorClassIdentifier: 
   MovementSpeed: 7
-  MovementLength: 8
+  MovementLength: 16
   HP: 25
   Defense: 7
   DefaultAttackDamage: 8

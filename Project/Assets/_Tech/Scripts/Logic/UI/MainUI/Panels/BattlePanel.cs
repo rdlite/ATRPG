@@ -10,8 +10,9 @@ public class BattlePanel : UIPanel {
 
     protected override void LocalInit() {
         _turnsLayoutHandler.Init();
-        _waitButton.gameObject.SetActive(false);
-        _walkButton.gameObject.SetActive(false);
+        _waitButton.SetActiveObject(false);
+        _walkButton.SetActiveObject(false);
+        _attackButton.SetActiveObject(false);
         _characterStatsPanel.gameObject.SetActive(false);
         _backToCurrentUnitButton.gameObject.SetActive(false);
         _characterStatsPanel.Init();
@@ -40,22 +41,27 @@ public class BattlePanel : UIPanel {
     public void EnableUnitPanel(BattleHandler battleHadler, UnitBase character, UnitPanelState state) {
         _characterStatsPanel.SetData(character);
         _characterStatsPanel.gameObject.SetActive(true);
-        _walkButton.gameObject.SetActive(true);
-        _waitButton.gameObject.SetActive(true);
+        _waitButton.SetActiveObject(true);
+        _walkButton.SetActiveObject(true);
+        _attackButton.SetActiveObject(true);
 
         _waitButton.SetActiveView(state == UnitPanelState.UseTurn);
         _walkButton.SetActiveView(state == UnitPanelState.UseTurn);
+        _attackButton.SetActiveView(state == UnitPanelState.UseTurn);
 
         _walkButton.EventsMediator.OnClick += battleHadler.SwitchWalking;
+        _attackButton.EventsMediator.OnClick += battleHadler.SwitchAttacking;
         _walkButton.EventsMediator.OnPointerEnter += battleHadler.WalkingPointerEnter;
         _walkButton.EventsMediator.OnPointerExit += battleHadler.WalkingPointerExit;
     }
 
     public void DisableUnitsPanel(BattleHandler battleHadler) {
         _characterStatsPanel.gameObject.SetActive(false);
-        _walkButton.SetActiveObject(false);
         _waitButton.SetActiveObject(false);
+        _walkButton.SetActiveObject(false);
+        _attackButton.SetActiveObject(false);
         _walkButton.EventsMediator.OnClick -= battleHadler.SwitchWalking;
+        _attackButton.EventsMediator.OnClick -= battleHadler.SwitchAttacking;
         _walkButton.EventsMediator.OnPointerEnter -= battleHadler.WalkingPointerEnter;
         _walkButton.EventsMediator.OnPointerExit -= battleHadler.WalkingPointerExit;
     }

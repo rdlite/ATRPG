@@ -18,5 +18,7 @@ MonoBehaviour:
     type: 3}
   UnderUnitDecalPrefab: {fileID: 2248940014966254410, guid: db2ea6fbe38253849b27e6badd066bf2,
     type: 3}
+  AttackUnderUnitDecalPrefab: {fileID: 7175649504760927070, guid: 6aa5a6443c5f9bd47869483b7a49388c,
+    type: 3}
   WeaponPrefabsContainer: {fileID: 11400000, guid: 3916b8be3eb3cd14397642793d68fc9a,
     type: 2}

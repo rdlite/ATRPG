@@ -13,6 +13,12 @@ public class EventTriggerButtonMediator : MonoBehaviour {
     }
 
     public void RaiseOnClickEvent() {
-        OnClick?.Invoke();
+        if (TryGetComponent(out CanvasGroup group)) {
+            if (group.interactable) {
+                OnClick?.Invoke();
+            }
+        } else {
+            OnClick?.Invoke();
+        }
     }
 }
