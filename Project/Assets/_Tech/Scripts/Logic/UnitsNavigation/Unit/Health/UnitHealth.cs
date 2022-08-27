@@ -4,17 +4,28 @@ public class UnitHealth {
     private UnitStatsConfig _defaultStatsCopy;
     private UnitStatsConfig _currentStatsData;
     private DamageReceiver _damageReceiver;
+    private float _maxHealth, _maxDefense;
 
     public UnitHealth(UnitStatsConfig statsData) {
         _currentStatsData = statsData.GetCopyOfData();
         _defaultStatsCopy = statsData.GetCopyOfData();
         _damageReceiver = new DamageReceiver();
-        _damageReceiver.ResetData(_currentStatsData);
+        ResetData();
     }
 
     public void ResetData() {
         _currentStatsData = _defaultStatsCopy.GetCopyOfData();
+        _maxHealth = _currentStatsData.HP;
+        _maxDefense = _currentStatsData.Defense;
         _damageReceiver.ResetData(_currentStatsData);
+    }
+
+    public float GetMaxHealth() {
+        return _maxHealth;
+    }
+    
+    public float GetMaxDefense() {
+        return _maxDefense;
     }
 
     public float GetCurrentHealth() {
@@ -38,8 +49,13 @@ public class DamageReceiver {
     }
 
     public bool TakeDamage(float pureDamage) {
-        float currentHealth = _statsConfig.HP;
-        currentHealth -= pureDamage;
-        return currentHealth <= 0;
+        _statsConfig.Defense -= pureDamage;
+
+        if (_statsConfig.Defense < 0) {
+            _statsConfig.HP -= Mathf.Abs(_statsConfig.Defense);
+            _statsConfig.Defense = 0;
+        }
+
+        return _statsConfig.HP <= 0;
     }
 }

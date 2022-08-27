@@ -7,6 +7,12 @@
             "m_Id": "847bbd8c243649cc9bfaf31a34fb7ea3"
         },
         {
+            "m_Id": "fa0b836058f14f45bc19e8bfd1e9ab09"
+        },
+        {
+            "m_Id": "89676d2c32be433d83071b69ec15dde7"
+        },
+        {
             "m_Id": "7f9c963494b547a19627b1891581590f"
         }
     ],
@@ -643,6 +649,35 @@
 }
 
 {
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "89676d2c32be433d83071b69ec15dde7",
+    "m_Guid": {
+        "m_GuidSerialized": "12d6b889-e79c-4d4c-80b9-0a6d5be03eea"
+    },
+    "m_Name": "SelectedColor",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "SelectedColor",
+    "m_DefaultReferenceName": "_SelectedColor",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 0.0
+    },
+    "isMainColor": false,
+    "m_ColorMode": 0
+}
+
+{
     "m_SGVersion": 0,
     "m_Type": "UnityEditor.ShaderGraph.Vector1MaterialSlot",
     "m_ObjectId": "93d975ebcc6b4af08fe8ab1505cdd649",
@@ -716,6 +751,12 @@
         },
         {
             "m_Id": "7f9c963494b547a19627b1891581590f"
+        },
+        {
+            "m_Id": "fa0b836058f14f45bc19e8bfd1e9ab09"
+        },
+        {
+            "m_Id": "89676d2c32be433d83071b69ec15dde7"
         }
     ]
 }
@@ -1093,6 +1134,35 @@
     "m_TextureType": 0,
     "m_NormalMapSpace": 0,
     "m_EnableGlobalMipBias": true
+}
+
+{
+    "m_SGVersion": 3,
+    "m_Type": "UnityEditor.ShaderGraph.Internal.ColorShaderProperty",
+    "m_ObjectId": "fa0b836058f14f45bc19e8bfd1e9ab09",
+    "m_Guid": {
+        "m_GuidSerialized": "98c259cb-66c6-43c0-8117-27e3be7228af"
+    },
+    "m_Name": "DefaultColor",
+    "m_DefaultRefNameVersion": 1,
+    "m_RefNameGeneratedByDisplayName": "DefaultColor",
+    "m_DefaultReferenceName": "_DefaultColor",
+    "m_OverrideReferenceName": "",
+    "m_GeneratePropertyBlock": true,
+    "m_UseCustomSlotLabel": false,
+    "m_CustomSlotLabel": "",
+    "m_Precision": 0,
+    "overrideHLSLDeclaration": false,
+    "hlslDeclarationOverride": 0,
+    "m_Hidden": false,
+    "m_Value": {
+        "r": 1.0,
+        "g": 1.0,
+        "b": 1.0,
+        "a": 0.0
+    },
+    "isMainColor": false,
+    "m_ColorMode": 0
 }
 
 {

@@ -45,7 +45,7 @@ PrefabInstance:
     - target: {fileID: 3020465566130662385, guid: 005537a05f2bc32408e92426bda4b53d,
         type: 3}
       propertyPath: m_Name
-      value: DefenceSlider
+      value: DefenseSlider
       objectReference: {fileID: 0}
     - target: {fileID: 4169445914753688170, guid: 005537a05f2bc32408e92426bda4b53d,
         type: 3}
@@ -151,6 +151,106 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.ctime1
+      value: 32382
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.ctime2
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.ctime3
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.ctime4
+      value: 65535
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key0.b
+      value: 0.77254903
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key0.g
+      value: 0.77254903
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key0.r
+      value: 0.77254903
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key1.b
+      value: 0.6762638
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key1.g
+      value: 0.81819046
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key1.r
+      value: 0.8584906
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key2.b
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key2.g
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key2.r
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key3.b
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key3.g
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key3.r
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key4.b
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key4.g
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.key4.r
+      value: 0.7735849
+      objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.m_NumColorKeys
+      value: 3
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 005537a05f2bc32408e92426bda4b53d, type: 3}

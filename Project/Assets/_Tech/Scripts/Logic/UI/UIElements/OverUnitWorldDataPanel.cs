@@ -4,13 +4,38 @@ using UnityEngine;
 public class OverUnitWorldDataPanel : MonoBehaviour {
     [SerializeField] private UISlider _healthSlider, _defenseSlider;
     [SerializeField] private TextMeshProUGUI _nameText;
+    [SerializeField] private GameObject _damageAmountPanel, _attackIcon, _skullIcon;
+    [SerializeField] private TextMeshProUGUI _damageAmountText;
 
-    public void Init(UnitBase character) {
+    public void Init(UnitBase character, UnitStatsConfig attackerStats) {
         _healthSlider.Init();
         _defenseSlider.Init();
 
-        _healthSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentHealth(), character.GetUnitHealthContainer().GetCurrentHealth());
-        _defenseSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentDefense(), character.GetUnitHealthContainer().GetCurrentDefense());
+        _damageAmountPanel.SetActive(attackerStats != null);
+
+        float onDefenseDamage = 0f;
+        float onHealthDamage = 0f;
+
+        _attackIcon.SetActive(true);
+        _skullIcon.SetActive(false);
+
+        if (attackerStats) {
+            onDefenseDamage = attackerStats.DefaultAttackDamage;
+            if (character.GetUnitHealthContainer().GetCurrentDefense() - onDefenseDamage < 0) {
+                onDefenseDamage = character.GetUnitHealthContainer().GetCurrentDefense();
+                onHealthDamage = attackerStats.DefaultAttackDamage - onDefenseDamage;
+                if (onHealthDamage > character.GetUnitHealthContainer().GetCurrentHealth()) {
+                    onHealthDamage = character.GetUnitHealthContainer().GetCurrentHealth();
+                    _attackIcon.SetActive(false);
+                    _skullIcon.SetActive(true);
+                } 
+            }
+
+            _damageAmountText.text = attackerStats.DefaultAttackDamage.ToString();
+        }
+
+        _healthSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentHealth(), character.GetUnitHealthContainer().GetMaxHealth(), onHealthDamage);
+        _defenseSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentDefense(), character.GetUnitHealthContainer().GetMaxDefense(), onDefenseDamage);
         _nameText.text = "beaty name";
     }
 }

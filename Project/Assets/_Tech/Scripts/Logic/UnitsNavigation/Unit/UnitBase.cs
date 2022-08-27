@@ -142,11 +142,11 @@ public abstract class UnitBase : MonoBehaviour {
         return _selectionData.OutlineColor;
     }
 
-    public void CreateOverUnitData() {
+    public void CreateOverUnitData(UnitStatsConfig attackerConfig = null) {
         if (_createdOverUnitData == null) {
             _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
             _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
-            _createdOverUnitData.Init(this);
+            _createdOverUnitData.Init(this, attackerConfig);
         }
     }
 
@@ -156,12 +156,20 @@ public abstract class UnitBase : MonoBehaviour {
         }
     }
 
+    public UnitStatsConfig GetUnitConfig() {
+        return _statsData;
+    }
+
     public UnitHealth GetUnitHealthContainer() {
         return _unitHealth;
     }
 
     public float GetMovementLength() {
         return _statsData.MovementLength;
+    }
+
+    public void TakeDamage(float damage) {
+        _unitHealth.TakeDamage(damage);
     }
 
     //ANIMATOR METHODS

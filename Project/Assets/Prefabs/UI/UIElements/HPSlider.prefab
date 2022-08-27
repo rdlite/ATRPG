@@ -152,5 +152,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6049284327375765740, guid: 005537a05f2bc32408e92426bda4b53d,
+        type: 3}
+      propertyPath: _underSliderBlinkGradient.ctime0
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 005537a05f2bc32408e92426bda4b53d, type: 3}
