@@ -21,4 +21,10 @@ public class EventTriggerButtonMediator : MonoBehaviour {
             OnClick?.Invoke();
         }
     }
+
+    public void RemoveAllListeners() {
+        OnPointerEnter.CleanAction();
+        OnPointerExit.CleanAction();
+        OnClick.CleanAction();
+    }
 }

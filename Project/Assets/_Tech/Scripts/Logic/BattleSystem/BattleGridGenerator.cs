@@ -12,11 +12,16 @@ public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private float _borderForGeneratedRect = 10f;
     [SerializeField] private bool _isDebug;
 
+    private UpdateStateMachine _globalStateMachine;
     private BattleGridData _battleGridData;
     private BattleHandler _battlehandler;
+    private CameraSimpleFollower _cameraFollower;
+    private UIRoot _uiRoot;
     private int _additionalResolutionForWalkingPoint = 2;
 
-    public void Init(AStarGrid globalGrid) {
+    public void Init(AStarGrid globalGrid, UpdateStateMachine globalStateMachine) {
+        _globalStateMachine = globalStateMachine;
+
         _battleGridData = new BattleGridData();
         _battleGridData.UnitsLayerMask = _unitsMask;
         _battleGridData.GroundLayerMask = _groundLayerMask;
@@ -30,6 +35,9 @@ public class BattleGridGenerator : MonoBehaviour {
     public void StartBattle(
         PlayerUnitsGroupContainer playerUnitsContainer, EnemyUnit triggeredEnemy, CameraSimpleFollower cameraFollower,
         UIRoot uiRoot, AssetsContainer assetsContainer, ICoroutineService coroutineService) {
+        _cameraFollower = cameraFollower;
+        _uiRoot = uiRoot;
+
         _battleGridData.Units = new List<UnitBase>();
         _battleGridData.LDPoint = new GameObject("BattleLDPoint").transform;
         _battleGridData.RUPoint = new GameObject("BattleRUPoint").transform;
@@ -60,22 +68,30 @@ public class BattleGridGenerator : MonoBehaviour {
         _battleGridData.LDPoint.transform.position = new Vector3(minXPos - _borderForGeneratedRect, 0f, minZPos - _borderForGeneratedRect);
         _battleGridData.RUPoint.transform.position = new Vector3(maxXPos + _borderForGeneratedRect, 0f, maxZPos + _borderForGeneratedRect);
 
-        cameraFollower.SetMovementRestrictions(_battleGridData.LDPoint.position, _battleGridData.RUPoint.position);
+        _cameraFollower.SetMovementRestrictions(_battleGridData.LDPoint.position, _battleGridData.RUPoint.position);
 
         PlaceUnitsOnGrid();
         GenerateStaticDataForBattle();
 
         _battlehandler = new BattleHandler();
         _battlehandler.Init(
-            cameraFollower, _battleGridData, _decalProjector,
-            uiRoot, assetsContainer, _movementLinePrefab,
-            transform, coroutineService);
+            _cameraFollower, _battleGridData, _decalProjector,
+            _uiRoot, assetsContainer, _movementLinePrefab,
+            transform, coroutineService, this);
+    }
+
+    public void StopBattle() {
+        _cameraFollower.SetFreeMovement();
+        _globalStateMachine.Enter<WordWalkingState>();
+        Cleanup();
     }
 
     public void Cleanup() {
         _battleGridData.Units.Clear();
         Destroy(_battleGridData.LDPoint.gameObject);
         Destroy(_battleGridData.RUPoint.gameObject);
+        _battleGridData.NodesGrid = null;
+        _battleGridData.WalkableMap = null;
     }
 
     private void GenerateStaticDataForBattle() {
@@ -178,11 +194,12 @@ public class BattleGridGenerator : MonoBehaviour {
 
     private void OnDrawGizmos() {
         if (Application.isPlaying && _isDebug) {
-            for (int x = 0; x < _battleGridData.Width; x++) {
-                for (int y = 0; y < _battleGridData.Height; y++) {
-                    Gizmos.color = _battleGridData.NodesGrid[x, y].CheckWalkability ? Color.green : Color.red;
-
-                    Gizmos.DrawSphere(_battleGridData.NodesGrid[x, y].WorldPosition, .15f);
+            if (_battleGridData.NodesGrid != null) {
+                for (int x = 0; x < _battleGridData.Width; x++) {
+                    for (int y = 0; y < _battleGridData.Height; y++) {
+                        Gizmos.color = _battleGridData.NodesGrid[x, y].CheckWalkability ? Color.green : Color.red;
+                        Gizmos.DrawSphere(_battleGridData.NodesGrid[x, y].WorldPosition, .15f);
+                    }
                 }
             }
         }

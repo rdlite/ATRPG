@@ -28,4 +28,8 @@ public class UnitWeaponHandler {
         _createdWeapon.transform.localPosition = Vector3.zero;
         _createdWeapon.transform.localRotation = Quaternion.identity;
     }
+
+    public void DeactivateWeapon() {
+        _createdWeapon.SetActive(false);
+    }
 }

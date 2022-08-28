@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public class WordWalkingState : IPayloadState<BetweenStatesDataContainer>, IUpdateState {
+public class WordWalkingState : IState, IPayloadState<BetweenStatesDataContainer>, IUpdateState {
     private UIRoot _uiRoot;
     private GameStateMachine _gameStateMachine;
     private BetweenStatesDataContainer _statesData;
@@ -9,6 +9,10 @@ public class WordWalkingState : IPayloadState<BetweenStatesDataContainer>, IUpda
         GameStateMachine gameStateMachine, UIRoot uiRoot) {
         _uiRoot = uiRoot;
         _gameStateMachine = gameStateMachine;
+    }
+
+    public void Enter() {
+        _uiRoot.EnablePanel(UIRoot.UIPanelType.WorldWalking);
     }
 
     public void Enter(BetweenStatesDataContainer statesData) {

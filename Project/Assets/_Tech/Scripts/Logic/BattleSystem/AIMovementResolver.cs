@@ -26,7 +26,7 @@ public class AIMovementResolver {
     private IEnumerator TurnSequence(UnitBase characterToMove) {
         _camera.SetTarget(characterToMove.transform);
 
-        yield return new WaitForSeconds(3f);
+        yield return new WaitForSeconds(1f);
 
         _turnsHandler.AIEndedTurn();
     }

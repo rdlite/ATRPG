@@ -6,7 +6,7 @@ public class LoadLevelState : IPayloadState<string> {
     private ICoroutineService _coroutineService;
     private AssetsContainer _assetsContainer;
     private ConfigsContainer _configsContainer;
-    private GameStateMachine _globalStatemachine;
+    private GameStateMachine _globalStateMachine;
     private LevelsLoadingService _levelsLoadingService;
 
     public LoadLevelState(
@@ -15,7 +15,7 @@ public class LoadLevelState : IPayloadState<string> {
         _coroutineService = coroutineService;
         _assetsContainer = assetsContainer;
         _configsContainer = configsContainer;
-        _globalStatemachine = globalStatemachine;
+        _globalStateMachine = globalStatemachine;
         _levelsLoadingService = levelsLoadingService;
     }
 
@@ -39,7 +39,7 @@ public class LoadLevelState : IPayloadState<string> {
         SceneAbstractEntitiesMediator abstractEntitiesMediator = new SceneAbstractEntitiesMediator();
 
         globalGrid.Init();
-        battleGridGenerator.Init(globalGrid);
+        battleGridGenerator.Init(globalGrid, _globalStateMachine);
 
         charactersGroupContainer.Init(
             fieldRaycaster, globalGrid, abstractEntitiesMediator,
@@ -66,9 +66,9 @@ public class LoadLevelState : IPayloadState<string> {
         }
 
         abstractEntitiesMediator.Init(
-            globalGrid, _globalStatemachine, statesDataContainer);
+            globalGrid, _globalStateMachine, statesDataContainer);
 
-        _globalStatemachine.Enter<WordWalkingState, BetweenStatesDataContainer>(statesDataContainer);
+        _globalStateMachine.Enter<WordWalkingState, BetweenStatesDataContainer>(statesDataContainer);
     }
 
     public void Exit() { }

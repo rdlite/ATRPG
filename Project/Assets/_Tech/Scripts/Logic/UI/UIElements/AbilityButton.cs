@@ -14,4 +14,8 @@ public class AbilityButton : MonoBehaviour {
         _canvasGroup.alpha = value ? 1f : .5f;
         _canvasGroup.interactable = value;
     }
+
+    public void Cleanup() {
+        EventsMediator.RemoveAllListeners();
+    }
 }

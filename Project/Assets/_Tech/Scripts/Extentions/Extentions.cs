@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -28,5 +29,19 @@ public static class Extentions {
         Vector3 AB = b - a;
         Vector3 AV = v3 - a;
         return Vector3.Dot(AV, AB) / Vector3.Dot(AB, AB);
+    }
+
+    public static void CleanAction(this Action action) {
+        if (action == null) {
+            return;
+        }
+
+        Delegate[] dary = action.GetInvocationList();
+
+        if (dary != null) {
+            foreach (Delegate del in dary) {
+                action -= (Action)del;
+            }
+        }
     }
 }

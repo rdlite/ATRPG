@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 
 public abstract class UnitBase : MonoBehaviour {
+    public bool IsDeadOnBattleField;
+
     [SerializeField] protected UnitStatsConfig _statsData;
     [SerializeField] protected NavAgent _agent;
     [SerializeField] protected Collider _collider;
@@ -164,16 +166,52 @@ public abstract class UnitBase : MonoBehaviour {
         return _unitHealth;
     }
 
+    public UnitSkinContainer GetUnitSkinContainer() {
+        return _skinContainer;
+    }
+
     public float GetMovementLength() {
         return _statsData.MovementLength;
     }
 
-    public void TakeDamage(float damage) {
-        _unitHealth.TakeDamage(damage);
+    public bool TakeDamage(float damage) {
+        if (_unitHealth.TakeDamage(damage)) {
+            OnBattleFieldDieEvent();
+            return true;
+        }
+
+        return false;
+    }
+
+    private void OnBattleFieldDieEvent() {
+        PlayDeadAnimation();
+        IsDeadOnBattleField = true;
+        _weaponHandler.DeactivateWeapon();
+        _collider.enabled = false;
+    }
+
+    public void DeactivateWeapon() {
+        _animator.SetActiveWeapon(false);
     }
 
     //ANIMATOR METHODS
     public void WithdrawWeapon() {
         _animator.WithdrawWeapon();
+    }
+
+    public void ShealtWeapon() {
+        _animator.ShealtWeapon();
+    }
+
+    public void PlayAttackAnimation() {
+        _animator.PlayAttackAnimation();
+    }
+
+    public void PlayImpactFromSwordAnimation() {
+        _animator.PlayImpactFromSwordAnimation();
+    }
+
+    public void PlayDeadAnimation() {
+        _animator.PlayDeadAnimation();
     }
 }

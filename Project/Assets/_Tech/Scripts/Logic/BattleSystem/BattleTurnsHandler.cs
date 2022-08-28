@@ -26,6 +26,13 @@ public class BattleTurnsHandler {
         RefreshUnitsData();
     }
 
+    public void Cleanup() {
+        _turnsContainer.Clear();
+        _unitsRoundData_map.Clear();
+        _unitsRoundData_map = null;
+        _uiRoot.GetPanel<BattlePanel>().CleanupAfterBattleEnd();
+    }
+
     public void StartTurns() {
         if (_turnsContainer[0].IconType == TurnsUILayout.IconType.Enemy) {
             StartAITurn(_turnsContainer[0].Unit);
@@ -117,7 +124,27 @@ public class BattleTurnsHandler {
 
         foreach (var unitData in _unitsRoundData_map) {
             unitData.Value.IsCanWalk = true;
+            unitData.Value.IsDefaultAttacked = false;
             unitData.Value.MovementLengthLast = unitData.Key.GetMovementLength();
+        }
+    }
+
+    public void CheckBattleEnd() {
+        bool isAllEnemiesDead = true;
+        bool isAllPlayerDead = true;
+
+        foreach (var unitData in _unitsRoundData_map) {
+            if (isAllPlayerDead && unitData.Key is PlayerUnit && !unitData.Key.IsDeadOnBattleField) {
+                isAllPlayerDead = false;
+            }
+
+            if (isAllEnemiesDead && unitData.Key is EnemyUnit && !unitData.Key.IsDeadOnBattleField) {
+                isAllEnemiesDead = false;
+            }
+        }
+
+        if (isAllEnemiesDead || isAllPlayerDead) {
+            _battleHandler.StopBattle(isAllEnemiesDead);
         }
     }
 
@@ -140,8 +167,19 @@ public class BattleTurnsHandler {
 
         List<UnitBase> listRandomize = new List<UnitBase>(_battleGridData.Units);
 
-        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+        int removedUnits = 0;
+
+        for (int i = 0; i < listRandomize.Count; i++) {
+            if (listRandomize[i].IsDeadOnBattleField) {
+                listRandomize.RemoveAt(i);
+                i--;
+                removedUnits++;
+            }
+        }
+
+        for (int i = 0; i < _battleGridData.Units.Count - removedUnits; i++) {
             UnitBase randomUnit = listRandomize[Random.Range(0, listRandomize.Count)];
+
             listRandomize.Remove(randomUnit);
 
             bool isPlayerTurn = randomUnit is PlayerUnit;
@@ -152,6 +190,32 @@ public class BattleTurnsHandler {
 
         _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
         _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
+    }
+
+    public void SetUnitAttackedDefaultAttack(UnitBase attackedUnit) {
+        //_unitsRoundData_map[attackedUnit].IsDefaultAttacked = true;
+    }
+
+    public bool IsUnitAttackedDefaultAttack(UnitBase attackedUnit) {
+        if (_unitsRoundData_map != null && _unitsRoundData_map.ContainsKey(attackedUnit)) {
+            return _unitsRoundData_map[attackedUnit].IsDefaultAttacked;
+        }
+
+        return false;
+    }
+
+    public void MarkUnitAsDead(UnitBase deadUnit) {
+        for (int i = 0; i < _turnsContainer.Count; i++) {
+            if (_turnsContainer[i].Unit == deadUnit) {
+                _uiRoot.GetPanel<BattlePanel>().DestroyIconOfUnit(deadUnit);
+                _turnsContainer.RemoveAt(i);
+                i--;
+            }
+        }
+
+        TryFillTurns();
+
+        CheckBattleEnd();
     }
 
     private class TurnData {
@@ -167,10 +231,12 @@ public class BattleTurnsHandler {
     private class CurrentRoundUnitsData {
         public float MovementLengthLast;
         public bool IsCanWalk;
+        public bool IsDefaultAttacked;
 
         public CurrentRoundUnitsData(float movementRangeLast) {
             MovementLengthLast = movementRangeLast;
             IsCanWalk = true;
+            IsDefaultAttacked = false;
         }
     }
 }

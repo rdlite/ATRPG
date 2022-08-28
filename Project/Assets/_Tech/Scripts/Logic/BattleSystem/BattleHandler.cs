@@ -7,7 +7,7 @@ using UnityEngine.Rendering.Universal;
 public class BattleHandler {
     private const string APPEAR_RANGE = "_AppearRoundRange";
     private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
-    private DecalProjector[] _createdUnderUnitDecals;
+    private DecalProjector[] _createdUnderUnitWalkingDecals;
     private DecalProjector[] _createdUnderUnitAttackDecals;
     private bool[] _mouseOverSelectionMap, _mouseOverDataSelectionMap, _currentAttackingMap;
     private AssetsContainer _assetsContainer;
@@ -23,20 +23,23 @@ public class BattleHandler {
     private LineRenderer _createdLinePrefab;
     private BattleTurnsHandler _turnsHandler;
     private ICoroutineService _coroutineService;
+    private BattleGridGenerator _gridGenerator;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
     private bool _isCurrentlyShowAttacking;
     private bool _isRestrictedForDoAnything;
+    private bool _isBattleEnded;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
-        Transform battleGeneratorTransform, ICoroutineService coroutineService) {
+        Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator) {
         _coroutineService = coroutineService;
         _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
         _assetsContainer = assetsContainer;
         _uiRoot = uiRoot;
+        _gridGenerator = gridGenerator;
         _decalProjector = decalProjector;
         _battleGridData = battleGridData;
         _mouseOverSelectionMap = new bool[_battleGridData.Units.Count];
@@ -50,13 +53,13 @@ public class BattleHandler {
             _battleGridData, _uiRoot, this,
             _coroutineService, cameraFollower);
 
-        _createdUnderUnitDecals = new DecalProjector[_battleGridData.Units.Count];
+        _createdUnderUnitWalkingDecals = new DecalProjector[_battleGridData.Units.Count];
         _createdUnderUnitAttackDecals = new DecalProjector[_battleGridData.Units.Count];
 
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            _createdUnderUnitDecals[i] = Object.Instantiate(_assetsContainer.UnderUnitDecalPrefab);
-            _createdUnderUnitDecals[i].gameObject.SetActive(false);
-            _createdUnderUnitDecals[i].transform.SetParent(battleGeneratorTransform);
+            _createdUnderUnitWalkingDecals[i] = Object.Instantiate(_assetsContainer.UnderUnitDecalPrefab);
+            _createdUnderUnitWalkingDecals[i].gameObject.SetActive(false);
+            _createdUnderUnitWalkingDecals[i].transform.SetParent(battleGeneratorTransform);
             
             _createdUnderUnitAttackDecals[i] = Object.Instantiate(_assetsContainer.AttackUnderUnitDecalPrefab);
             _createdUnderUnitAttackDecals[i].gameObject.SetActive(false);
@@ -67,6 +70,7 @@ public class BattleHandler {
 
         _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().SignOnBackButton(BackButtonPressed);
+        _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
         _turnsHandler.StartTurns();
     }
@@ -101,6 +105,36 @@ public class BattleHandler {
         }
 
         SelectionMousePress();
+    }
+
+    public void StopBattle(bool isPlayerWon) {
+        _isRestrictedForDoAnything = true;
+        _isBattleEnded = true;
+
+        DeselectAllUnits();
+
+        _turnsHandler.Cleanup();
+
+        if (isPlayerWon) {
+            for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                Object.Destroy(_createdUnderUnitWalkingDecals[i].gameObject);
+                Object.Destroy(_createdUnderUnitAttackDecals[i].gameObject);
+
+                if (!_battleGridData.Units[i].IsDeadOnBattleField) {
+                    _battleGridData.Units[i].ShealtWeapon();
+                } else {
+                    _battleGridData.Units[i].DeactivateWeapon();
+                }
+            }
+
+            for (int x = 0; x < _battleGridData.Width; x++) {
+                for (int y = 0; y < _battleGridData.Height; y++) {
+                    _battleGridData.NodesGrid[x, y].SetPlacedByUnit(false);
+                }
+            }
+
+            _gridGenerator.StopBattle();
+        }
     }
 
     private void ProcessAttack() {
@@ -155,6 +189,11 @@ public class BattleHandler {
     private void MouseOverSelector() {
         if (Time.frameCount % 4 == 0) {
             _currentMouseOverSelectionUnit = _battleRaycaster.GetCurrentMouseOverSelectionUnit();
+
+            if (_currentMouseOverSelectionUnit != null && _currentMouseOverSelectionUnit.IsDeadOnBattleField) {
+                _currentMouseOverSelectionUnit = null;
+            }
+
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
                 if (!_currentAttackingMap[i] && _battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i] && !IsPointerOverUIObject()) {
                     _mouseOverSelectionMap[i] = true;
@@ -353,7 +392,7 @@ public class BattleHandler {
 
             if (unitNode == startNode) {
                 unitNode.SetPlacedByUnit(false);
-            } else {
+            } else if (!_battleGridData.Units[i].IsDeadOnBattleField) {
                 unitNode.SetPlacedByUnit(true);
             }
         }
@@ -408,10 +447,10 @@ public class BattleHandler {
 
     private void SetActiveUnderUnitsDecals(bool value) {
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            _createdUnderUnitDecals[i].gameObject.SetActive(_battleGridData.Units[i] != _currentSelectedUnit && value);
-            _createdUnderUnitDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 2f;
-            _createdUnderUnitDecals[i].material = Object.Instantiate(_createdUnderUnitDecals[i].material);
-            _createdUnderUnitDecals[i].material.SetColor("_Color", _battleGridData.Units[i].GetUnitColor().SetTransparency(1f));
+            _createdUnderUnitWalkingDecals[i].gameObject.SetActive(!_battleGridData.Units[i] .IsDeadOnBattleField && _battleGridData.Units[i] != _currentSelectedUnit && value);
+            _createdUnderUnitWalkingDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 2f;
+            _createdUnderUnitWalkingDecals[i].material = Object.Instantiate(_createdUnderUnitWalkingDecals[i].material);
+            _createdUnderUnitWalkingDecals[i].material.SetColor("_Color", _battleGridData.Units[i].GetUnitColor().SetTransparency(1f));
         }
     }
 
@@ -470,7 +509,7 @@ public class BattleHandler {
                         }
 
                         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                            if (_battleGridData.Units[i] != _currentSelectedUnit && _battleGridData.Units[i] is EnemyUnit) {
+                            if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != _currentSelectedUnit && _battleGridData.Units[i] is EnemyUnit) {
                                 Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
 
                                 if (currentUnitNode.GridX + x == targetUnitNode.GridX && currentUnitNode.GridY + y == targetUnitNode.GridY) {
@@ -525,15 +564,32 @@ public class BattleHandler {
 
         t = 0f;
 
-        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedUnit, UnitPanelState.UseTurn);
+        _turnsHandler.SetUnitAttackedDefaultAttack(attacker);
 
-        // play animations
-        // save attack restiction
+        attacker.PlayAttackAnimation();
+        attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => target.PlayImpactFromSwordAnimation());
+        attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => DealDamageOnUnit(target, attacker));
 
-        target.TakeDamage(_currentSelectedUnit.GetUnitConfig().DefaultAttackDamage);
-        // remove HP form enemy
+        yield return new WaitForSeconds(2f);
 
+        if (_isBattleEnded) {
+            yield break;
+        }
+
+        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(
+            this, _currentSelectedUnit, UnitPanelState.UseTurn,
+            _turnsHandler);
         _isRestrictedForDoAnything = false;
+    }
+
+    private void DealDamageOnUnit(UnitBase unit, UnitBase attacker) {
+        if (unit.TakeDamage(attacker.GetUnitConfig().DefaultAttackDamage)) {
+            UnitDeadEvent(unit);
+        }
+    }
+
+    private void UnitDeadEvent(UnitBase unit) {
+        _turnsHandler.MarkUnitAsDead(unit);
     }
     // END ATTACK MODULE
 
@@ -593,12 +649,19 @@ public class BattleHandler {
         }
 
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
-        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedUnit, viewState);
+        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedUnit, viewState, _turnsHandler);
 
         if (_turnsHandler.IsHaveCurrentWalkingUnit() && !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit)) {
             _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(true);
         } else {
             _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(false);
+        }
+    }
+
+    private void DeselectAllUnits() {
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            _battleGridData.Units[i].SetActiveOutline(false);
+            _battleGridData.Units[i].DestroySelection();
         }
     }
 

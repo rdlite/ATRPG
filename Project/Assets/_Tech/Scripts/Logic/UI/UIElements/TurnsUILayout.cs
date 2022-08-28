@@ -7,10 +7,10 @@ public class TurnsUILayout : MonoBehaviour{
     [SerializeField] private Transform _parentLayout;
 
     private Dictionary<IconType, GameObject> _prefabsType_map;
-    private List<GameObject> _createdIcons;
+    private List<UnitIcon> _createdIcons;
 
     public void Init() {
-        _createdIcons = new List<GameObject>();
+        _createdIcons = new List<UnitIcon>();
         _prefabsType_map = new Dictionary<IconType, GameObject>();
 
         _prefabsType_map.Add(IconType.Player, _playerTurnIcon);
@@ -18,24 +18,51 @@ public class TurnsUILayout : MonoBehaviour{
         _prefabsType_map.Add(IconType.RestartRound, _restartRoundIcon);
     }
 
-    public void CreateNewIcon(IconType type, BattleHandler battleHandler, UnitBase characterWalker) {
-        GameObject newIcon = Instantiate(_prefabsType_map[type], _parentLayout);
-        newIcon.transform.localScale = _prefabsType_map[type].transform.localScale;
-        if (newIcon.GetComponent<EventTriggerButtonMediator>() != null && type == IconType.Enemy) {
-            newIcon.GetComponent<EventTriggerButtonMediator>().OnPointerEnter += () => battleHandler.OnTurnButtonEntered(characterWalker);
-            newIcon.GetComponent<EventTriggerButtonMediator>().OnPointerExit += () => battleHandler.OnTurnButtonExit(characterWalker);
+    public void Cleanup() {
+        for (int i = 0; i < _createdIcons.Count; i++) {
+            Destroy(_createdIcons[i].Icon);
+        }
+        _createdIcons.Clear();
+    }
+
+    public void CreateNewIcon(IconType type, BattleHandler battleHandler, UnitBase unit) {
+        UnitIcon newIcon = new UnitIcon(Instantiate(_prefabsType_map[type], _parentLayout), unit);
+        newIcon.Icon.transform.localScale = _prefabsType_map[type].transform.localScale;
+        if (newIcon.Icon.GetComponent<EventTriggerButtonMediator>() != null && type == IconType.Enemy) {
+            newIcon.Icon.GetComponent<EventTriggerButtonMediator>().OnPointerEnter += () => battleHandler.OnTurnButtonEntered(unit);
+            newIcon.Icon.GetComponent<EventTriggerButtonMediator>().OnPointerExit += () => battleHandler.OnTurnButtonExit(unit);
         }
         _createdIcons.Add(newIcon);
     }
 
     public void DestroyFirstIcon() {
-        GameObject fistIcon = _createdIcons[0];
+        GameObject fistIcon = _createdIcons[0].Icon;
         _createdIcons.RemoveAt(0);
         Destroy(fistIcon);
+    }
+    
+    public void DestroyIconOfUnit(UnitBase unitToDestroyIcon) {
+        for (int i = 0; i < _createdIcons.Count; i++) {
+            if (_createdIcons[i].ConnectedUnit == unitToDestroyIcon) {
+                Destroy(_createdIcons[i].Icon);
+                _createdIcons.RemoveAt(i);
+                i--;
+            }
+        }
     }
 
     public bool CheckIfNeedNewIcons() {
         return _createdIcons.Count < 12;
+    }
+
+    private class UnitIcon {
+        public GameObject Icon;
+        public UnitBase ConnectedUnit;
+
+        public UnitIcon(GameObject icon, UnitBase connectedUnit) {
+            Icon = icon;
+            this.ConnectedUnit = connectedUnit;
+        }
     }
 
     public enum IconType {
