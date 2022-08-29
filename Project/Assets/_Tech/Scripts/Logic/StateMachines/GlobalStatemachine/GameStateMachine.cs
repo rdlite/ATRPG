@@ -9,7 +9,8 @@ public class GameStateMachine : UpdateStateMachine
     {
         _states = new Dictionary<Type, IExitableState>() {
             [typeof(BootstrapState)] = new BootstrapState(
-                this, coroutineService, uiRoot),
+                this, coroutineService, uiRoot,
+                assetsContainer),
             [typeof(LoadLevelState)] = new LoadLevelState(
                 ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer,
                 assetsContainer, coroutineService),

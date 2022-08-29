@@ -24,10 +24,12 @@ public class AIMovementResolver {
     }
 
     private IEnumerator TurnSequence(UnitBase characterToMove) {
+        _battleHandler.SetRestriction(true);
         _camera.SetTarget(characterToMove.transform);
 
         yield return new WaitForSeconds(1f);
 
         _turnsHandler.AIEndedTurn();
+        _battleHandler.SetRestriction(false);
     }
 }

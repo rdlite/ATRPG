@@ -24,6 +24,7 @@ public class BattleHandler {
     private BattleTurnsHandler _turnsHandler;
     private ICoroutineService _coroutineService;
     private BattleGridGenerator _gridGenerator;
+    private ImposedPairsContainer _imposedPairsContainer;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
     private bool _isCurrentlyShowAttacking;
@@ -46,6 +47,9 @@ public class BattleHandler {
         _mouseOverDataSelectionMap = new bool[_battleGridData.Units.Count];
         _currentAttackingMap = new bool[_battleGridData.Units.Count];
         _selectionForAttackMap = new UnitBase[_battleGridData.Units.Count];
+
+        _imposedPairsContainer = new ImposedPairsContainer(_coroutineService);
+
         _battleRaycaster = new BattleRaycaster(
             _battleGridData.UnitsLayerMask, _cameraFollower, _battleGridData.GroundLayerMask);
 
@@ -70,6 +74,7 @@ public class BattleHandler {
 
         _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().SignOnBackButton(BackButtonPressed);
+        _uiRoot.GetPanel<BattlePanel>().SignOnAbortImposionButton(AbortImposingButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
         _turnsHandler.StartTurns();
@@ -231,7 +236,7 @@ public class BattleHandler {
         UnitBase nearestChar = null;
 
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            if (_battleGridData.Units[i] is PlayerUnit && _turnsHandler.IsCanUnitWalk(_battleGridData.Units[i])) {
+            if (_battleGridData.Units[i] is PlayerUnit && !_battleGridData.Units[i].IsDeadOnBattleField && _turnsHandler.IsCanUnitWalk(_battleGridData.Units[i])) {
                 float distance = Vector3.Distance(_battleGridData.Units[i].transform.position, unitToCheck.transform.position);
 
                 if (distance < nearestLength) {
@@ -462,12 +467,42 @@ public class BattleHandler {
         _turnsHandler.SetCurrentWalker(_currentSelectedUnit);
         _currentSelectedUnit.StartMove();
         _turnsHandler.RemovePossibleLengthForUnit(_currentSelectedUnit, _battleGridData.GlobalGrid.GetPathLength(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedUnit.transform.position), _endMovementNode));
-        _currentSelectedUnit.GoToPoint(_endMovementNode.WorldPosition, false, true, null, UnitEndedAction);
+        _currentSelectedUnit.GoToPoint(_endMovementNode.WorldPosition, false, true, null, () => UnitEndedWalkAction(_currentSelectedUnit));
     }
 
-    private void UnitEndedAction() {
+    private void UnitEndedWalkAction(UnitBase unitWalked) {
         HideWalkingDistance(true);
         _isRestrictedForDoAnything = false;
+        TryTurnEnemiesOnUnitEndWalking(unitWalked);
+    }
+
+    private void TryTurnEnemiesOnUnitEndWalking(UnitBase unitWalked) {
+        bool isPlayerUnitWalked = unitWalked is PlayerUnit;
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            if (_battleGridData.Units[i] != unitWalked) {
+                if (isPlayerUnitWalked && _battleGridData.Units[i] is EnemyUnit || !isPlayerUnitWalked && _battleGridData.Units[i] is PlayerUnit) {
+                    if (IsTargetInMeleeAttackRange(unitWalked, _battleGridData.Units[i]) && !_imposedPairsContainer.HasPairWith(_battleGridData.Units[i])) {
+                        _coroutineService.StartCoroutine(RotateUnitToTarget(unitWalked, _battleGridData.Units[i]));
+                    }
+                } 
+            }
+        }
+    }
+
+    private IEnumerator RotateUnitToTarget(UnitBase toWhomRotate, UnitBase unitNeedsToBeRotated) {
+        float t = 0f;
+
+        Quaternion startTargetRotation = unitNeedsToBeRotated.transform.rotation;
+        Quaternion endTargetRotation = Quaternion.LookRotation((toWhomRotate.transform.position - unitNeedsToBeRotated.transform.position).RemoveYCoord());
+
+        while (t <= 1f) {
+            t += Time.deltaTime * 5f;
+
+            unitNeedsToBeRotated.transform.rotation = Quaternion.Slerp(startTargetRotation, endTargetRotation, t);
+
+            yield return null;
+        }
     }
     // END WALK MODULE
 
@@ -495,6 +530,34 @@ public class BattleHandler {
                 WalkingPointerExit();
             }
         }
+    }
+
+    private bool IsTargetInMeleeAttackRange(UnitBase unitCentre, UnitBase unitToCheck) {
+        Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitCentre.transform.position);
+
+        for (int x = -1; x < 2; x++) {
+            for (int y = -1; y < 2; y++) {
+                if (x == 0 || y == 0) {
+                    if (x == 0 && y == 0) {
+                        continue;
+                    }
+
+                    for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                        if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != _currentSelectedUnit && _battleGridData.Units[i] is EnemyUnit) {
+                            Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+
+                            if (currentUnitNode.GridX + x == targetUnitNode.GridX && currentUnitNode.GridY + y == targetUnitNode.GridY) {
+                                if (_battleGridData.Units[i] == unitToCheck) {
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
     }
 
     private void FindPossibleTargetsForAttack_MELEE(bool value) {
@@ -536,66 +599,113 @@ public class BattleHandler {
         DeselectAllAttackUnits();
     }
 
-    private void TryAttackUnit(UnitBase attacker, UnitBase target) {
-        _coroutineService.StartCoroutine(AttackSequence(attacker, target));
+    private void TryAttackUnit(UnitBase attacker, UnitBase target, bool isImposedAttack = false) {
+        _coroutineService.StartCoroutine(AttackSequence(attacker, target, isImposedAttack));
     }
 
-    private IEnumerator AttackSequence(UnitBase attacker, UnitBase target) {
+    private IEnumerator AttackSequence(UnitBase attacker, UnitBase target, bool isImposedAttack) {
         _isRestrictedForDoAnything = true;
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
+        attacker.IsBusy = true;
+        target.IsBusy = true;
+
         float t = 0f;
 
-        Quaternion startAttackerRotation = attacker.transform.rotation;
-        Quaternion startTargetRotation = target.transform.rotation;
-        Quaternion endAttackerRotation = Quaternion.LookRotation((target.transform.position - attacker.transform.position).RemoveYCoord());
-        Quaternion endTargetRotation = Quaternion.LookRotation((attacker.transform.position - target.transform.position).RemoveYCoord());
+        if (!isImposedAttack) {
+            Quaternion startAttackerRotation = attacker.transform.rotation;
+            Quaternion startTargetRotation = target.transform.rotation;
+            Quaternion endAttackerRotation = Quaternion.LookRotation((target.transform.position - attacker.transform.position).RemoveYCoord());
+            Quaternion endTargetRotation = Quaternion.LookRotation((attacker.transform.position - target.transform.position).RemoveYCoord());
 
-        DeactivateAttackDecals();
+            DeactivateAttackDecals();
 
-        while (t <= 1f) {
-            t += Time.deltaTime * 5f;
+            bool isTargetImposed = _imposedPairsContainer.HasPairWith(target);
 
-            attacker.transform.rotation = Quaternion.Slerp(startAttackerRotation, endAttackerRotation, t);
-            target.transform.rotation = Quaternion.Slerp(startTargetRotation, endTargetRotation, t);
+            while (t <= 1f) {
+                t += Time.deltaTime * 5f;
 
-            yield return null;
+                attacker.transform.rotation = Quaternion.Slerp(startAttackerRotation, endAttackerRotation, t);
+
+                if (!isTargetImposed) {
+                    target.transform.rotation = Quaternion.Slerp(startTargetRotation, endTargetRotation, t);
+                }
+
+                yield return null;
+            }
         }
 
         t = 0f;
 
-        _turnsHandler.SetUnitAttackedDefaultAttack(attacker);
+        if (!isImposedAttack) {
+            _turnsHandler.SetUnitAttackedDefaultAttack(attacker);
+        }
+
+        bool endAttack = false;
+        bool isDead = false;
 
         attacker.PlayAttackAnimation();
         attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => target.PlayImpactFromSwordAnimation());
-        attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => DealDamageOnUnit(target, attacker));
+        attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => {
+            endAttack = true;
+            isDead = DealDamageOnUnit(target, attacker);
+        });        
+        attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => {
+            Object.Instantiate(_assetsContainer.BloodImpact, target.GetAttackPoint().position, Quaternion.LookRotation(attacker.transform.forward));
+        });
 
-        yield return new WaitForSeconds(2f);
+        yield return new WaitWhile(() => !endAttack);
+
+        yield return new WaitForSeconds(isDead ? 2f : 1f);
+
+        attacker.IsBusy = false;
+        target.IsBusy = false;
+
+        if (isDead) {
+            DeselectAllUnits();
+            UnitDeadEvent(target);
+        }
 
         if (_isBattleEnded) {
             yield break;
         }
 
-        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(
-            this, _currentSelectedUnit, UnitPanelState.UseTurn,
-            _turnsHandler);
+        if (!isImposedAttack) {
+            _imposedPairsContainer.TryCreateNewPair(attacker, target);
+        }
+
+        if (!(isDead && target is PlayerUnit) && !_uiRoot.GetPanel<BattlePanel>().IsUnitPanelAlreadyEnabled()) {
+            _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(
+                this, _currentSelectedUnit, UnitPanelState.UseTurn,
+                _turnsHandler, _imposedPairsContainer.HasPairWith(_currentSelectedUnit));
+        }
+        
         _isRestrictedForDoAnything = false;
     }
 
-    private void DealDamageOnUnit(UnitBase unit, UnitBase attacker) {
-        if (unit.TakeDamage(attacker.GetUnitConfig().DefaultAttackDamage)) {
-            UnitDeadEvent(unit);
-        }
+    private bool DealDamageOnUnit(UnitBase unit, UnitBase attacker) {
+        float damage = attacker.GetUnitConfig().DefaultAttackDamage;
+
+        _uiRoot.DynamicObjectsPanel.SpawnDamageNumber(Mathf.RoundToInt(damage), false, unit.transform.position + Vector3.up * 3f, _cameraFollower.Camera);
+
+        return unit.TakeDamage(damage);
     }
 
     private void UnitDeadEvent(UnitBase unit) {
+        _imposedPairsContainer.TryRemovePair(unit);
         _turnsHandler.MarkUnitAsDead(unit);
+    }
+
+    private void AbortImposingButtonPressed() {
+        UnitBase unitToAttack = _imposedPairsContainer.GetPairFor(_currentSelectedUnit);
+        _imposedPairsContainer.TryRemovePair(_currentSelectedUnit);
+        TryAttackUnit(unitToAttack, _currentSelectedUnit, true);
     }
     // END ATTACK MODULE
 
     public void OnTurnButtonEntered(UnitBase unit) {
         unit.SetActiveOutline(true);
-        unit.CreateOverUnitData();
+        unit.CreateOverUnitData(null, _imposedPairsContainer.HasPairWith(unit));
     }
 
     public void OnTurnButtonExit(UnitBase unit) {
@@ -642,14 +752,16 @@ public class BattleHandler {
 
         UnitPanelState viewState = UnitPanelState.CompletelyDeactivate;
         
-        if (_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit) && _turnsHandler.IsCanUnitWalk(_currentSelectedUnit)) {
+        if (_currentSelectedUnit is PlayerUnit && _turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit) && _turnsHandler.IsCanUnitWalk(_currentSelectedUnit)) {
             viewState = UnitPanelState.UseTurn;
         } else {
             viewState = UnitPanelState.ViewTurn;
         }
 
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
-        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(this, _currentSelectedUnit, viewState, _turnsHandler);
+        _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(
+            this, _currentSelectedUnit, viewState, 
+            _turnsHandler, _imposedPairsContainer.HasPairWith(_currentSelectedUnit));
 
         if (_turnsHandler.IsHaveCurrentWalkingUnit() && !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit)) {
             _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(true);
@@ -692,7 +804,7 @@ public class BattleHandler {
     }
 
     private void CreateOverUnitData(UnitBase unit, UnitStatsConfig attackerConfig = null) {
-        unit.CreateOverUnitData(attackerConfig);
+        unit.CreateOverUnitData(attackerConfig, _imposedPairsContainer.HasPairWith(unit));
     }
 
     private void DestroyOverUnitData(UnitBase unit) {
@@ -703,6 +815,10 @@ public class BattleHandler {
         _currentSelectedUnit?.DestroySelection();
         _currentSelectedUnit?.SetActiveOutline(false);
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
+    }
+
+    public void SetRestriction(bool value) {
+        _isRestrictedForDoAnything = value;
     }
 
     private void ShowView() {

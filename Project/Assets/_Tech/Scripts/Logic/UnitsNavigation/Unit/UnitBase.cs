@@ -3,14 +3,17 @@ using UnityEngine;
 
 public abstract class UnitBase : MonoBehaviour {
     public bool IsDeadOnBattleField;
+    public bool IsBusy;
 
     [SerializeField] protected UnitStatsConfig _statsData;
     [SerializeField] protected NavAgent _agent;
     [SerializeField] protected Collider _collider;
     [SerializeField] protected Transform _overUnitPoint;
     [SerializeField] protected GameObject _selectionAboveCharacter;
+    [SerializeField] protected Collider _characterRaycastDetector;
     [SerializeField] protected float _distanceToStartWalkingAnimation = 5f;
     [SerializeField] protected WeaponPrefabsType _weaponType;
+    [SerializeField] private Transform _attackPoint;
 
     protected Outline[] _childOutlines;
     protected ConfigsContainer _configsContainer;
@@ -144,11 +147,11 @@ public abstract class UnitBase : MonoBehaviour {
         return _selectionData.OutlineColor;
     }
 
-    public void CreateOverUnitData(UnitStatsConfig attackerConfig = null) {
+    public void CreateOverUnitData(UnitStatsConfig attackerConfig = null, bool imposed = false) {
         if (_createdOverUnitData == null) {
             _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
             _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
-            _createdOverUnitData.Init(this, attackerConfig);
+            _createdOverUnitData.Init(this, attackerConfig, imposed);
         }
     }
 
@@ -185,6 +188,7 @@ public abstract class UnitBase : MonoBehaviour {
 
     private void OnBattleFieldDieEvent() {
         PlayDeadAnimation();
+        _characterRaycastDetector.gameObject.SetActive(false);
         IsDeadOnBattleField = true;
         _weaponHandler.DeactivateWeapon();
         _collider.enabled = false;
@@ -213,5 +217,17 @@ public abstract class UnitBase : MonoBehaviour {
 
     public void PlayDeadAnimation() {
         _animator.PlayDeadAnimation();
+    }
+
+    public void PlayImposedAttackAnimation() {
+        _animator.PlayImposedAttackAnimation();
+    }
+
+    public void PlayImposedImpactAnimation() {
+        _animator.PlayImposedImpactAnimation();
+    }
+
+    public Transform GetAttackPoint() {
+        return _attackPoint;
     }
 }

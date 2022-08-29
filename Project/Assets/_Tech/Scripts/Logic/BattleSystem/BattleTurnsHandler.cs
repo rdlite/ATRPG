@@ -205,17 +205,35 @@ public class BattleTurnsHandler {
     }
 
     public void MarkUnitAsDead(UnitBase deadUnit) {
+        if (deadUnit is EnemyUnit) {
+            for (int i = 0; i < _turnsContainer.Count; i++) {
+                if (_turnsContainer[i].Unit == deadUnit) {
+                    _uiRoot.GetPanel<BattlePanel>().DestroyIconOfUnit(deadUnit);
+                    _turnsContainer.RemoveAt(i);
+                    i--;
+                }
+            }
+
+            TryFillTurns();
+        } else {
+            RemoveOnePlayerIconFromEachRound();
+            CheckBattleEnd();
+            CallNextTurn();
+        }
+    }
+
+    private void RemoveOnePlayerIconFromEachRound() {
         for (int i = 0; i < _turnsContainer.Count; i++) {
-            if (_turnsContainer[i].Unit == deadUnit) {
-                _uiRoot.GetPanel<BattlePanel>().DestroyIconOfUnit(deadUnit);
-                _turnsContainer.RemoveAt(i);
-                i--;
+            if (_turnsContainer[i].IconType == TurnsUILayout.IconType.RestartRound) {
+                for (int j = i; j < _turnsContainer.Count; j++) {
+                    if (_turnsContainer[j].IconType == TurnsUILayout.IconType.Player) {
+                        _uiRoot.GetPanel<BattlePanel>().DestroyIconAt(j);
+                        _turnsContainer.RemoveAt(j);
+                        break;
+                    }
+                }
             }
         }
-
-        TryFillTurns();
-
-        CheckBattleEnd();
     }
 
     private class TurnData {

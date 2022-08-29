@@ -22,3 +22,7 @@ MonoBehaviour:
     type: 3}
   WeaponPrefabsContainer: {fileID: 11400000, guid: 3916b8be3eb3cd14397642793d68fc9a,
     type: 2}
+  DamageNumber: {fileID: 7661320510829381036, guid: a26a35a807867dd40834ee3d78b22b3f,
+    type: 3}
+  BloodImpact: {fileID: 5317631125209856527, guid: 6fce358f15ba14844be2685c6f4e18a7,
+    type: 3}

@@ -11,7 +11,7 @@ public class CharacterStatsPanel : MonoBehaviour {
     }
 
     public void SetData(UnitBase character) {
-        _healthSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentHealth(), character.GetUnitHealthContainer().GetCurrentHealth());
-        _defenseSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentDefense(), character.GetUnitHealthContainer().GetCurrentDefense());
+        _healthSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentHealth(), character.GetUnitHealthContainer().GetMaxHealth());
+        _defenseSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentDefense(), character.GetUnitHealthContainer().GetMaxDefense());
     }
 }

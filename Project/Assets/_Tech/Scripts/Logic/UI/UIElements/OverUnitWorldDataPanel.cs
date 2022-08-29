@@ -4,10 +4,10 @@ using UnityEngine;
 public class OverUnitWorldDataPanel : MonoBehaviour {
     [SerializeField] private UISlider _healthSlider, _defenseSlider;
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private GameObject _damageAmountPanel, _attackIcon, _skullIcon;
+    [SerializeField] private GameObject _damageAmountPanel, _attackIcon, _skullIcon, _imposedIcon;
     [SerializeField] private TextMeshProUGUI _damageAmountText;
 
-    public void Init(UnitBase character, UnitStatsConfig attackerStats) {
+    public void Init(UnitBase character, UnitStatsConfig attackerStats, bool imposed) {
         _healthSlider.Init();
         _defenseSlider.Init();
 
@@ -18,6 +18,7 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
 
         _attackIcon.SetActive(true);
         _skullIcon.SetActive(false);
+        _imposedIcon.gameObject.SetActive(imposed);
 
         if (attackerStats) {
             onDefenseDamage = attackerStats.DefaultAttackDamage;

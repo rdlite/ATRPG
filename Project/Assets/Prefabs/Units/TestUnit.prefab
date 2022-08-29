@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3124893341264911134
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7687816933417043139}
+  m_Layer: 3
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7687816933417043139
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3124893341264911134}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.86, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8753632802380966425}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &8753632802380966426
 GameObject:
   m_ObjectHideFlags: 0
@@ -37,6 +68,7 @@ Transform:
   - {fileID: 3872780644035602496}
   - {fileID: 3663343100620078138}
   - {fileID: 6832818575804325920}
+  - {fileID: 7687816933417043139}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -52,14 +84,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ed24bdba4c62d5643856379b30e3d4c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsDeadOnBattleField: 0
+  IsBusy: 0
   _statsData: {fileID: 11400000, guid: a8fec7605cc2a024f8f5b6a51236f656, type: 2}
   _agent: {fileID: 8753632802380966424}
   _collider: {fileID: 4816486399591938333}
   _overUnitPoint: {fileID: 6832818575804325920}
   _selectionAboveCharacter: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
     type: 3}
+  _characterRaycastDetector: {fileID: 5024089594029673018}
   _distanceToStartWalkingAnimation: 5
   _weaponType: 1
+  _attackPoint: {fileID: 7687816933417043139}
   _characterDetectorTrigger: {fileID: 882274872034861512}
   _viewFow: {fileID: 8753632803513780407}
   _isMainChar: 0
@@ -287,6 +323,12 @@ PrefabInstance:
 --- !u!4 &3663343100620078138 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2527170008766827217, guid: c3bef6f828c69624d8e7c5f1f9e300f1,
+    type: 3}
+  m_PrefabInstance: {fileID: 1280289617845106411}
+  m_PrefabAsset: {fileID: 0}
+--- !u!136 &5024089594029673018 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 6088205074656869585, guid: c3bef6f828c69624d8e7c5f1f9e300f1,
     type: 3}
   m_PrefabInstance: {fileID: 1280289617845106411}
   m_PrefabAsset: {fileID: 0}

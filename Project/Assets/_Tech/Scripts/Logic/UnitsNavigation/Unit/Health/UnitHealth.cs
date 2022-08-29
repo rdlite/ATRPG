@@ -51,11 +51,15 @@ public class DamageReceiver {
     public bool TakeDamage(float pureDamage) {
         _statsConfig.Defense -= pureDamage;
 
-        if (_statsConfig.Defense < 0) {
+        if (_statsConfig.Defense < 0f) {
             _statsConfig.HP -= Mathf.Abs(_statsConfig.Defense);
-            _statsConfig.Defense = 0;
+            if (_statsConfig.HP < 0f) {
+                _statsConfig.HP = 0f;
+            }
+
+            _statsConfig.Defense = 0f;
         }
 
-        return _statsConfig.HP <= 0;
+        return _statsConfig.HP <= 0f;
     }
 }

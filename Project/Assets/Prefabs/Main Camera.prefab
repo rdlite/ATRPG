@@ -131,6 +131,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5260233a3b24d1143a73060669bcbba2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <Camera>k__BackingField: {fileID: 161803826755697335}
   _offset: {x: 0, y: 20, z: 10}
   _targetRotation: {x: 60, y: 180, z: 0}
   _zoom: 1.25

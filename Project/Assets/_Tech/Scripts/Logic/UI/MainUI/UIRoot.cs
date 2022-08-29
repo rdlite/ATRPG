@@ -3,13 +3,17 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class UIRoot : MonoBehaviour {
+    [field: SerializeField] public DynamicObjectsPanel DynamicObjectsPanel { get; private set; }
+
     [SerializeField] private List<PanelData> _uiPanels;
 
     private Dictionary<Type, PanelData> _panelsMap = new Dictionary<Type, PanelData>();
     private UIPanelType _previousPanelType, _currentPanelType;
 
     public void Init(
-        UpdateStateMachine globalStateMachine) {
+        UpdateStateMachine globalStateMachine, AssetsContainer assetsContainer, ICoroutineService coroutineService) {
+        DynamicObjectsPanel.Init(assetsContainer, coroutineService);
+
         for (int i = 0; i < _uiPanels.Count; i++) {
             _uiPanels[i].Panel.Init(
                 globalStateMachine, this);

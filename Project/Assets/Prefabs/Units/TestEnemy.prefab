@@ -36,6 +36,7 @@ Transform:
   - {fileID: 2577137320230231782}
   - {fileID: 7433271060329032329}
   - {fileID: 6849609087746001742}
+  - {fileID: 894693861919216183}
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -51,14 +52,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d44ce1ce4bb8a8547858cc5590676955, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  IsDeadOnBattleField: 0
+  IsBusy: 0
   _statsData: {fileID: 11400000, guid: 91ad86ae37cffb946bf66b1736efac2c, type: 2}
   _agent: {fileID: 2577137321308798024}
   _collider: {fileID: 1760743379826749261}
   _overUnitPoint: {fileID: 6849609087746001742}
   _selectionAboveCharacter: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
     type: 3}
+  _characterRaycastDetector: {fileID: 1173083646998617225}
   _distanceToStartWalkingAnimation: 5
   _weaponType: 1
+  _attackPoint: {fileID: 894693861919216183}
 --- !u!114 &2577137321308798024
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -136,6 +141,37 @@ Transform:
   m_Father: {fileID: 2577137321308798025}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &6075454029750305560
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 894693861919216183}
+  m_Layer: 3
+  m_Name: AttackPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &894693861919216183
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6075454029750305560}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.958, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2577137321308798025}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4916249771570307160
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -205,6 +241,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c3bef6f828c69624d8e7c5f1f9e300f1, type: 3}
+--- !u!136 &1173083646998617225 stripped
+CapsuleCollider:
+  m_CorrespondingSourceObject: {fileID: 6088205074656869585, guid: c3bef6f828c69624d8e7c5f1f9e300f1,
+    type: 3}
+  m_PrefabInstance: {fileID: 4916249771570307160}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &7433271060329032329 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2527170008766827217, guid: c3bef6f828c69624d8e7c5f1f9e300f1,

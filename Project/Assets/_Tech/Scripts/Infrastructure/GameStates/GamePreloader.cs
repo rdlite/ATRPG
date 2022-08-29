@@ -20,7 +20,7 @@ public class GamePreloader : MonoBehaviour, ICoroutineService {
             this, _configsContainer, _uiRoot,
             _assetsContaner);
 
-        Time.timeScale = 4f;
+        //Time.timeScale = 4f;
     }
 
     private void Update() {

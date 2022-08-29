@@ -51,6 +51,16 @@ public class TurnsUILayout : MonoBehaviour{
         }
     }
 
+    public void DestroyIconAt(int id) {
+        for (int i = 0; i < _createdIcons.Count; i++) {
+            if (i == id) {
+                Destroy(_createdIcons[i].Icon);
+                _createdIcons.RemoveAt(i);
+                break;
+            }
+        }
+    }
+
     public bool CheckIfNeedNewIcons() {
         return _createdIcons.Count < 12;
     }

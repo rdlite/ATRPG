@@ -2,6 +2,8 @@ using System;
 using UnityEngine;
 
 public class CameraSimpleFollower : MonoBehaviour {
+    [field: SerializeField] public Camera Camera { get; private set; }
+
     [SerializeField] private Vector3 _offset;
     [SerializeField] private Vector3 _targetRotation;
     [Range(.4f, 2f), SerializeField] private float _zoom = 1f;

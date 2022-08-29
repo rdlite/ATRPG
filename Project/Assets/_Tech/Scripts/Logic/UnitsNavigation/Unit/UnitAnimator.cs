@@ -8,6 +8,8 @@ public class UnitAnimator {
     private int MOVEMENT_MAGNITUDE_HASH = Animator.StringToHash("MovementMagnitude");
     private int IMPART_TRIIGER_HASH = Animator.StringToHash("ImpactTrigger");
     private int ATTACK_TRIGGER_HASH = Animator.StringToHash("AttackTrigger");
+    private int IMPOSED_ATTACK_TRIGGER_HASH = Animator.StringToHash("ImposedAttackTrigger");
+    private int IMPOSED_IMPACT_TRIGGER_HASH = Animator.StringToHash("ImposedImpactTrigger");
     private int WITHDRAWWEAPON_TRIGGER_HASH = Animator.StringToHash("WithdrawWeaponTrigger");
     private int SHEALTWEAPON_TRIGGER_HASH = Animator.StringToHash("ShealtWeaponTrigger");
     private int ANIMATON_SPEED_RANDOM_HASH = Animator.StringToHash("AnimationSpeedRandom");
@@ -100,6 +102,14 @@ public class UnitAnimator {
         if (!value) {
             _weaponHandler.DeactivateWeapon();
         }
+    }
+
+    public void PlayImposedAttackAnimation() {
+        _animator.SetTrigger(IMPOSED_ATTACK_TRIGGER_HASH);
+    }
+    
+    public void PlayImposedImpactAnimation() {
+        _animator.SetTrigger(IMPOSED_IMPACT_TRIGGER_HASH);
     }
 
     private IEnumerator SetSmoothLayerWeight(int layerID, float startValue, float endValue) {
