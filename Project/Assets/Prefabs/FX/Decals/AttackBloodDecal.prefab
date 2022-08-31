@@ -10,8 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 7868297889407846414}
   - component: {fileID: 7868297889407846415}
+  - component: {fileID: 2002049695626239162}
   m_Layer: 0
-  m_Name: BloodDecal
+  m_Name: AttackBloodDecal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -55,3 +56,19 @@ MonoBehaviour:
   m_Offset: {x: 0, y: 1, z: 0}
   m_Size: {x: 1, y: 2, z: 4.78}
   m_FadeFactor: 1
+--- !u!114 &2002049695626239162
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7868297889407846412}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: af1acafc34482414ba8015203d0ca7ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _bloodTextures: {fileID: 11400000, guid: 593a3309d61ae5149980f22a3f2a9c07, type: 2}
+  _projector: {fileID: 7868297889407846415}
+  _randomWidthSize: {x: 0.8, y: 1.2}
+  _randomHeightSize: {x: 1, y: 2}

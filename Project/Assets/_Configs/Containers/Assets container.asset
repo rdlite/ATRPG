@@ -26,3 +26,7 @@ MonoBehaviour:
     type: 3}
   BloodImpact: {fileID: 5317631125209856527, guid: 6fce358f15ba14844be2685c6f4e18a7,
     type: 3}
+  BloodDecal: {fileID: 2002049695626239162, guid: 2036bdea4d4c9554fb257fa8981d828d,
+    type: 3}
+  StunEffect: {fileID: 8613233491269307386, guid: b64d74cac0ebf8846b9cc91cf564bce2,
+    type: 3}

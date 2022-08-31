@@ -215,6 +215,7 @@ public class BattleTurnsHandler {
             }
 
             TryFillTurns();
+            CheckBattleEnd();
         } else {
             RemoveOnePlayerIconFromEachRound();
             CheckBattleEnd();

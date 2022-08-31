@@ -12,4 +12,6 @@ public class AssetsContainer : ScriptableObject {
     public GameObject DamageNumber;
     [Header("FX")]
     public ParticleSystem BloodImpact;
+    public BloodDecalAppearance BloodDecal;
+    public StunEffect StunEffect;
 }

@@ -44,10 +44,12 @@ Material:
     - _DecalMeshDepthBias: 0
     - _DecalMeshViewBias: 0
     - _DrawOrder: 0
-    - _MAOSAlpha: 1
+    - _MAOSAlpha: 0
     - _Metallic: 0
-    - _NormalStrength: 5
+    - _NormalStrength: 4.76
+    - _Rotation: -43.9
     - _Smooth: 1
     m_Colors:
-    - _BloodColor: {r: 0.5377358, g: 0.03804734, b: 0.03804734, a: 1}
+    - _BloodColor: {r: 0.6320754, g: 0.11031505, b: 0.11031505, a: 1}
+    - _UpAxis: {r: 15.41, g: -2.53, b: -0.27, a: 0}
   m_BuildTextureStacks: []

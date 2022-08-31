@@ -51,7 +51,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AppearRoundRange: 1.0038059
+    - _AppearRoundRange: 1.0011975
     - _CurrentMovementPointSmooth0: 0.02
     - _CurrentMovementPointSmooth1: 0.13
     - _CurrentMovementPointsOpacity: 0.21
@@ -82,7 +82,7 @@ Material:
     - _WalkPointsTextureOffset: -0.0042
     - _WalkingPointsTextureOffset: 0
     m_Colors:
-    - _AppearCenterPointUV: {r: 0.33480948, g: 0.6400113, b: 0, a: 0}
+    - _AppearCenterPointUV: {r: 0.5484675, g: 0.32183978, b: 0, a: 0}
     - _FillColor: {r: 0, g: 0.89161587, b: 1, a: 1}
     - _InlineAlphaColor: {r: 1, g: 1, b: 1, a: 0.772549}
     - _InlineColor: {r: 0, g: 1, b: 0.9374714, a: 1}

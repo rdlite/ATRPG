@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 20ac0e12b85d477418c4dabc9a175c2a, type: 3}
+  m_Name: BloodForwardDecals
+  m_EditorClassIdentifier: 
+  Textures:
+  - {fileID: 2800000, guid: 1d0b610fecc018048bd27588b7292169, type: 3}
+  - {fileID: 2800000, guid: cec788539195fb749aadd95e2a22c132, type: 3}
+  - {fileID: 2800000, guid: 388d6989b8a455e47bd03de0dfd0ef3e, type: 3}
+  - {fileID: 2800000, guid: a802b281225639848808bdce24490a82, type: 3}
+  - {fileID: 2800000, guid: a2174c91f0a601848a97883e0f7f5456, type: 3}

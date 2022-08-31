@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class EnemyUnit : UnitBase {
     private EnemyContainer _container;
@@ -20,5 +21,11 @@ public class EnemyUnit : UnitBase {
         } else {
             return _container.GetConnectedEnemies();
         }
+    }
+
+    [ContextMenu("Create decal")]
+    public void CreateBloodDecal() {
+        BloodDecalAppearance bloodDecal = Object.Instantiate(_assetsContainer.BloodDecal);
+        bloodDecal.ThrowDecalOnSurface(GetAttackPoint().position, -transform.forward);
     }
 }

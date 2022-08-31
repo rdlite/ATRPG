@@ -90,6 +90,7 @@ MonoBehaviour:
   _agent: {fileID: 8753632802380966424}
   _collider: {fileID: 4816486399591938333}
   _overUnitPoint: {fileID: 6832818575804325920}
+  _headPoint: {fileID: 7754652321062141472}
   _selectionAboveCharacter: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
     type: 3}
   _characterRaycastDetector: {fileID: 5024089594029673018}
@@ -129,7 +130,7 @@ Rigidbody:
   m_UseGravity: 0
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 112
+  m_Constraints: 116
   m_CollisionDetection: 0
 --- !u!136 &4816486399591938333
 CapsuleCollider:
@@ -245,6 +246,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8bc6c49f15ce5a64db57ca8ee151e091, type: 3}
+--- !u!4 &7754652321062141472 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 7858407787314451257, guid: 8bc6c49f15ce5a64db57ca8ee151e091,
+    type: 3}
+  m_PrefabInstance: {fileID: 473057233053920537}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9147268079589282011 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8674281249993129410, guid: 8bc6c49f15ce5a64db57ca8ee151e091,

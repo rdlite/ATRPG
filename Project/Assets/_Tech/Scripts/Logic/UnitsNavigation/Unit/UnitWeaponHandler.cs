@@ -29,6 +29,10 @@ public class UnitWeaponHandler {
         _createdWeapon.transform.localRotation = Quaternion.identity;
     }
 
+    public void ActivateWeapon() {
+        _createdWeapon.SetActive(true);
+    }
+
     public void DeactivateWeapon() {
         _createdWeapon.SetActive(false);
     }

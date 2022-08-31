@@ -7,6 +7,8 @@ using UnityEngine.Rendering.Universal;
 public class BattleHandler {
     private const string APPEAR_RANGE = "_AppearRoundRange";
     private const string APPEAR_CENTER_POINT_UV = "_AppearCenterPointUV";
+    private List<BloodDecalAppearance> _createdBloodDecals;
+    private List<StunEffect> _createdStunEffects;
     private DecalProjector[] _createdUnderUnitWalkingDecals;
     private DecalProjector[] _createdUnderUnitAttackDecals;
     private bool[] _mouseOverSelectionMap, _mouseOverDataSelectionMap, _currentAttackingMap;
@@ -47,6 +49,9 @@ public class BattleHandler {
         _mouseOverDataSelectionMap = new bool[_battleGridData.Units.Count];
         _currentAttackingMap = new bool[_battleGridData.Units.Count];
         _selectionForAttackMap = new UnitBase[_battleGridData.Units.Count];
+
+        _createdBloodDecals = new List<BloodDecalAppearance>();
+        _createdStunEffects = new List<StunEffect>();
 
         _imposedPairsContainer = new ImposedPairsContainer(_coroutineService);
 
@@ -116,6 +121,14 @@ public class BattleHandler {
         _isRestrictedForDoAnything = true;
         _isBattleEnded = true;
 
+        for (int i = 0; i < _createdBloodDecals.Count; i++) {
+            _createdBloodDecals[i].DestroyDecal();
+        }
+
+        for (int i = 0; i < _createdStunEffects.Count; i++) {
+            Object.Destroy(_createdStunEffects[i]);
+        }
+
         DeselectAllUnits();
 
         _turnsHandler.Cleanup();
@@ -128,7 +141,11 @@ public class BattleHandler {
                 if (!_battleGridData.Units[i].IsDeadOnBattleField) {
                     _battleGridData.Units[i].ShealtWeapon();
                 } else {
-                    _battleGridData.Units[i].DeactivateWeapon();
+                    if (_battleGridData.Units[i] is EnemyUnit) {
+                        _battleGridData.Units[i].DeactivateWeapon();
+                    } else {
+                        _battleGridData.Units[i].Revive();
+                    }
                 }
             }
 
@@ -652,6 +669,9 @@ public class BattleHandler {
         });        
         attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => {
             Object.Instantiate(_assetsContainer.BloodImpact, target.GetAttackPoint().position, Quaternion.LookRotation(attacker.transform.forward));
+            BloodDecalAppearance bloodDecal = Object.Instantiate(_assetsContainer.BloodDecal);
+            _createdBloodDecals.Add(bloodDecal);
+            bloodDecal.ThrowDecalOnSurface(target.GetAttackPoint().position, attacker.transform.forward);
         });
 
         yield return new WaitWhile(() => !endAttack);
@@ -692,11 +712,18 @@ public class BattleHandler {
     }
 
     private void UnitDeadEvent(UnitBase unit) {
+        if (unit is PlayerUnit) {
+            StunEffect stunParticle = Object.Instantiate(_assetsContainer.StunEffect);
+            stunParticle.SnapToPoint(unit.GetHeadPoint());
+            _createdStunEffects.Add(stunParticle);
+        }
+
         _imposedPairsContainer.TryRemovePair(unit);
         _turnsHandler.MarkUnitAsDead(unit);
     }
 
     private void AbortImposingButtonPressed() {
+        DeactivateAttackDecals();
         UnitBase unitToAttack = _imposedPairsContainer.GetPairFor(_currentSelectedUnit);
         _imposedPairsContainer.TryRemovePair(_currentSelectedUnit);
         TryAttackUnit(unitToAttack, _currentSelectedUnit, true);

@@ -58,6 +58,7 @@ MonoBehaviour:
   _agent: {fileID: 2577137321308798024}
   _collider: {fileID: 1760743379826749261}
   _overUnitPoint: {fileID: 6849609087746001742}
+  _headPoint: {fileID: 4173369175025365344}
   _selectionAboveCharacter: {fileID: 3830566906313862836, guid: d4434bbcaf1450a498d9f176cd69e6c9,
     type: 3}
   _characterRaycastDetector: {fileID: 1173083646998617225}
@@ -323,6 +324,12 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 3347386746599535393, guid: d6e75616c9a59e14aa6004dea105cfe6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d6e75616c9a59e14aa6004dea105cfe6, type: 3}
+--- !u!4 &4173369175025365344 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 8957281333485681922, guid: d6e75616c9a59e14aa6004dea105cfe6,
+    type: 3}
+  m_PrefabInstance: {fileID: 5018257713597320290}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &8036211534721360867 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3036047498824363905, guid: d6e75616c9a59e14aa6004dea105cfe6,

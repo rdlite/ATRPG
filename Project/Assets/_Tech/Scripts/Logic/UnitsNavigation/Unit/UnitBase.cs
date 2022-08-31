@@ -9,6 +9,7 @@ public abstract class UnitBase : MonoBehaviour {
     [SerializeField] protected NavAgent _agent;
     [SerializeField] protected Collider _collider;
     [SerializeField] protected Transform _overUnitPoint;
+    [SerializeField] protected Transform _headPoint;
     [SerializeField] protected GameObject _selectionAboveCharacter;
     [SerializeField] protected Collider _characterRaycastDetector;
     [SerializeField] protected float _distanceToStartWalkingAnimation = 5f;
@@ -190,8 +191,8 @@ public abstract class UnitBase : MonoBehaviour {
         PlayDeadAnimation();
         _characterRaycastDetector.gameObject.SetActive(false);
         IsDeadOnBattleField = true;
-        _weaponHandler.DeactivateWeapon();
         _collider.enabled = false;
+        _weaponHandler.DeactivateWeapon();
     }
 
     public void DeactivateWeapon() {
@@ -229,5 +230,19 @@ public abstract class UnitBase : MonoBehaviour {
 
     public Transform GetAttackPoint() {
         return _attackPoint;
+    }
+
+    public Transform GetHeadPoint() {
+        return _headPoint;
+    }
+
+    public void Revive() {
+        _characterRaycastDetector.gameObject.SetActive(true);
+        IsDeadOnBattleField = false;
+        _collider.enabled = true;
+        _weaponHandler.SetWeaponIdle();
+        _weaponHandler.ActivateWeapon();
+        _animator.StandUp();
+        _unitHealth.ResetData();
     }
 }

@@ -11,8 +11,10 @@ public class UnitAnimator {
     private int IMPOSED_ATTACK_TRIGGER_HASH = Animator.StringToHash("ImposedAttackTrigger");
     private int IMPOSED_IMPACT_TRIGGER_HASH = Animator.StringToHash("ImposedImpactTrigger");
     private int WITHDRAWWEAPON_TRIGGER_HASH = Animator.StringToHash("WithdrawWeaponTrigger");
+    private int STAND_UP_TRIGGER_HASH = Animator.StringToHash("StandUpTrigger");
     private int SHEALTWEAPON_TRIGGER_HASH = Animator.StringToHash("ShealtWeaponTrigger");
     private int ANIMATON_SPEED_RANDOM_HASH = Animator.StringToHash("AnimationSpeedRandom");
+    private int DEATH_ANIMATIONS_RANDOM_HASH = Animator.StringToHash("DeathAnimationsRandom");
 
     private Dictionary<WeaponAnimationLayerType, int> _weaponLayers_map = new Dictionary<WeaponAnimationLayerType, int>();
     private ICoroutineService _coroutineService;
@@ -87,6 +89,7 @@ public class UnitAnimator {
     }
 
     public void PlayDeadAnimation() {
+        _animator.SetFloat(DEATH_ANIMATIONS_RANDOM_HASH, Random.Range(0, 9));
         _animator.SetBool(IS_DEAD_HASH, true);
     }
 
@@ -120,6 +123,17 @@ public class UnitAnimator {
             _animator.SetLayerWeight(layerID, Mathf.Lerp(startValue, endValue, t));
             yield return null;
         }
+    }
+
+    public void StandUp() {
+        for (int i = 0; i < _animator.layerCount; i++) {
+            _animator.SetLayerWeight(i, 0f);
+        }
+
+        _animator.SetLayerWeight(0, 1f);
+
+        _animator.SetBool(IS_DEAD_HASH, false);
+        _animator.SetTrigger(STAND_UP_TRIGGER_HASH);
     }
 }
 
