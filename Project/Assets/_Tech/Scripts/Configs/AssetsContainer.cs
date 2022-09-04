@@ -10,6 +10,7 @@ public class AssetsContainer : ScriptableObject {
     public DecalProjector AttackUnderUnitDecalPrefab;
     public WeaponPrefabsContainer WeaponPrefabsContainer;
     public GameObject DamageNumber;
+    public MovementPointer MovementPointer;
     [Header("FX")]
     public ParticleSystem BloodImpact;
     public BloodDecalAppearance BloodDecal;

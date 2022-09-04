@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6624871792487185698}
-  m_Layer: 3
+  m_Layer: 9
   m_Name: SphericalFOWMask
   m_TagString: Untagged
   m_Icon: {fileID: 0}

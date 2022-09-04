@@ -52,7 +52,8 @@ public abstract class UnitBase : MonoBehaviour {
             GetComponentInChildren<Animator>(true), coroutineService, _weaponHandler, 
             _skinContainer);
 
-        _weaponHandler.Init(assetsContainer, _skinContainer);
+        _weaponHandler.Init(
+            assetsContainer, _skinContainer, gameObject.layer);
 
         if (this is EnemyUnit) {
             _selectionData = _configsContainer.CharactersSelectionData.EnemySelection;
@@ -234,6 +235,12 @@ public abstract class UnitBase : MonoBehaviour {
 
     public Transform GetHeadPoint() {
         return _headPoint;
+    }
+
+    public StunEffect CreateStunParticle() {
+        StunEffect stunParticle = Instantiate(_assetsContainer.StunEffect);
+        stunParticle.SnapToPoint(GetHeadPoint());
+        return stunParticle;
     }
 
     public void Revive() {

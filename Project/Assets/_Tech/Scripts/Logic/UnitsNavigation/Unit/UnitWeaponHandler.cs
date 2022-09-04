@@ -5,9 +5,14 @@ public class UnitWeaponHandler {
     private UnitSkinContainer _skinContainer;
     private GameObject _createdWeapon;
 
-    public void Init(AssetsContainer assetsContainer, UnitSkinContainer skinContainer) {
+    private int _characterLayer;
+
+    public void Init(
+        AssetsContainer assetsContainer, UnitSkinContainer skinContainer, int layer) {
         _assetsContainer = assetsContainer;
         _skinContainer = skinContainer;
+
+        _characterLayer = layer;
     }
 
     public void CreateWeapon(WeaponPrefabsType weaponType) {
@@ -15,6 +20,10 @@ public class UnitWeaponHandler {
         _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
         _createdWeapon.transform.localPosition = Vector3.zero;
         _createdWeapon.transform.localRotation = Quaternion.identity;
+        _createdWeapon.gameObject.layer = _characterLayer;
+        foreach (Transform weaponChild in _createdWeapon.transform) {
+            weaponChild.gameObject.layer = _characterLayer;
+        }
     }
 
     public void SetWeaponInHand() {

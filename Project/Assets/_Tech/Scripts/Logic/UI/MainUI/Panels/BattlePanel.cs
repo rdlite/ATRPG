@@ -31,6 +31,10 @@ public class BattlePanel : UIPanel {
         _walkButton.SetActiveObject(false);
         _attackButton.SetActiveObject(false);
 
+        _waitButton.Button.onClick.RemoveAllListeners();
+        _backToCurrentUnitButton.onClick.RemoveAllListeners();
+        _abortImposionButton.onClick.RemoveAllListeners();
+
         _walkButton.Cleanup();
         _attackButton.Cleanup();
     }

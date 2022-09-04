@@ -15,12 +15,12 @@ MonoBehaviour:
   m_Active: 1
   settings:
     passTag: VisibleCharacter
-    Event: 300
+    Event: 400
     filterSettings:
       RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
-        m_Bits: 1983
+        m_Bits: 8
       PassNames: []
     overrideMaterial: {fileID: 0}
     overrideMaterialPassIndex: 0
@@ -56,7 +56,7 @@ MonoBehaviour:
     passTag: Hidden
     Event: 300
     filterSettings:
-      RenderQueueType: 1
+      RenderQueueType: 0
       LayerMask:
         serializedVersion: 2
         m_Bits: 8
@@ -69,7 +69,7 @@ MonoBehaviour:
     stencilSettings:
       overrideStencilState: 0
       stencilReference: 0
-      stencilCompareFunction: 4
+      stencilCompareFunction: 0
       passOperation: 2
       failOperation: 7
       zFailOperation: 1
@@ -97,8 +97,8 @@ MonoBehaviour:
     dBufferSettings:
       surfaceData: 2
     screenSpaceSettings:
-      normalBlend: 1
-      useGBuffer: 1
+      normalBlend: 0
+      useGBuffer: 0
   m_CopyDepthPS: {fileID: 4800000, guid: d6dae50ee9e1bfa4db75f19f99355220, type: 3}
   m_DBufferClear: {fileID: 4800000, guid: f056d8bd2a1c7e44e9729144b4c70395, type: 3}
 --- !u!114 &-1878332245247344467
@@ -113,7 +113,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f62c9c65cf3354c93be831c8bc075510, type: 3}
   m_Name: SSAO
   m_EditorClassIdentifier: 
-  m_Active: 0
+  m_Active: 1
   m_Shader: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
   m_Settings:
     Downsample: 0
@@ -121,9 +121,9 @@ MonoBehaviour:
     Source: 1
     NormalSamples: 1
     Intensity: 0.5
-    DirectLightingStrength: 0.25
+    DirectLightingStrength: 0.143
     Radius: 0.25
-    SampleCount: 12
+    SampleCount: 6
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -143,8 +143,9 @@ MonoBehaviour:
   - {fileID: -1878332245247344467}
   - {fileID: -1950063561477830794}
   - {fileID: -7650894908166114310}
+  - {fileID: 1145744025495398225}
   - {fileID: -8428684950739816826}
-  m_RendererFeatureMap: adc0de57c6d2eee57647aed085fbefe4faf3e9009e8fd29586ee78c3b14b078b
+  m_RendererFeatureMap: adc0de57c6d2eee57647aed085fbefe4faf3e9009e8fd29551e72deb1e80e60f86ee78c3b14b078b
   m_UseNativeRenderPass: 0
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   xrSystemData: {fileID: 11400000, guid: 60e1133243b97e347b653163a8c01b64, type: 2}
@@ -166,7 +167,7 @@ MonoBehaviour:
   m_AssetVersion: 1
   m_OpaqueLayerMask:
     serializedVersion: 2
-    m_Bits: 2039
+    m_Bits: 2047
   m_TransparentLayerMask:
     serializedVersion: 2
     m_Bits: 4294967295
@@ -177,10 +178,49 @@ MonoBehaviour:
     passOperation: 2
     failOperation: 0
     zFailOperation: 0
-  m_ShadowTransparentReceive: 1
-  m_RenderingMode: 0
+  m_ShadowTransparentReceive: 0
+  m_RenderingMode: 1
   m_DepthPrimingMode: 0
   m_AccurateGbufferNormals: 0
   m_ClusteredRendering: 0
   m_TileSize: 32
   m_IntermediateTextureMode: 1
+--- !u!114 &1145744025495398225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6b3d386ba5cd94485973aee1479b272e, type: 3}
+  m_Name: GroundRender
+  m_EditorClassIdentifier: 
+  m_Active: 1
+  settings:
+    passTag: GroundRender
+    Event: 300
+    filterSettings:
+      RenderQueueType: 0
+      LayerMask:
+        serializedVersion: 2
+        m_Bits: 128
+      PassNames: []
+    overrideMaterial: {fileID: 0}
+    overrideMaterialPassIndex: 0
+    overrideDepthState: 0
+    depthCompareFunction: 0
+    enableWrite: 0
+    stencilSettings:
+      overrideStencilState: 0
+      stencilReference: 0
+      stencilCompareFunction: 8
+      passOperation: 0
+      failOperation: 0
+      zFailOperation: 0
+    cameraSettings:
+      overrideCamera: 0
+      restoreCamera: 1
+      offset: {x: 0, y: 0, z: 0, w: 0}
+      cameraFieldOfView: 60

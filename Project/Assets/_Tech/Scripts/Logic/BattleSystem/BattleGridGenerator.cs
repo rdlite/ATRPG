@@ -110,12 +110,10 @@ public class BattleGridGenerator : MonoBehaviour {
 
         _battleGridData.ViewTexture = new Texture2D(_battleGridData.Width * _battleGridData.ViewTextureResolution, _battleGridData.Height * _battleGridData.ViewTextureResolution);
         _battleGridData.WalkingPointsTexture = new Texture2D(_battleGridData.Width * _additionalResolutionForWalkingPoint, _battleGridData.Height * _additionalResolutionForWalkingPoint);
-        _battleGridData.CurrentMovementPointsTexture = new Texture2D(_battleGridData.Width * _additionalResolutionForWalkingPoint, _battleGridData.Height * _additionalResolutionForWalkingPoint);
 
         for (int x = 0; x < _battleGridData.Width * _additionalResolutionForWalkingPoint; x++) {
             for (int y = 0; y < _battleGridData.Height * _additionalResolutionForWalkingPoint; y++) {
                 _battleGridData.WalkingPointsTexture.SetPixel(x, y, blackCol);
-                _battleGridData.CurrentMovementPointsTexture.SetPixel(x, y, blackCol);
             }
         }        
         
@@ -138,7 +136,6 @@ public class BattleGridGenerator : MonoBehaviour {
 
         _battleGridData.ViewTexture.Apply();
         _battleGridData.WalkingPointsTexture.Apply();
-        _battleGridData.CurrentMovementPointsTexture.Apply();
 
         Vector3 decalPosition = (_battleGridData.NodesGrid[_battleGridData.Width - 1, _battleGridData.Height - 1].WorldPosition - _battleGridData.NodesGrid[0, 0].WorldPosition) / 2f;
         decalPosition = decalPosition.RemoveYCoord();
@@ -187,7 +184,6 @@ public class BattleGridGenerator : MonoBehaviour {
     private void SetDecal() {
         _decalProjector.material.SetTexture("_MainTex", _battleGridData.ViewTexture);
         _decalProjector.material.SetTexture("_WalkingPointsMap", _battleGridData.WalkingPointsTexture);
-        _decalProjector.material.SetTexture("_CurrentMovementPointsTexture", _battleGridData.CurrentMovementPointsTexture);
         _decalProjector.material.SetFloat("_TextureOffset", 0f);
         _decalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
     }
@@ -210,7 +206,6 @@ public class BattleGridData {
     public AStarGrid GlobalGrid;
     public Texture2D ViewTexture;
     public Texture2D WalkingPointsTexture;
-    public Texture2D CurrentMovementPointsTexture;
     public List<UnitBase> Units;
     public Node[,] NodesGrid;
     public bool[,] WalkableMap;

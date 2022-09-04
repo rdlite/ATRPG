@@ -27,6 +27,7 @@ public class BattleHandler {
     private ICoroutineService _coroutineService;
     private BattleGridGenerator _gridGenerator;
     private ImposedPairsContainer _imposedPairsContainer;
+    private MovementPointer _movementPointerStart, _movementPointerEnd;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
     private bool _isCurrentlyShowAttacking;
@@ -52,6 +53,11 @@ public class BattleHandler {
 
         _createdBloodDecals = new List<BloodDecalAppearance>();
         _createdStunEffects = new List<StunEffect>();
+
+        _movementPointerStart = Object.Instantiate(_assetsContainer.MovementPointer);
+        _movementPointerEnd = Object.Instantiate(_assetsContainer.MovementPointer);
+        _movementPointerStart.gameObject.SetActive(false);
+        _movementPointerEnd.gameObject.SetActive(false);
 
         _imposedPairsContainer = new ImposedPairsContainer(_coroutineService);
 
@@ -126,8 +132,10 @@ public class BattleHandler {
         }
 
         for (int i = 0; i < _createdStunEffects.Count; i++) {
-            Object.Destroy(_createdStunEffects[i]);
+            Object.Destroy(_createdStunEffects[i].gameObject);
         }
+
+        _createdStunEffects.Clear();
 
         DeselectAllUnits();
 
@@ -301,17 +309,13 @@ public class BattleHandler {
                     _createdLinePrefab.SetPosition(i, path[i] + Vector3.up * .1f);
                 }
 
-                for (int x = 0; x < _battleGridData.NodesGrid.GetLength(0); x++) {
-                    for (int y = 0; y < _battleGridData.NodesGrid.GetLength(1); y++) {
-                        _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
-                    }
-                }
+                _movementPointerStart.gameObject.SetActive(true);
+                _movementPointerEnd.gameObject.SetActive(true);
 
-                _battleGridData.CurrentMovementPointsTexture.SetPixel((startNode.GridX - _battleGridData.StartNodeIDX) * 2, (startNode.GridY - _battleGridData.StartNodeIDY) * 2, Color.white);
-                _battleGridData.CurrentMovementPointsTexture.SetPixel((endNode.GridX - _battleGridData.StartNodeIDX) * 2, (endNode.GridY - _battleGridData.StartNodeIDY) * 2, Color.white);
+                _movementPointerStart.transform.position = path[0];
+                _movementPointerEnd.transform.position = path[^1];
 
-                _battleGridData.CurrentMovementPointsTexture.Apply();
-                SetDecal();
+                //SetDecal();
             }
         }
         
@@ -373,6 +377,9 @@ public class BattleHandler {
 
         if (_createdLinePrefab != null) {
             Object.Destroy(_createdLinePrefab.gameObject);
+
+            _movementPointerStart.gameObject.SetActive(false);
+            _movementPointerEnd.gameObject.SetActive(false);
         }
     }
 
@@ -405,7 +412,6 @@ public class BattleHandler {
             for (int y = 0; y < _battleGridData.Height; y++) {
                 _battleGridData.WalkableMap[x, y] = false;
                 _battleGridData.NodesGrid[x, y].SetPlacedByUnit(false);
-                _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
             }
         }
 
@@ -662,7 +668,6 @@ public class BattleHandler {
         bool isDead = false;
 
         attacker.PlayAttackAnimation();
-        attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => target.PlayImpactFromSwordAnimation());
         attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => {
             endAttack = true;
             isDead = DealDamageOnUnit(target, attacker);
@@ -675,6 +680,10 @@ public class BattleHandler {
         });
 
         yield return new WaitWhile(() => !endAttack);
+
+        if (!isDead) {
+            target.PlayImpactFromSwordAnimation();
+        }
 
         yield return new WaitForSeconds(isDead ? 2f : 1f);
 
@@ -713,9 +722,7 @@ public class BattleHandler {
 
     private void UnitDeadEvent(UnitBase unit) {
         if (unit is PlayerUnit) {
-            StunEffect stunParticle = Object.Instantiate(_assetsContainer.StunEffect);
-            stunParticle.SnapToPoint(unit.GetHeadPoint());
-            _createdStunEffects.Add(stunParticle);
+            _createdStunEffects.Add(unit.CreateStunParticle());
         }
 
         _imposedPairsContainer.TryRemovePair(unit);
@@ -765,6 +772,9 @@ public class BattleHandler {
     private void SetUnitSelect(UnitBase unit) {
         if (_createdLinePrefab != null) {
             Object.Destroy(_createdLinePrefab.gameObject);
+
+            _movementPointerStart.gameObject.SetActive(false);
+            _movementPointerEnd.gameObject.SetActive(false);
         }
 
         _decalProjector.gameObject.SetActive(false);
@@ -861,14 +871,11 @@ public class BattleHandler {
                 _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
                 _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
                 _battleGridData.ViewTexture.SetPixel(x * _battleGridData.ViewTextureResolution + 1, y * _battleGridData.ViewTextureResolution + 1, _battleGridData.WalkableMap[x, y] && !isBorder ? whiteCol : blackCol);
-
-                _battleGridData.CurrentMovementPointsTexture.SetPixel(x * 2, y * 2, Color.black);
             }
         }
 
         _battleGridData.ViewTexture.Apply();
         _battleGridData.WalkingPointsTexture.Apply();
-        _battleGridData.CurrentMovementPointsTexture.Apply();
 
         SetDecal();
     }
@@ -876,7 +883,6 @@ public class BattleHandler {
     private void SetDecal() {
         _decalProjector.material.SetTexture("_MainTex", _battleGridData.ViewTexture);
         _decalProjector.material.SetTexture("_WalkingPointsMap", _battleGridData.WalkingPointsTexture);
-        _decalProjector.material.SetTexture("_CurrentMovementPointsTexture", _battleGridData.CurrentMovementPointsTexture);
         _decalProjector.material.SetFloat("_TextureOffset", 0f);
         _decalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
     }
