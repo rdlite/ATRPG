@@ -15,4 +15,6 @@ public class AssetsContainer : ScriptableObject {
     public ParticleSystem BloodImpact;
     public BloodDecalAppearance BloodDecal;
     public StunEffect StunEffect;
+    [Header("Containers")]
+    public UnitWeaponAnimatorsContainer AnimatorsContainer;
 }

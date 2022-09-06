@@ -64,6 +64,7 @@ MonoBehaviour:
   _characterRaycastDetector: {fileID: 1173083646998617225}
   _distanceToStartWalkingAnimation: 5
   _weaponType: 1
+  _weaponLayerType: 1
   _attackPoint: {fileID: 894693861919216183}
 --- !u!114 &2577137321308798024
 MonoBehaviour:

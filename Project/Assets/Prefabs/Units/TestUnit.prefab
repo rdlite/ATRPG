@@ -96,6 +96,7 @@ MonoBehaviour:
   _characterRaycastDetector: {fileID: 5024089594029673018}
   _distanceToStartWalkingAnimation: 5
   _weaponType: 1
+  _weaponLayerType: 1
   _attackPoint: {fileID: 7687816933417043139}
   _characterDetectorTrigger: {fileID: 882274872034861512}
   _viewFow: {fileID: 8753632803513780407}

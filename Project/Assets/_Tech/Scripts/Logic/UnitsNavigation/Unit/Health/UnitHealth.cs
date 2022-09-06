@@ -39,6 +39,11 @@ public class UnitHealth {
     public bool TakeDamage(float pureDamage) {
         return _damageReceiver.TakeDamage(pureDamage);
     }
+
+    public (bool, float) GedModifiedDamageAmount(float notModifiedDamage) {
+        float modifiedDamage = notModifiedDamage;
+        return new(_damageReceiver.IsCanKill(modifiedDamage), modifiedDamage);
+    }
 }
 
 public class DamageReceiver {
@@ -61,5 +66,17 @@ public class DamageReceiver {
         }
 
         return _statsConfig.HP <= 0f;
+    }
+
+    public bool IsCanKill(float pureDamage) {
+        float currentDefense = _statsConfig.Defense - pureDamage;
+
+        if (_statsConfig.Defense < 0f) {
+            if ((_statsConfig.HP - Mathf.Abs(currentDefense)) < 0f) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -37,7 +37,8 @@ public class BattleHandler {
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
-        Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator) {
+        Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator,
+        bool isAIActing) {
         _coroutineService = coroutineService;
         _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
@@ -66,7 +67,8 @@ public class BattleHandler {
 
         _turnsHandler = new BattleTurnsHandler(
             _battleGridData, _uiRoot, this,
-            _coroutineService, cameraFollower);
+            _coroutineService, cameraFollower, isAIActing,
+            _imposedPairsContainer);
 
         _createdUnderUnitWalkingDecals = new DecalProjector[_battleGridData.Units.Count];
         _createdUnderUnitAttackDecals = new DecalProjector[_battleGridData.Units.Count];
@@ -381,6 +383,82 @@ public class BattleHandler {
             _movementPointerStart.gameObject.SetActive(false);
             _movementPointerEnd.gameObject.SetActive(false);
         }
+    }
+
+    public List<Node> GetPossibleWalkNodesForUnit(UnitBase unit) {
+        float unitMaxWalkDistance = _turnsHandler.GetLastLengthForUnit(unit);
+
+        if (unitMaxWalkDistance < 1f) {
+            HideWalkingDistance(false);
+            return null;
+        }
+
+        Vector3 currentUnitPosition = unit.transform.position;
+
+        Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition);
+
+        List<Node> possibleNodes = new List<Node>(25);
+        Node[] neighbours;
+        List<Node> resultNodes = new List<Node>(25);
+        possibleNodes.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition));
+
+        int crushProtection = 0;
+
+        for (int x = 0; x < _battleGridData.Width; x++) {
+            for (int y = 0; y < _battleGridData.Height; y++) {
+                _battleGridData.WalkableMap[x, y] = false;
+                _battleGridData.NodesGrid[x, y].SetPlacedByUnit(false);
+            }
+        }
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+
+            if (unitNode == startNode) {
+                unitNode.SetPlacedByUnit(false);
+            } else if (!_battleGridData.Units[i].IsDeadOnBattleField) {
+                unitNode.SetPlacedByUnit(true);
+            }
+        }
+
+        while (possibleNodes.Count > 0) {
+            crushProtection++;
+
+            if (crushProtection > 100000) {
+                Debug.Log("CRUSHED, DOLBOEB!!!");
+                break;
+            }
+
+            neighbours = _battleGridData.GlobalGrid.GetNeighbours(possibleNodes[0], true).ToArray();
+            possibleNodes.RemoveAt(0);
+
+            foreach (Node neighbour in neighbours) {
+                if (!resultNodes.Contains(neighbour) &&
+                    neighbour.CheckWalkability &&
+                    (
+                        neighbour.GridX >= _battleGridData.StartNodeIDX &&
+                        neighbour.GridX < _battleGridData.StartNodeIDX + _battleGridData.Width) &&
+                        (neighbour.GridY >= _battleGridData.StartNodeIDY &&
+                        neighbour.GridY < _battleGridData.StartNodeIDY + _battleGridData.Height)) {
+                    if (unitMaxWalkDistance >= _battleGridData.GlobalGrid.GetPathLength(startNode, neighbour)) {
+                        resultNodes.Add(neighbour);
+                        possibleNodes.Add(neighbour);
+                        _battleGridData.NodesGrid[neighbour.GridX - _battleGridData.StartNodeIDX, neighbour.GridY - _battleGridData.StartNodeIDY].SetPlacedByUnit(false);
+                        _battleGridData.WalkableMap[neighbour.GridX - _battleGridData.StartNodeIDX, neighbour.GridY - _battleGridData.StartNodeIDY] = true;
+                    }
+                }
+            }
+        }
+
+        for (int x = 0; x < _battleGridData.Width; x++) {
+            for (int y = 0; y < _battleGridData.Height; y++) {
+                bool isBlocked = !_battleGridData.WalkableMap[x, y] || (x == 0 || y == 0 || (x == _battleGridData.Width - 1) || (y == _battleGridData.Height - 1));
+
+                _battleGridData.NodesGrid[x, y].SetPlacedByUnit(isBlocked);
+            }
+        }
+
+        return resultNodes;
     }
 
     private void ShowUnitWalkingDistance() {

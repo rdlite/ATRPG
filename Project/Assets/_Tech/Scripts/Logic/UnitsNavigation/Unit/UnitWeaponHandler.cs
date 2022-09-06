@@ -5,6 +5,7 @@ public class UnitWeaponHandler {
     private UnitSkinContainer _skinContainer;
     private GameObject _createdWeapon;
 
+    private WeaponPrefabsType _currentWeaponType;
     private int _characterLayer;
 
     public void Init(
@@ -16,33 +17,44 @@ public class UnitWeaponHandler {
     }
 
     public void CreateWeapon(WeaponPrefabsType weaponType) {
-        _createdWeapon = Object.Instantiate(_assetsContainer.WeaponPrefabsContainer.GetWeaponPrefab(weaponType));
-        _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
-        _createdWeapon.transform.localPosition = Vector3.zero;
-        _createdWeapon.transform.localRotation = Quaternion.identity;
-        _createdWeapon.gameObject.layer = _characterLayer;
-        foreach (Transform weaponChild in _createdWeapon.transform) {
-            weaponChild.gameObject.layer = _characterLayer;
+        if (weaponType != WeaponPrefabsType.None) {
+            _createdWeapon = Object.Instantiate(_assetsContainer.WeaponPrefabsContainer.GetWeaponPrefab(weaponType));
+            _currentWeaponType = weaponType;
+            _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
+            _createdWeapon.transform.localPosition = Vector3.zero;
+            _createdWeapon.transform.localRotation = Quaternion.identity;
+            _createdWeapon.gameObject.layer = _characterLayer;
+            foreach (Transform weaponChild in _createdWeapon.transform) {
+                weaponChild.gameObject.layer = _characterLayer;
+            }
         }
     }
 
+    public WeaponPrefabsType GetCurrentWeaponType() {
+        return _currentWeaponType;
+    }
+
     public void SetWeaponInHand() {
-        _createdWeapon.transform.SetParent(_skinContainer.WeaponInHandPoint);
-        _createdWeapon.transform.localPosition = Vector3.zero;
-        _createdWeapon.transform.localRotation = Quaternion.identity;
+        if (_createdWeapon != null) {
+            _createdWeapon.transform.SetParent(_skinContainer.WeaponInHandPoint);
+            _createdWeapon.transform.localPosition = Vector3.zero;
+            _createdWeapon.transform.localRotation = Quaternion.identity;
+        }
     }
 
     public void SetWeaponIdle() {
-        _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
-        _createdWeapon.transform.localPosition = Vector3.zero;
-        _createdWeapon.transform.localRotation = Quaternion.identity;
+        if (_createdWeapon != null) {
+            _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
+            _createdWeapon.transform.localPosition = Vector3.zero;
+            _createdWeapon.transform.localRotation = Quaternion.identity;
+        }
     }
 
     public void ActivateWeapon() {
-        _createdWeapon.SetActive(true);
+        _createdWeapon?.SetActive(true);
     }
 
     public void DeactivateWeapon() {
-        _createdWeapon.SetActive(false);
+        _createdWeapon?.SetActive(false);
     }
 }

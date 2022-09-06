@@ -15716,6 +15716,16 @@ PrefabInstance:
       propertyPath: _isMainChar
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 3464182009622857086, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: _weaponType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3464182009622857086, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: _weaponLayerType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8753632802380966425, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_RootOrder

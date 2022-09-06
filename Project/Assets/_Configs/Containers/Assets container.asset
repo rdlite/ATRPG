@@ -32,3 +32,4 @@ MonoBehaviour:
     type: 3}
   StunEffect: {fileID: 8613233491269307386, guid: b64d74cac0ebf8846b9cc91cf564bce2,
     type: 3}
+  AnimatorsContainer: {fileID: 11400000, guid: 05b128506c163ae4da2efc3b10929bdc, type: 2}

@@ -24,11 +24,13 @@ public class UnitSkinContainer : MonoBehaviour {
     public void RaiseOneAnimationAttackCallback() {
         UniqueAnimationEvent?.Invoke();
 
-        Delegate[] dary = UniqueAnimationEvent.GetInvocationList();
+        if (UniqueAnimationEvent != null) {
+            Delegate[] dary = UniqueAnimationEvent.GetInvocationList();
 
-        if (dary != null) {
-            foreach (Delegate del in dary) {
-                UniqueAnimationEvent -= (Action)del;
+            if (dary != null) {
+                foreach (Delegate del in dary) {
+                    UniqueAnimationEvent -= (Action)del;
+                }
             }
         }
     }

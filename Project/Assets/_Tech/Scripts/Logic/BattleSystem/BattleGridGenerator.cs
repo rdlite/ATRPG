@@ -11,6 +11,7 @@ public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private Transform _startPoint;
     [SerializeField] private float _borderForGeneratedRect = 10f;
     [SerializeField] private bool _isDebug;
+    [SerializeField] private bool _isAIActing = true;
 
     private UpdateStateMachine _globalStateMachine;
     private BattleGridData _battleGridData;
@@ -77,7 +78,8 @@ public class BattleGridGenerator : MonoBehaviour {
         _battlehandler.Init(
             _cameraFollower, _battleGridData, _decalProjector,
             _uiRoot, assetsContainer, _movementLinePrefab,
-            transform, coroutineService, this);
+            transform, coroutineService, this,
+            _isAIActing);
     }
 
     public void StopBattle() {

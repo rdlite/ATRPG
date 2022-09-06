@@ -14,24 +14,27 @@ public class UnitAnimator {
     private int STAND_UP_TRIGGER_HASH = Animator.StringToHash("StandUpTrigger");
     private int SHEALTWEAPON_TRIGGER_HASH = Animator.StringToHash("ShealtWeaponTrigger");
     private int ANIMATON_SPEED_RANDOM_HASH = Animator.StringToHash("AnimationSpeedRandom");
-    private int DEATH_ANIMATIONS_RANDOM_HASH = Animator.StringToHash("DeathAnimationsRandom");
+    private int ANIMATIONS_RANDOM = Animator.StringToHash("AnimationsRandom");
 
     private Dictionary<WeaponAnimationLayerType, int> _weaponLayers_map = new Dictionary<WeaponAnimationLayerType, int>();
+    private UnitWeaponAnimatorsContainer _animatorsContainer;
     private ICoroutineService _coroutineService;
     private Animator _animator;
     private UnitWeaponHandler _weaponHandler;
     private UnitSkinContainer _skinContainer;
-    private WeaponAnimationLayerType _currentWeapon = WeaponAnimationLayerType.OneHandSword;
+    private WeaponAnimationLayerType _currentWeapon;
     private Coroutine _smoothLayerChangeRoutine;
     private float _layerChangeDuration = .3f;
 
     public UnitAnimator(
         Animator animator, ICoroutineService coroutineService, UnitWeaponHandler weaponHandler, 
-        UnitSkinContainer skinContainer) {
+        UnitSkinContainer skinContainer, UnitWeaponAnimatorsContainer animatorsContainer, WeaponAnimationLayerType weaponType) {
+        _animatorsContainer = animatorsContainer;
         _coroutineService = coroutineService;
         _animator = animator;
         _weaponHandler = weaponHandler;
         _skinContainer = skinContainer;
+        _currentWeapon = weaponType;
 
         _weaponLayers_map.Add(WeaponAnimationLayerType.Hands, 0);
         _weaponLayers_map.Add(WeaponAnimationLayerType.OneHandSword, 1);
@@ -49,38 +52,31 @@ public class UnitAnimator {
     }
 
     public void WithdrawWeapon() {
-        for (int i = 0; i < _animator.layerCount; i++) {
-            _animator.SetLayerWeight(i, 0f);
-        }
-
-        _animator.SetLayerWeight(0, 1f);
+        _animator.runtimeAnimatorController = _animatorsContainer.GetAnimatorByType(_currentWeapon);
 
         if (_smoothLayerChangeRoutine != null) {
             _coroutineService.StopCoroutine(_smoothLayerChangeRoutine);
         }
 
-        _smoothLayerChangeRoutine = _coroutineService.StartCoroutine(SetSmoothLayerWeight(_weaponLayers_map[_currentWeapon], 0f, 1f));
+        _smoothLayerChangeRoutine = _coroutineService.StartCoroutine(SetSmoothLayerWeight(1, 0f, 1f));
         _animator.SetFloat(ANIMATON_SPEED_RANDOM_HASH, Random.Range(.7f, 1.3f));
         _animator.SetTrigger(WITHDRAWWEAPON_TRIGGER_HASH);
     }
 
     public void ShealtWeapon() {
-        for (int i = 0; i < _animator.layerCount; i++) {
-            _animator.SetLayerWeight(i, 0f);
-        }
-
-        _animator.SetLayerWeight(0, 1f);
+        _animator.runtimeAnimatorController = _animatorsContainer.GetAnimatorByType(_currentWeapon);
 
         if (_smoothLayerChangeRoutine != null) {
             _coroutineService.StopCoroutine(_smoothLayerChangeRoutine);
         }
 
-        _smoothLayerChangeRoutine = _coroutineService.StartCoroutine(SetSmoothLayerWeight(_weaponLayers_map[_currentWeapon], 1f, 0f));
+        _smoothLayerChangeRoutine = _coroutineService.StartCoroutine(SetSmoothLayerWeight(1, 1f, 0f));
         _animator.SetFloat(ANIMATON_SPEED_RANDOM_HASH, Random.Range(.7f, 1.3f));
         _animator.SetTrigger(SHEALTWEAPON_TRIGGER_HASH);
     }
 
     public void PlayAttackAnimation() {
+        SetRandomAnimation(_animatorsContainer.GetAttackAnimationsAmount(_currentWeapon));
         _animator.SetTrigger(ATTACK_TRIGGER_HASH);
     }
 
@@ -89,7 +85,7 @@ public class UnitAnimator {
     }
 
     public void PlayDeadAnimation() {
-        _animator.SetFloat(DEATH_ANIMATIONS_RANDOM_HASH, Random.Range(0, 9));
+        SetRandomAnimation(9);
         _animator.SetBool(IS_DEAD_HASH, true);
     }
 
@@ -126,14 +122,16 @@ public class UnitAnimator {
     }
 
     public void StandUp() {
-        for (int i = 0; i < _animator.layerCount; i++) {
-            _animator.SetLayerWeight(i, 0f);
-        }
-
         _animator.SetLayerWeight(0, 1f);
+        _animator.SetLayerWeight(1, 0f);
 
         _animator.SetBool(IS_DEAD_HASH, false);
         _animator.SetTrigger(STAND_UP_TRIGGER_HASH);
+    }
+
+    private void SetRandomAnimation(int animationsAmount) {
+        int randomAnimation = Random.Range(0, animationsAmount);
+        _animator.SetFloat(ANIMATIONS_RANDOM, randomAnimation);
     }
 }
 
