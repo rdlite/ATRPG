@@ -15,5 +15,7 @@ MonoBehaviour:
   _selectionDatas:
   - Thickness: 1
     OutlineColor: {r: 0.514151, g: 1, b: 0.6151307, a: 0.68235296}
+    WalkingGridColor: {r: 0.18792273, g: 0.9486765, b: 0.9716981, a: 0.7294118}
   - Thickness: 1
     OutlineColor: {r: 1, g: 0.46846846, b: 0.3820755, a: 0.6862745}
+    WalkingGridColor: {r: 1, g: 0.4666667, b: 0.3803922, a: 0.6745098}

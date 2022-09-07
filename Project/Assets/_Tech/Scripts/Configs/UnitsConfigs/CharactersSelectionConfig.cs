@@ -18,4 +18,5 @@ public class CharactersSelectionConfig : ScriptableObject {
 public class SelectionData {
     public float Thickness = 1f;
     public Color OutlineColor;
+    public Color WalkingGridColor;
 }

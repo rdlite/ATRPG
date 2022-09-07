@@ -17,7 +17,8 @@ public class GameStateMachine : UpdateStateMachine
             [typeof(WordWalkingState)] = new WordWalkingState(
                 this, uiRoot),
             [typeof(BattleState)] = new BattleState(
-                uiRoot, assetsContainer, coroutineService)
+                uiRoot, assetsContainer, coroutineService,
+                configsContainer)
         };
     }
 }

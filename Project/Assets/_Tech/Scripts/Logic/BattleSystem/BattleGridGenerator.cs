@@ -35,7 +35,7 @@ public class BattleGridGenerator : MonoBehaviour {
 
     public void StartBattle(
         PlayerUnitsGroupContainer playerUnitsContainer, EnemyUnit triggeredEnemy, CameraSimpleFollower cameraFollower,
-        UIRoot uiRoot, AssetsContainer assetsContainer, ICoroutineService coroutineService) {
+        UIRoot uiRoot, AssetsContainer assetsContainer, ICoroutineService coroutineService, ConfigsContainer configsContainer) {
         _cameraFollower = cameraFollower;
         _uiRoot = uiRoot;
 
@@ -79,7 +79,7 @@ public class BattleGridGenerator : MonoBehaviour {
             _cameraFollower, _battleGridData, _decalProjector,
             _uiRoot, assetsContainer, _movementLinePrefab,
             transform, coroutineService, this,
-            _isAIActing);
+            _isAIActing, configsContainer.CharactersSelectionData);
     }
 
     public void StopBattle() {

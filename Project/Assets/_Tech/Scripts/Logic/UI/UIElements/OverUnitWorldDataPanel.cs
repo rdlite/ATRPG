@@ -7,36 +7,51 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
     [SerializeField] private GameObject _damageAmountPanel, _attackIcon, _skullIcon, _imposedIcon;
     [SerializeField] private TextMeshProUGUI _damageAmountText;
 
-    public void Init(UnitBase character, UnitStatsConfig attackerStats, bool imposed) {
+    private UnitBase _currentUnit;
+
+    public void Init(UnitBase unit) {
+        _currentUnit = unit;
+
         _healthSlider.Init();
         _defenseSlider.Init();
 
-        _damageAmountPanel.SetActive(attackerStats != null);
+        _damageAmountPanel.SetActive(false);
 
-        float onDefenseDamage = 0f;
-        float onHealthDamage = 0f;
+        _attackIcon.SetActive(false);
+        _skullIcon.SetActive(false);
+        _imposedIcon.gameObject.SetActive(false);
+
+        _healthSlider.UpdateValue(unit.GetUnitHealthContainer().GetCurrentHealth(), unit.GetUnitHealthContainer().GetMaxHealth(), 0f);
+        _defenseSlider.UpdateValue(unit.GetUnitHealthContainer().GetCurrentDefense(), unit.GetUnitHealthContainer().GetMaxDefense(), 0f);
+        _nameText.text = "beaty name";
+    }
+
+    public void UpdateData(UnitStatsConfig attackerStats, bool imposed) {
+        _damageAmountPanel.SetActive(attackerStats != null);
 
         _attackIcon.SetActive(true);
         _skullIcon.SetActive(false);
         _imposedIcon.gameObject.SetActive(imposed);
 
+        float onDefenseDamage = 0f;
+        float onHealthDamage = 0f;
+
         if (attackerStats) {
             onDefenseDamage = attackerStats.DefaultAttackDamage;
-            if (character.GetUnitHealthContainer().GetCurrentDefense() - onDefenseDamage < 0) {
-                onDefenseDamage = character.GetUnitHealthContainer().GetCurrentDefense();
+            if (_currentUnit.GetUnitHealthContainer().GetCurrentDefense() - onDefenseDamage < 0) {
+                onDefenseDamage = _currentUnit.GetUnitHealthContainer().GetCurrentDefense();
                 onHealthDamage = attackerStats.DefaultAttackDamage - onDefenseDamage;
-                if (onHealthDamage > character.GetUnitHealthContainer().GetCurrentHealth()) {
-                    onHealthDamage = character.GetUnitHealthContainer().GetCurrentHealth();
+                if (onHealthDamage > _currentUnit.GetUnitHealthContainer().GetCurrentHealth()) {
+                    onHealthDamage = _currentUnit.GetUnitHealthContainer().GetCurrentHealth();
                     _attackIcon.SetActive(false);
                     _skullIcon.SetActive(true);
-                } 
+                }
             }
 
             _damageAmountText.text = attackerStats.DefaultAttackDamage.ToString();
         }
 
-        _healthSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentHealth(), character.GetUnitHealthContainer().GetMaxHealth(), onHealthDamage);
-        _defenseSlider.UpdateValue(character.GetUnitHealthContainer().GetCurrentDefense(), character.GetUnitHealthContainer().GetMaxDefense(), onDefenseDamage);
-        _nameText.text = "beaty name";
+        _healthSlider.UpdateValue(_currentUnit.GetUnitHealthContainer().GetCurrentHealth(), _currentUnit.GetUnitHealthContainer().GetMaxHealth(), onHealthDamage);
+        _defenseSlider.UpdateValue(_currentUnit.GetUnitHealthContainer().GetCurrentDefense(), _currentUnit.GetUnitHealthContainer().GetMaxDefense(), onDefenseDamage);
     }
 }

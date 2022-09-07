@@ -39,27 +39,31 @@ public class AIMovementResolver {
         yield return new WaitWhile(() => !endedWalk);
     }
 
-    private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target) {
-        yield return null;
+    private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target, bool isImposedAttack) {
+        bool isAttackEnded = false;
+        _battleHandler.ProcessAIAttack(attacker, target, () => isAttackEnded = true, isImposedAttack);
+        yield return new WaitWhile(() => !isAttackEnded);
+        yield return new WaitForSeconds(.5f);
     }
 
-    private IEnumerator TurnSequence(UnitBase characterToMove) {
+    private IEnumerator TurnSequence(UnitBase unitToMove) {
         _battleHandler.SetRestriction(true);
-        _camera.SetTarget(characterToMove.transform);
+        _camera.SetTarget(unitToMove.transform);
 
-        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnit(characterToMove);
+        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnit(unitToMove);
 
         yield return new WaitForSeconds(.5f);
 
-        if (_imposedPairsContainer.HasPairWith(characterToMove)) {
-            yield return new WaitForSeconds(.5f);
+        if (_imposedPairsContainer.HasPairWith(unitToMove)) {
+            UnitBase target = _imposedPairsContainer.GetPairFor(unitToMove);
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target, true));
         } else {
-            Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(characterToMove.transform.position);
+            Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
 
             List<(UnitBase, List<Node>)> unitAttackData = new List<(UnitBase, List<Node>)>();
 
             for (int j = 0; j < _battleGridData.Units.Count; j++) {
-                if (!_battleGridData.Units[j].IsDeadOnBattleField && _battleGridData.Units[j] != characterToMove && _battleGridData.Units[j] is PlayerUnit) {
+                if (!_battleGridData.Units[j].IsDeadOnBattleField && _battleGridData.Units[j] != unitToMove && _battleGridData.Units[j] is PlayerUnit) {
                     Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[j].transform.position);
 
                     unitAttackData.Add(new(_battleGridData.Units[j], new List<Node>()));
@@ -86,7 +90,7 @@ public class AIMovementResolver {
 
             for (int i = 0; i < unitAttackData.Count; i++) {
                 if (unitAttackData[i].Item2.Count > 0) {
-                    (bool, float) result = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(characterToMove.GetUnitConfig().DefaultAttackDamage);
+                    (bool, float) result = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(unitToMove.GetUnitConfig().DefaultAttackDamage);
                     float tacticalPoints = result.Item1 ? 100000 : result.Item2;
 
                     Node randomWalkNode = unitAttackData[i].Item2[Random.Range(0, unitAttackData[i].Item2.Count)];
@@ -104,9 +108,11 @@ public class AIMovementResolver {
                 }
             }
 
-            yield return _coroutineService.StartCoroutine(MovementRoutine(characterToMove, target.Item3.WorldPosition));
+            if (target.Item3 != _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position)) {
+                yield return _coroutineService.StartCoroutine(MovementRoutine(unitToMove, target.Item3.WorldPosition));
+            }
 
-            //yield return _coroutineService.StartCoroutine(MeleeAttack(characterToMove, target.Item2));
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target.Item2, false));
         }
 
         // засунуть проверку на атаку

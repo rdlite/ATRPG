@@ -10,10 +10,10 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: eba48e54fb95ea24c82d654b5d5ca19f, type: 3}
-  m_Name: enemyDefaultConfig 1
+  m_Name: DefaultConfig 3
   m_EditorClassIdentifier: 
   MovementSpeed: 7
   MovementLength: 15
-  HP: 70
+  HP: 25
   Defense: 20
-  DefaultAttackDamage: 30
+  DefaultAttackDamage: 15

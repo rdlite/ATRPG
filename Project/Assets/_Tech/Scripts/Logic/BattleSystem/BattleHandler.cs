@@ -24,6 +24,7 @@ public class BattleHandler {
     private LineRenderer _movementLinePrefab;
     private LineRenderer _createdLinePrefab;
     private BattleTurnsHandler _turnsHandler;
+    private CharactersSelectionConfig _selectionConfig;
     private ICoroutineService _coroutineService;
     private BattleGridGenerator _gridGenerator;
     private ImposedPairsContainer _imposedPairsContainer;
@@ -38,7 +39,8 @@ public class BattleHandler {
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
         Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator,
-        bool isAIActing) {
+        bool isAIActing, CharactersSelectionConfig selectionConfig) {
+        _selectionConfig = selectionConfig;
         _coroutineService = coroutineService;
         _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
@@ -107,6 +109,13 @@ public class BattleHandler {
         MouseOverSelector();
 
         ProcessMovementDecalAppearance();
+
+        if (_isCurrentlyShowAttacking) {
+            if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
+                SwitchAttacking();
+                return;
+            }
+        }
 
         if (_isCurrentlyShowWalkingDistance) {
             if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
@@ -244,7 +253,7 @@ public class BattleHandler {
                     CreateOverUnitData(_battleGridData.Units[i]);
                 } else if (!_currentAttackingMap[i] && _battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverDataSelectionMap[i]) {
                     _mouseOverDataSelectionMap[i] = false;
-                    DestroyOverUnitData(_battleGridData.Units[i]);
+                    DeactivateOverUnitData(_battleGridData.Units[i]);
                 }
             }
         }
@@ -337,7 +346,7 @@ public class BattleHandler {
         _isCurrentlyShowWalkingDistance = !_isCurrentlyShowWalkingDistance;
 
         if (_isCurrentlyShowWalkingDistance && !_decalProjector.gameObject.activeSelf) {
-            ShowUnitWalkingDistance();
+            ShowUnitWalkingDistance(_currentSelectedUnit);
         }
 
         if (!_isCurrentlyShowWalkingDistance) {
@@ -347,7 +356,7 @@ public class BattleHandler {
 
     private void ShowWalkingDistance() {
         if (!_isCurrentlyShowWalkingDistance || !_turnsHandler.IsCanUnitWalk(_currentSelectedUnit)) {
-            ShowUnitWalkingDistance();
+            ShowUnitWalkingDistance(_currentSelectedUnit);
         }
     }
 
@@ -461,10 +470,10 @@ public class BattleHandler {
         return resultNodes;
     }
 
-    private void ShowUnitWalkingDistance() {
+    private void ShowUnitWalkingDistance(UnitBase unitToShow) {
         SetActiveUnderUnitsDecals(true);
-        
-        float unitMaxWalkDistance = _turnsHandler.GetLastLengthForUnit(_currentSelectedUnit);
+
+        float unitMaxWalkDistance = _turnsHandler.GetLastLengthForUnit(unitToShow);
 
         if (unitMaxWalkDistance < 1f) {
             HideWalkingDistance(false);
@@ -475,7 +484,7 @@ public class BattleHandler {
         _currentAppearRange = 0f;
         _decalProjector.material.SetFloat(APPEAR_RANGE, 0f);
 
-        Vector3 currentUnitPosition = _currentSelectedUnit.transform.position;
+        Vector3 currentUnitPosition = unitToShow.transform.position;
 
         Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(currentUnitPosition);
 
@@ -547,6 +556,8 @@ public class BattleHandler {
         float zLerpPoint = Mathf.InverseLerp(minPoint.z, maxPoint.z, currentUnitPosition.z);
 
         _decalProjector.material.SetVector(APPEAR_CENTER_POINT_UV, new Vector2(xLerpPoint, zLerpPoint));
+        _decalProjector.material.SetColor("_FillColor", unitToShow.GetWalkingGridColor().SetTransparency(1f));
+        _decalProjector.material.SetColor("_OutlineColor", unitToShow.GetWalkingGridColor());
 
         ShowView();
     }
@@ -561,14 +572,18 @@ public class BattleHandler {
     }
 
     private void SetUnitDestination() {
-        _cameraFollower.SetTarget(_currentSelectedUnit.transform);
-        _isCurrentlyShowWalkingDistance = false;
-        _isRestrictedForDoAnything = true;
-        HideWalkingDistance(true);
-        _turnsHandler.SetCurrentWalker(_currentSelectedUnit);
-        _currentSelectedUnit.StartMove();
-        _turnsHandler.RemovePossibleLengthForUnit(_currentSelectedUnit, _battleGridData.GlobalGrid.GetPathLength(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedUnit.transform.position), _endMovementNode));
-        _currentSelectedUnit.GoToPoint(_endMovementNode.WorldPosition, false, true, null, () => UnitEndedWalkAction(_currentSelectedUnit));
+        Node startMovementNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedUnit.transform.position);
+
+        if (startMovementNode != _endMovementNode) {
+            _cameraFollower.SetTarget(_currentSelectedUnit.transform);
+            _isCurrentlyShowWalkingDistance = false;
+            _isRestrictedForDoAnything = true;
+            HideWalkingDistance(true);
+            _turnsHandler.SetCurrentWalker(_currentSelectedUnit);
+            _currentSelectedUnit.StartMove();
+            _turnsHandler.RemovePossibleLengthForUnit(_currentSelectedUnit, _battleGridData.GlobalGrid.GetPathLength(startMovementNode, _endMovementNode));
+            _currentSelectedUnit.GoToPoint(_endMovementNode.WorldPosition, false, true, null, () => UnitEndedWalkAction(_currentSelectedUnit));
+        }
     }
 
     private void UnitEndedWalkAction(UnitBase unitWalked) {
@@ -665,22 +680,35 @@ public class BattleHandler {
         if (value) {
             Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_currentSelectedUnit.transform.position);
 
-            for (int x = -1; x < 2; x++) {
-                for (int y = -1; y < 2; y++) {
-                    if (x == 0 || y == 0) {
-                        if (x == 0 && y == 0) {
-                            continue;
-                        }
+            if (_imposedPairsContainer.HasPairWith(_currentSelectedUnit)) {
+                UnitBase imposedUnit = _imposedPairsContainer.GetPairFor(_currentSelectedUnit);
 
-                        for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                            if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != _currentSelectedUnit && _battleGridData.Units[i] is EnemyUnit) {
-                                Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+                for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                    if (_battleGridData.Units[i] == imposedUnit) {
+                        _createdUnderUnitAttackDecals[i].gameObject.SetActive(true);
+                        _createdUnderUnitAttackDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 3f;
+                        _createdUnderUnitAttackDecals[i].material = Object.Instantiate(_createdUnderUnitAttackDecals[i].material);
+                        _createdUnderUnitAttackDecals[i].material.SetColor("_Color", _createdUnderUnitAttackDecals[i].material.GetColor("_DefaultColor"));
+                    }
+                }
+            } else {
+                for (int x = -1; x < 2; x++) {
+                    for (int y = -1; y < 2; y++) {
+                        if (x == 0 || y == 0) {
+                            if (x == 0 && y == 0) {
+                                continue;
+                            }
 
-                                if (currentUnitNode.GridX + x == targetUnitNode.GridX && currentUnitNode.GridY + y == targetUnitNode.GridY) {
-                                    _createdUnderUnitAttackDecals[i].gameObject.SetActive(true);
-                                    _createdUnderUnitAttackDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 3f;
-                                    _createdUnderUnitAttackDecals[i].material = Object.Instantiate(_createdUnderUnitAttackDecals[i].material);
-                                    _createdUnderUnitAttackDecals[i].material.SetColor("_Color", _createdUnderUnitAttackDecals[i].material.GetColor("_DefaultColor"));
+                            for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                                if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != _currentSelectedUnit && _battleGridData.Units[i] is EnemyUnit) {
+                                    Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+
+                                    if (currentUnitNode.GridX + x == targetUnitNode.GridX && currentUnitNode.GridY + y == targetUnitNode.GridY) {
+                                        _createdUnderUnitAttackDecals[i].gameObject.SetActive(true);
+                                        _createdUnderUnitAttackDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 3f;
+                                        _createdUnderUnitAttackDecals[i].material = Object.Instantiate(_createdUnderUnitAttackDecals[i].material);
+                                        _createdUnderUnitAttackDecals[i].material.SetColor("_Color", _createdUnderUnitAttackDecals[i].material.GetColor("_DefaultColor"));
+                                    }
                                 }
                             }
                         }
@@ -700,11 +728,15 @@ public class BattleHandler {
         DeselectAllAttackUnits();
     }
 
-    private void TryAttackUnit(UnitBase attacker, UnitBase target, bool isImposedAttack = false) {
-        _coroutineService.StartCoroutine(AttackSequence(attacker, target, isImposedAttack));
+    public void ProcessAIAttack(UnitBase attacker, UnitBase target, System.Action callback, bool isImposedAttack = false, bool isPossibilityAttack = false) {
+        _coroutineService.StartCoroutine(AttackSequence(attacker, target, isImposedAttack, isPossibilityAttack, callback));
     }
 
-    private IEnumerator AttackSequence(UnitBase attacker, UnitBase target, bool isImposedAttack) {
+    private void TryAttackUnit(UnitBase attacker, UnitBase target, bool isImposedAttack = false, bool isPossibilityAttack = false) {
+        _coroutineService.StartCoroutine(AttackSequence(attacker, target, isImposedAttack, isPossibilityAttack, null));
+    }
+
+    private IEnumerator AttackSequence(UnitBase attacker, UnitBase target, bool isImposedAttack, bool isPossibilityAttack, System.Action callback) {
         _isRestrictedForDoAnything = true;
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
@@ -781,12 +813,16 @@ public class BattleHandler {
             _imposedPairsContainer.TryCreateNewPair(attacker, target);
         }
 
-        if (!(isDead && target is PlayerUnit) && !_uiRoot.GetPanel<BattlePanel>().IsUnitPanelAlreadyEnabled()) {
+        bool isReactivatePanel = !isPossibilityAttack && (attacker is PlayerUnit) && !_uiRoot.GetPanel<BattlePanel>().IsUnitPanelAlreadyEnabled();
+
+        if (isReactivatePanel) {
             _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(
                 this, _currentSelectedUnit, UnitPanelState.UseTurn,
                 _turnsHandler, _imposedPairsContainer.HasPairWith(_currentSelectedUnit));
-        }
-        
+            SetUnitSelect(_currentSelectedUnit);
+        } 
+
+        callback?.Invoke();
         _isRestrictedForDoAnything = false;
     }
 
@@ -811,7 +847,7 @@ public class BattleHandler {
         DeactivateAttackDecals();
         UnitBase unitToAttack = _imposedPairsContainer.GetPairFor(_currentSelectedUnit);
         _imposedPairsContainer.TryRemovePair(_currentSelectedUnit);
-        TryAttackUnit(unitToAttack, _currentSelectedUnit, true);
+        TryAttackUnit(unitToAttack, _currentSelectedUnit, true, true);
     }
     // END ATTACK MODULE
 
@@ -822,7 +858,7 @@ public class BattleHandler {
 
     public void OnTurnButtonExit(UnitBase unit) {
         unit.SetActiveOutline(false);
-        unit.DestroyOverUnitData();
+        unit.DeactivateOverUnitData();
     }
 
     private void WaitButtonPressed() {
@@ -883,6 +919,10 @@ public class BattleHandler {
         } else {
             _uiRoot.GetPanel<BattlePanel>().SetActiveBackToUnitButton(false);
         }
+
+        if (unit is EnemyUnit) {
+            ShowUnitWalkingDistance(unit);
+        }
     }
 
     private void DeselectAllUnits() {
@@ -906,7 +946,7 @@ public class BattleHandler {
         for (int i = 0; i < _selectionForAttackMap.Length; i++) {
             if (_selectionForAttackMap[i] != null) {
                 _selectionForAttackMap[i].SetActiveOutline(false);
-                DestroyOverUnitData(_selectionForAttackMap[i]);
+                DeactivateOverUnitData(_selectionForAttackMap[i]);
                 _selectionForAttackMap[i] = null;
                 _createdUnderUnitAttackDecals[i].material.SetColor("_Color", _createdUnderUnitAttackDecals[i].material.GetColor("_DefaultColor"));
             }
@@ -922,8 +962,8 @@ public class BattleHandler {
         unit.CreateOverUnitData(attackerConfig, _imposedPairsContainer.HasPairWith(unit));
     }
 
-    private void DestroyOverUnitData(UnitBase unit) {
-        unit.DestroyOverUnitData();
+    private void DeactivateOverUnitData(UnitBase unit) {
+        unit.DeactivateOverUnitData();
     }
 
     public void SetEnemyTurn() {

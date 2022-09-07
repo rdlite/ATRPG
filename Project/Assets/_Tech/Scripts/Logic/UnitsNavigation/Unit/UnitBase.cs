@@ -68,6 +68,13 @@ public abstract class UnitBase : MonoBehaviour {
 
         _weaponHandler.CreateWeapon(_weaponType);
 
+        if (_createdOverUnitData == null) {
+            _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
+            _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
+            _createdOverUnitData.gameObject.SetActive(false);
+            _createdOverUnitData.Init(this);
+        }
+
         LocalInit();
     }
 
@@ -151,17 +158,14 @@ public abstract class UnitBase : MonoBehaviour {
     }
 
     public void CreateOverUnitData(UnitStatsConfig attackerConfig = null, bool imposed = false) {
-        if (_createdOverUnitData == null) {
-            _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
-            _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
-            _createdOverUnitData.Init(this, attackerConfig, imposed);
+        if (!_createdOverUnitData.gameObject.activeSelf) {
+            _createdOverUnitData.gameObject.SetActive(true);
+            _createdOverUnitData.UpdateData(attackerConfig, imposed);
         }
     }
 
-    public void DestroyOverUnitData() {
-        if (_createdOverUnitData != null) {
-            Destroy(_createdOverUnitData.gameObject);
-        }
+    public void DeactivateOverUnitData() {
+        _createdOverUnitData.gameObject.SetActive(false);
     }
 
     public UnitStatsConfig GetUnitConfig() {
@@ -242,6 +246,10 @@ public abstract class UnitBase : MonoBehaviour {
         StunEffect stunParticle = Instantiate(_assetsContainer.StunEffect);
         stunParticle.SnapToPoint(GetHeadPoint());
         return stunParticle;
+    }
+
+    public Color GetWalkingGridColor() {
+        return _selectionData.WalkingGridColor;
     }
 
     public void Revive() {
