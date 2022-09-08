@@ -90,8 +90,16 @@ public class AIMovementResolver {
 
             for (int i = 0; i < unitAttackData.Count; i++) {
                 if (unitAttackData[i].Item2.Count > 0) {
-                    (bool, float) result = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(unitToMove.GetUnitConfig().DefaultAttackDamage);
-                    float tacticalPoints = result.Item1 ? 100000 : result.Item2;
+                    (bool, float) damageResult = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(unitToMove.GetUnitConfig().DefaultAttackDamage);
+                    float tacticalPoints = damageResult.Item1 ? 100000 : damageResult.Item2;
+
+                    if (_imposedPairsContainer.HasPairWith(unitAttackData[i].Item1)) {
+                        tacticalPoints *= 1.5f;
+                    }
+
+                    // add more tactical points the health is closer to zero
+                    float targetUnitHealthCompleteness = unitAttackData[i].Item1.GetUnitHealthContainer().GetHealthCompleteness();
+                    float remappedTactitialPointsValue = Mathf.Lerp(tacticalPoints, tacticalPoints * 1.25f, Mathf.InverseLerp(1f, 0f, targetUnitHealthCompleteness));
 
                     Node randomWalkNode = unitAttackData[i].Item2[Random.Range(0, unitAttackData[i].Item2.Count)];
 

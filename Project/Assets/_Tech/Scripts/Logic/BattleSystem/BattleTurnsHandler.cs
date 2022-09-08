@@ -206,7 +206,7 @@ public class BattleTurnsHandler {
         return false;
     }
 
-    public void MarkUnitAsDead(UnitBase deadUnit) {
+    public void MarkUnitAsDead(UnitBase deadUnit, bool isCallNextTurn) {
         if (deadUnit is EnemyUnit) {
             for (int i = 0; i < _turnsContainer.Count; i++) {
                 if (_turnsContainer[i].Unit == deadUnit) {
@@ -219,17 +219,37 @@ public class BattleTurnsHandler {
             TryFillTurns();
             CheckBattleEnd();
         } else {
-            RemoveOnePlayerIconFromEachRound();
+            RemoveOnePlayerIconFromEachRound(deadUnit);
+            TryFillTurns();
             CheckBattleEnd();
+        }
+
+        if (isCallNextTurn) {
             CallNextTurn();
         }
     }
 
-    private void RemoveOnePlayerIconFromEachRound() {
-        for (int i = 0; i < _turnsContainer.Count; i++) {
-            if (_turnsContainer[i].IconType == TurnsUILayout.IconType.RestartRound) {
+    private void RemoveOnePlayerIconFromEachRound(UnitBase deadUnit) {
+        int startFindID = 0;
+        bool startFindFromFirstIcon = true;
+
+        if (deadUnit != null) {
+            if (!IsCanUnitWalk(deadUnit)) {
+                for (int i = 0; i < _turnsContainer.Count; i++) {
+                    if (_turnsContainer[i].IconType == TurnsUILayout.IconType.RestartRound) {
+                        startFindFromFirstIcon = false;
+                        startFindID = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        for (int i = startFindID; i < _turnsContainer.Count; i++) {
+            if (startFindFromFirstIcon || _turnsContainer[i].IconType == TurnsUILayout.IconType.RestartRound) {
                 for (int j = i; j < _turnsContainer.Count; j++) {
                     if (_turnsContainer[j].IconType == TurnsUILayout.IconType.Player) {
+                        startFindFromFirstIcon = false;
                         _uiRoot.GetPanel<BattlePanel>().DestroyIconAt(j);
                         _turnsContainer.RemoveAt(j);
                         break;

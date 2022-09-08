@@ -1,6 +1,9 @@
+using System;
 using UnityEngine;
 
 public class UnitHealth {
+    public event Action OnUnitHealthChanged;
+
     private UnitStatsConfig _defaultStatsCopy;
     private UnitStatsConfig _currentStatsData;
     private DamageReceiver _damageReceiver;
@@ -10,6 +13,7 @@ public class UnitHealth {
         _currentStatsData = statsData.GetCopyOfData();
         _defaultStatsCopy = statsData.GetCopyOfData();
         _damageReceiver = new DamageReceiver();
+
         ResetData();
     }
 
@@ -23,7 +27,7 @@ public class UnitHealth {
     public float GetMaxHealth() {
         return _maxHealth;
     }
-    
+
     public float GetMaxDefense() {
         return _maxDefense;
     }
@@ -37,12 +41,22 @@ public class UnitHealth {
     }
 
     public bool TakeDamage(float pureDamage) {
-        return _damageReceiver.TakeDamage(pureDamage);
+        bool isDead = _damageReceiver.TakeDamage(pureDamage);
+        OnUnitHealthChanged?.Invoke();
+
+        return isDead;
     }
 
     public (bool, float) GedModifiedDamageAmount(float notModifiedDamage) {
         float modifiedDamage = notModifiedDamage;
         return new(_damageReceiver.IsCanKill(modifiedDamage), modifiedDamage);
+    }
+
+    public float GetHealthCompleteness() {
+        float maxHealthPoints = _maxDefense + _maxHealth;
+        float currentValues = _currentStatsData.HP + _currentStatsData.Defense;
+
+        return currentValues / maxHealthPoints;
     }
 }
 

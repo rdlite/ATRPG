@@ -69,10 +69,7 @@ public abstract class UnitBase : MonoBehaviour {
         _weaponHandler.CreateWeapon(_weaponType);
 
         if (_createdOverUnitData == null) {
-            _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
-            _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
-            _createdOverUnitData.gameObject.SetActive(false);
-            _createdOverUnitData.Init(this);
+            CreateOverUnitUIData();
         }
 
         LocalInit();
@@ -109,7 +106,7 @@ public abstract class UnitBase : MonoBehaviour {
 
     private void MoveDataAbove() {
         if (_createdOverUnitData != null) {
-            _createdOverUnitData.transform.position = Vector3.Lerp(_createdOverUnitData.transform.position, GetOverUnitPoint() + Vector3.up * (_createdUnitSelection == null ? .5f : 1f), 13f * Time.deltaTime);
+            _createdOverUnitData.transform.position = Vector3.Lerp(_createdOverUnitData.transform.position, GetOverUnitPoint() + _createdOverUnitData.transform.up * (_createdUnitSelection == null ? .5f : 1f), 13f * Time.deltaTime);
             _createdOverUnitData.transform.forward = _mainCamera.transform.forward;
         }
     }
@@ -157,15 +154,25 @@ public abstract class UnitBase : MonoBehaviour {
         return _selectionData.OutlineColor;
     }
 
-    public void CreateOverUnitData(UnitStatsConfig attackerConfig = null, bool imposed = false) {
-        if (!_createdOverUnitData.gameObject.activeSelf) {
-            _createdOverUnitData.gameObject.SetActive(true);
-            _createdOverUnitData.UpdateData(attackerConfig, imposed);
-        }
+    private void CreateOverUnitUIData() {
+        _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
+        _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
+        _createdOverUnitData.gameObject.SetActive(false);
+        _createdOverUnitData.Init(this, _unitHealth);
+        _createdOverUnitData.SetActivePanel(OverUnitWorldDataPanel.PanelActivationType.None);
     }
 
-    public void DeactivateOverUnitData() {
-        _createdOverUnitData.gameObject.SetActive(false);
+    public void ActivateOverUnitData(bool isSmall, UnitStatsConfig attackerConfig = null, bool imposed = false) {
+        _createdOverUnitData.gameObject.SetActive(true);
+        _createdOverUnitData.UpdateData(attackerConfig, imposed);
+        _createdOverUnitData.SetActivePanel(isSmall ? OverUnitWorldDataPanel.PanelActivationType.Small : OverUnitWorldDataPanel.PanelActivationType.Full);
+    }
+
+    public void DeactivateOverUnitData(bool completely) {
+        _createdOverUnitData.SetActivePanel(completely ? OverUnitWorldDataPanel.PanelActivationType.None : OverUnitWorldDataPanel.PanelActivationType.Small);
+        if (completely) {
+            _createdOverUnitData.gameObject.SetActive(false);
+        }
     }
 
     public UnitStatsConfig GetUnitConfig() {

@@ -87,6 +87,10 @@ public class BattleHandler {
             _battleGridData.Units[i].WithdrawWeapon();
         }
 
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            _battleGridData.Units[i].ActivateOverUnitData(true);
+        }
+
         _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().SignOnBackButton(BackButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().SignOnAbortImposionButton(AbortImposingButtonPressed);
@@ -149,6 +153,7 @@ public class BattleHandler {
         _createdStunEffects.Clear();
 
         DeselectAllUnits();
+        CompletelyDeactivateOverUnitsData();
 
         _turnsHandler.Cleanup();
 
@@ -250,10 +255,10 @@ public class BattleHandler {
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
                 if (!_currentAttackingMap[i] && _battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverDataSelectionMap[i] && !IsPointerOverUIObject()) {
                     _mouseOverDataSelectionMap[i] = true;
-                    CreateOverUnitData(_battleGridData.Units[i]);
+                    ShowOverUnitData(_battleGridData.Units[i]);
                 } else if (!_currentAttackingMap[i] && _battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverDataSelectionMap[i]) {
                     _mouseOverDataSelectionMap[i] = false;
-                    DeactivateOverUnitData(_battleGridData.Units[i]);
+                    DeactivateOverUnitData(_battleGridData.Units[i], false);
                 }
             }
         }
@@ -563,6 +568,10 @@ public class BattleHandler {
     }
 
     private void SetActiveUnderUnitsDecals(bool value) {
+        if (_currentSelectedUnit == null || _currentSelectedUnit is EnemyUnit) {
+            return;
+        }
+
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
             _createdUnderUnitWalkingDecals[i].gameObject.SetActive(!_battleGridData.Units[i] .IsDeadOnBattleField && _battleGridData.Units[i] != _currentSelectedUnit && value);
             _createdUnderUnitWalkingDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 2f;
@@ -813,9 +822,9 @@ public class BattleHandler {
             _imposedPairsContainer.TryCreateNewPair(attacker, target);
         }
 
-        bool isReactivatePanel = !isPossibilityAttack && (attacker is PlayerUnit) && !_uiRoot.GetPanel<BattlePanel>().IsUnitPanelAlreadyEnabled();
+        bool isReactivatePanel = (!isPossibilityAttack || isPossibilityAttack && target is PlayerUnit && !isDead) && !_uiRoot.GetPanel<BattlePanel>().IsUnitPanelAlreadyEnabled();
 
-        if (isReactivatePanel) {
+        if (isReactivatePanel && _currentSelectedUnit != null) {
             _uiRoot.GetPanel<BattlePanel>().EnableUnitPanel(
                 this, _currentSelectedUnit, UnitPanelState.UseTurn,
                 _turnsHandler, _imposedPairsContainer.HasPairWith(_currentSelectedUnit));
@@ -839,8 +848,9 @@ public class BattleHandler {
             _createdStunEffects.Add(unit.CreateStunParticle());
         }
 
+        unit.DeactivateOverUnitData(true);
         _imposedPairsContainer.TryRemovePair(unit);
-        _turnsHandler.MarkUnitAsDead(unit);
+        _turnsHandler.MarkUnitAsDead(unit, _currentSelectedUnit == unit);
     }
 
     private void AbortImposingButtonPressed() {
@@ -853,12 +863,12 @@ public class BattleHandler {
 
     public void OnTurnButtonEntered(UnitBase unit) {
         unit.SetActiveOutline(true);
-        unit.CreateOverUnitData(null, _imposedPairsContainer.HasPairWith(unit));
+        unit.ActivateOverUnitData(false, null, _imposedPairsContainer.HasPairWith(unit));
     }
 
     public void OnTurnButtonExit(UnitBase unit) {
         unit.SetActiveOutline(false);
-        unit.DeactivateOverUnitData();
+        unit.DeactivateOverUnitData(false);
     }
 
     private void WaitButtonPressed() {
@@ -937,8 +947,14 @@ public class BattleHandler {
             if (_currentAttackingMap[i]) {
                 _createdUnderUnitAttackDecals[i].material.SetColor("_Color", _createdUnderUnitAttackDecals[i].material.GetColor("_SelectedColor"));
                 _battleGridData.Units[i].SetActiveOutline(true);
-                CreateOverUnitData(_battleGridData.Units[i], _currentSelectedUnit.GetUnitConfig());
+                ShowOverUnitData(_battleGridData.Units[i], _currentSelectedUnit.GetUnitConfig());
             }
+        }
+    }
+
+    private void CompletelyDeactivateOverUnitsData() {
+        for (int i = 0; i < _battleGridData.Units.Count; i++) {
+            _battleGridData.Units[i].DeactivateOverUnitData(true);
         }
     }
 
@@ -946,7 +962,7 @@ public class BattleHandler {
         for (int i = 0; i < _selectionForAttackMap.Length; i++) {
             if (_selectionForAttackMap[i] != null) {
                 _selectionForAttackMap[i].SetActiveOutline(false);
-                DeactivateOverUnitData(_selectionForAttackMap[i]);
+                DeactivateOverUnitData(_selectionForAttackMap[i], false);
                 _selectionForAttackMap[i] = null;
                 _createdUnderUnitAttackDecals[i].material.SetColor("_Color", _createdUnderUnitAttackDecals[i].material.GetColor("_DefaultColor"));
             }
@@ -958,12 +974,12 @@ public class BattleHandler {
         _currentSelectedUnit?.SetActiveOutline(false);
     }
 
-    private void CreateOverUnitData(UnitBase unit, UnitStatsConfig attackerConfig = null) {
-        unit.CreateOverUnitData(attackerConfig, _imposedPairsContainer.HasPairWith(unit));
+    private void ShowOverUnitData(UnitBase unit, UnitStatsConfig attackerConfig = null) {
+        unit.ActivateOverUnitData(false, attackerConfig, _imposedPairsContainer.HasPairWith(unit));
     }
 
-    private void DeactivateOverUnitData(UnitBase unit) {
-        unit.DeactivateOverUnitData();
+    private void DeactivateOverUnitData(UnitBase unit, bool isBattleEnded) {
+        unit.DeactivateOverUnitData(isBattleEnded);
     }
 
     public void SetEnemyTurn() {
