@@ -39,7 +39,7 @@ public class BattleHandler {
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
         Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator,
-        bool isAIActing, CharactersSelectionConfig selectionConfig) {
+        bool isAIActing, CharactersSelectionConfig selectionConfig, bool isDebugAIMovementWeights) {
         _selectionConfig = selectionConfig;
         _coroutineService = coroutineService;
         _cameraFollower = cameraFollower;
@@ -70,7 +70,7 @@ public class BattleHandler {
         _turnsHandler = new BattleTurnsHandler(
             _battleGridData, _uiRoot, this,
             _coroutineService, cameraFollower, isAIActing,
-            _imposedPairsContainer);
+            _imposedPairsContainer, isDebugAIMovementWeights);
 
         _createdUnderUnitWalkingDecals = new DecalProjector[_battleGridData.Units.Count];
         _createdUnderUnitAttackDecals = new DecalProjector[_battleGridData.Units.Count];
@@ -577,6 +577,19 @@ public class BattleHandler {
             _createdUnderUnitWalkingDecals[i].transform.position = _battleGridData.Units[i].transform.position + Vector3.up / 2f;
             _createdUnderUnitWalkingDecals[i].material = Object.Instantiate(_createdUnderUnitWalkingDecals[i].material);
             _createdUnderUnitWalkingDecals[i].material.SetColor("_Color", _battleGridData.Units[i].GetUnitColor().SetTransparency(1f));
+            _createdUnderUnitWalkingDecals[i].material.SetFloat("_IsShowAttackDirection", _imposedPairsContainer.HasPairWith(_battleGridData.Units[i]) ? 1f : 0f);
+
+            Vector2 attackDirectionVector = _imposedPairsContainer.GetAttackDirectionFor(_battleGridData.Units[i]);
+
+            float rotation = 0f;
+
+            if (attackDirectionVector.x != 0f) {
+                rotation = -90f * attackDirectionVector.x;
+            } else if (attackDirectionVector.y == 1f) {
+                rotation = 180f;
+            }
+
+            _createdUnderUnitWalkingDecals[i].material.SetFloat("_Rotation", rotation);
         }
     }
 
@@ -785,6 +798,8 @@ public class BattleHandler {
 
         bool endAttack = false;
         bool isDead = false;
+
+        bool isAttackFromBehind = Vector3.Dot(attacker.transform.forward.RemoveYCoord(), target.transform.forward.RemoveYCoord()) >= .9f;
 
         attacker.PlayAttackAnimation();
         attacker.GetUnitSkinContainer().SignOnAttackAnimation(() => {

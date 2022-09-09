@@ -52,6 +52,14 @@ public class ImposedPairsContainer {
         return null;
     }
 
+    public Vector2 GetAttackDirectionFor(UnitBase unitToCheck) {
+        if (HasPairWith(unitToCheck)) {
+            return new Vector2(unitToCheck.transform.forward.x, unitToCheck.transform.forward.z);
+        } else {
+            return Vector2.zero;
+        }
+    }
+
     private IEnumerator AttakingRoutine(ImposedPair pair) {
         yield return new WaitForSeconds(1f);
 

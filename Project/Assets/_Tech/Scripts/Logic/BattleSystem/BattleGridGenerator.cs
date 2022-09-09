@@ -10,7 +10,7 @@ public class BattleGridGenerator : MonoBehaviour {
     [SerializeField] private LayerMask _groundLayerMask;
     [SerializeField] private Transform _startPoint;
     [SerializeField] private float _borderForGeneratedRect = 10f;
-    [SerializeField] private bool _isDebug;
+    [SerializeField] private bool _isDebug, _isDebugAIMovementWeights;
     [SerializeField] private bool _isAIActing = true;
 
     private UpdateStateMachine _globalStateMachine;
@@ -79,7 +79,7 @@ public class BattleGridGenerator : MonoBehaviour {
             _cameraFollower, _battleGridData, _decalProjector,
             _uiRoot, assetsContainer, _movementLinePrefab,
             transform, coroutineService, this,
-            _isAIActing, configsContainer.CharactersSelectionData);
+            _isAIActing, configsContainer.CharactersSelectionData, _isDebugAIMovementWeights);
     }
 
     public void StopBattle() {

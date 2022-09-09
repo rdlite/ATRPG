@@ -13,7 +13,7 @@ public class BattleTurnsHandler {
     public BattleTurnsHandler(
         BattleGridData battleGridData, UIRoot ui, BattleHandler battleHandler,
         ICoroutineService coroutineService, CameraSimpleFollower camera, bool isAIActing, 
-        ImposedPairsContainer imposedPairsContainer) {
+        ImposedPairsContainer imposedPairsContainer, bool isDebugAIMovementWeights) {
         _battleHandler = battleHandler;
         _uiRoot = ui;
         _battleGridData = battleGridData;
@@ -22,7 +22,7 @@ public class BattleTurnsHandler {
         _aiMovementResolver = new AIMovementResolver(
             battleGridData, battleHandler, this,
             camera, coroutineService, isAIActing,
-            imposedPairsContainer);
+            imposedPairsContainer, isDebugAIMovementWeights);
 
         TryFillTurns();
         RefreshUnitsData();

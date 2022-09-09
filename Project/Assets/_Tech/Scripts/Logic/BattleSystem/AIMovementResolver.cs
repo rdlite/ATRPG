@@ -10,11 +10,12 @@ public class AIMovementResolver {
     private BattleTurnsHandler _turnsHandler;
     private ImposedPairsContainer _imposedPairsContainer;
     private bool _isAIActing;
+    private bool _isDebugAIMovementWeights;
 
     public AIMovementResolver(
         BattleGridData battleGridData, BattleHandler battleHandler, BattleTurnsHandler turnsHandler,
         CameraSimpleFollower camera, ICoroutineService coroutineService, bool isAIActing,
-        ImposedPairsContainer imposedPairsContainer) {
+        ImposedPairsContainer imposedPairsContainer, bool isDebugAIMovementWeights) {
         _imposedPairsContainer = imposedPairsContainer;
         _isAIActing = isAIActing;
         _coroutineService = coroutineService;
@@ -22,6 +23,7 @@ public class AIMovementResolver {
         _battleGridData = battleGridData;
         _battleHandler = battleHandler;
         _turnsHandler = turnsHandler;
+        _isDebugAIMovementWeights = isDebugAIMovementWeights;
     }
 
     public void MoveUnit(UnitBase characterToMove) {
@@ -88,22 +90,67 @@ public class AIMovementResolver {
 
             List<(float, UnitBase, Node)> targets = new List<(float, UnitBase, Node)>();
 
+            if (_isDebugAIMovementWeights) {
+                bool isFirst = false;
+                foreach (var item in Object.FindObjectsOfType<TMPro.TextMeshPro>()) {
+                    if (!isFirst) {
+                        isFirst = true;
+                        continue;
+                    }
+                    Object.Destroy(item.gameObject);
+                }
+
+                Object.FindObjectOfType<TMPro.TextMeshPro>().transform.position = Vector3.one * 10000f;
+            }
+
             for (int i = 0; i < unitAttackData.Count; i++) {
                 if (unitAttackData[i].Item2.Count > 0) {
-                    (bool, float) damageResult = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(unitToMove.GetUnitConfig().DefaultAttackDamage);
-                    float tacticalPoints = damageResult.Item1 ? 100000 : damageResult.Item2;
+                    List<(float, Node)> nodesByTacticalPoints = new List<(float, Node)>(unitAttackData[i].Item2.Count);
 
-                    if (_imposedPairsContainer.HasPairWith(unitAttackData[i].Item1)) {
-                        tacticalPoints *= 1.5f;
+                    Node bestNodeToAttackFrom = unitAttackData[i].Item2[0];
+
+                    for (int j = 0; j < unitAttackData[i].Item2.Count; j++) {
+                        (bool, float) damageResult = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(unitToMove.GetUnitConfig().DefaultAttackDamage);
+                        float tacticalPoints = damageResult.Item1 ? 100000 : damageResult.Item2;
+
+                        Vector3 attackDirection = (unitAttackData[i].Item1.transform.position.RemoveYCoord() - unitAttackData[i].Item2[j].WorldPosition.RemoveYCoord()).normalized;
+
+                        if (_imposedPairsContainer.HasPairWith(unitAttackData[i].Item1)) {
+                            tacticalPoints *= 1.2f;
+
+                            bool isAttackFromBehind = _imposedPairsContainer.HasPairWith(unitAttackData[i].Item1) && (Vector3.Dot(attackDirection, unitAttackData[i].Item1.transform.forward.RemoveYCoord()) >= .9f);
+
+                            if (isAttackFromBehind) {
+                                tacticalPoints += damageResult.Item2 * .2f;
+                            }
+                        }
+
+                        // add more tactical points the health is closer to zero
+                        float targetUnitHealthCompleteness = unitAttackData[i].Item1.GetUnitHealthContainer().GetHealthCompleteness();
+                        float remappedTactitialPointsValue = Mathf.Lerp(tacticalPoints, tacticalPoints * 1.25f, Mathf.InverseLerp(1f, 0f, targetUnitHealthCompleteness));
+
+                        float distToTarget = Vector3.Distance(unitAttackData[i].Item2[j].WorldPosition, unitToMove.transform.position);
+                        tacticalPoints -= distToTarget / 8f;
+
+                        nodesByTacticalPoints.Add(new(tacticalPoints, unitAttackData[i].Item2[j]));
                     }
 
-                    // add more tactical points the health is closer to zero
-                    float targetUnitHealthCompleteness = unitAttackData[i].Item1.GetUnitHealthContainer().GetHealthCompleteness();
-                    float remappedTactitialPointsValue = Mathf.Lerp(tacticalPoints, tacticalPoints * 1.25f, Mathf.InverseLerp(1f, 0f, targetUnitHealthCompleteness));
+                    float maxTacticalAttackPoints = -Mathf.Infinity;
 
-                    Node randomWalkNode = unitAttackData[i].Item2[Random.Range(0, unitAttackData[i].Item2.Count)];
+                    for (int j = 0; j < nodesByTacticalPoints.Count; j++) {
+                        if (_isDebugAIMovementWeights) {
+                            TMPro.TextMeshPro worldText = Object.Instantiate(Object.FindObjectOfType<TMPro.TextMeshPro>());
+                            worldText.transform.position = Vector3.up + nodesByTacticalPoints[j].Item2.WorldPosition;
+                            worldText.text = nodesByTacticalPoints[j].Item1.ToString("F1");
+                        }
 
-                    targets.Add(new(tacticalPoints, unitAttackData[i].Item1, randomWalkNode));
+                        if (nodesByTacticalPoints[j].Item1 > maxTacticalAttackPoints) {
+                            maxTacticalAttackPoints = nodesByTacticalPoints[j].Item1;
+                            bestNodeToAttackFrom = nodesByTacticalPoints[j].Item2;
+                        }
+                    }
+
+                    targets.Add(new(maxTacticalAttackPoints, unitAttackData[i].Item1, bestNodeToAttackFrom));
                 }
             }
 
