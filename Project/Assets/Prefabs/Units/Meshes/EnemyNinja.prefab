@@ -256,6 +256,7 @@ Transform:
   - {fileID: 5991189232333483878}
   - {fileID: 6382336606417771668}
   - {fileID: 1704504504570998968}
+  - {fileID: 455997113876370389}
   m_Father: {fileID: 1025644827607219650}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -995,8 +996,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cd8cd3ed17b5f94ab2937fd47f5cd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WeaponInHandPoint>k__BackingField: {fileID: 1704504504570998968}
-  <WeaponIdlePoint>k__BackingField: {fileID: 2798674646379695503}
+  _weaponPoints:
+  - Type: 1
+    AttackPoint: {fileID: 455997113876370389}
+    IdlePoint: {fileID: 2798674646379695503}
+  - Type: 2
+    AttackPoint: {fileID: 1704504504570998968}
+    IdlePoint: {fileID: 3214715987015460533}
 --- !u!1 &2498808384744199776
 GameObject:
   m_ObjectHideFlags: 0
@@ -1029,6 +1035,7 @@ Transform:
   - {fileID: 6699093518227241002}
   - {fileID: 7069136317793680518}
   - {fileID: 2798674646379695503}
+  - {fileID: 3214715987015460533}
   m_Father: {fileID: 3036047498824363905}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1233,7 +1240,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2798674646379695503}
   m_Layer: 3
-  m_Name: WeaponIdlePoint
+  m_Name: OneHandSwordWeaponIdlePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1701,6 +1708,68 @@ Transform:
   m_Father: {fileID: 7757094136210244668}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &5605381014965061145
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 455997113876370389}
+  m_Layer: 3
+  m_Name: OneHandSwordWeaponInHandPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &455997113876370389
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5605381014965061145}
+  m_LocalRotation: {x: 0.0000000782311, y: -0.00000006705523, z: 0.707107, w: 0.70710653}
+  m_LocalPosition: {x: -0.023, y: 0.11, z: 0.025}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3755193580549126050}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+--- !u!1 &5611130258257026655
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3214715987015460533}
+  m_Layer: 3
+  m_Name: 'TwoHandedAxeWeaponIdlePoint '
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3214715987015460533
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5611130258257026655}
+  m_LocalRotation: {x: 0.13840802, y: -0.9896582, z: -0.0225428, w: 0.030196097}
+  m_LocalPosition: {x: 0.11, y: -0.213, z: -0.231}
+  m_LocalScale: {x: 1.0797077, y: 1.079708, z: 1.0797077}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 7382076890509332245}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: -2.078, y: -176.213, z: 344.008}
 --- !u!1 &5672792472741399774
 GameObject:
   m_ObjectHideFlags: 0
@@ -2160,7 +2229,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1704504504570998968}
   m_Layer: 3
-  m_Name: WeaponInHandPoint
+  m_Name: TwoHandedAxeWeaponInHandPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2173,14 +2242,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7788261811910287665}
-  m_LocalRotation: {x: 0.0000000782311, y: -0.00000006705523, z: 0.707107, w: 0.70710653}
-  m_LocalPosition: {x: -0.023, y: 0.11, z: 0.025}
+  m_LocalRotation: {x: -0.0740684, y: 0.71909624, z: 0.68943197, w: -0.04580499}
+  m_LocalPosition: {x: 0.06, y: -0.027, z: -0.014}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3755193580549126050}
   m_RootOrder: 5
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
+  m_LocalEulerAnglesHint: {x: 280.01898, y: -105.049, z: -77.25}
 --- !u!1 &7795684568909731285
 GameObject:
   m_ObjectHideFlags: 0

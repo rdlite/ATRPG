@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6501937462996541423}
   m_Layer: 0
-  m_Name: OneHandSword
+  m_Name: OneHandSword_Test
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

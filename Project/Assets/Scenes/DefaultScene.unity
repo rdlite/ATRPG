@@ -7300,7 +7300,7 @@ PrefabInstance:
     - target: {fileID: 5052610839338524692, guid: 41d78a7e119f946469ab7b0438e69e5d,
         type: 3}
       propertyPath: _isDebugAIMovementWeights
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5052610839338524693, guid: 41d78a7e119f946469ab7b0438e69e5d,
         type: 3}
@@ -10112,6 +10112,16 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: a8fec7605cc2a024f8f5b6a51236f656,
         type: 2}
+    - target: {fileID: 3464182009622857086, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: _weaponType
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 3464182009622857086, guid: afa9d2aa79821de42b4b0a593b59ee7e,
+        type: 3}
+      propertyPath: _weaponLayerType
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 3966153737315238459, guid: afa9d2aa79821de42b4b0a593b59ee7e,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -14359,6 +14369,11 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 11400000, guid: 91ad86ae37cffb946bf66b1736efac2c,
         type: 2}
+    - target: {fileID: 2214513987342800796, guid: f23317fb04cf423429e4aa6183274d27,
+        type: 3}
+      propertyPath: _weaponType
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2486413598886411092, guid: f23317fb04cf423429e4aa6183274d27,
         type: 3}
       propertyPath: m_LocalPosition.x

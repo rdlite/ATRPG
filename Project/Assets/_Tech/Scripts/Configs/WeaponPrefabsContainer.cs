@@ -10,13 +10,27 @@ public class WeaponPrefabsContainer : ScriptableObject {
         return _weapons_map.Single((item) => item.Type == type).Prefab;
     }
 
+    public List<BattleFieldActionAbility> GetWeaponAbilities(WeaponPrefabsType type) {
+        return _weapons_map.Single((item) => item.Type == type).AbilitiesForThisWeapon;
+    }
+
+    public WeaponAnimationLayerType GetWeaponLayerType(WeaponPrefabsType type) {
+        if (type == WeaponPrefabsType.None) {
+            return WeaponAnimationLayerType.Hands;
+        }
+
+        return _weapons_map.Single((item) => item.Type == type).LayerType;
+    }
+
     [System.Serializable]
     private class WeaponDataPair {
         public WeaponPrefabsType Type;
+        public WeaponAnimationLayerType LayerType;
         public GameObject Prefab;
+        public List<BattleFieldActionAbility> AbilitiesForThisWeapon;
     }
 }
 
 public enum WeaponPrefabsType {
-    None, TestOneHandedSword
+    None, TestOneHandedSword, TestTwoHandedAxe
 }

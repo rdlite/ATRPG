@@ -64,6 +64,7 @@ Transform:
   - {fileID: 9154511167050528220}
   - {fileID: 419360453996960120}
   - {fileID: 3113978112358499664}
+  - {fileID: 1145832828333162567}
   m_Father: {fileID: 8674281249993129410}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -650,6 +651,37 @@ Transform:
   m_Father: {fileID: 1821546063319626820}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &2830126915709326383
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1145832828333162567}
+  m_Layer: 3
+  m_Name: TwoHandedAxeWeaponIdlePoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1145832828333162567
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2830126915709326383}
+  m_LocalRotation: {x: 0.13840802, y: -0.9896582, z: -0.0225428, w: 0.030196097}
+  m_LocalPosition: {x: 0.11, y: -0.213, z: -0.231}
+  m_LocalScale: {x: 1.0797077, y: 1.079708, z: 1.0797077}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 8654191681815689931}
+  m_RootOrder: 4
+  m_LocalEulerAnglesHint: {x: -2.078, y: -176.213, z: 344.008}
 --- !u!1 &3000094907546555269
 GameObject:
   m_ObjectHideFlags: 0
@@ -692,7 +724,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3113978112358499664}
   m_Layer: 3
-  m_Name: WeaponIdlePoint
+  m_Name: OneHandSwordWeaponIdlePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1560,7 +1592,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6071672600836687110}
   m_Layer: 3
-  m_Name: WeaponPoint
+  m_Name: OneHandSwordWeaponPoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2277,6 +2309,37 @@ Transform:
   m_Father: {fileID: 2219985323624918772}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90.883}
+--- !u!1 &7881732618607871922
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 7657236843540535768}
+  m_Layer: 3
+  m_Name: TwoHandedAxeWeaponPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &7657236843540535768
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7881732618607871922}
+  m_LocalRotation: {x: -0.09317085, y: 0.72741205, z: 0.6769447, w: -0.06274475}
+  m_LocalPosition: {x: 0.06, y: -0.027, z: -0.014}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1821546063319626820}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 283.309, y: -109.177, z: -73.305}
 --- !u!1 &7889407604101399092
 GameObject:
   m_ObjectHideFlags: 0
@@ -2311,6 +2374,7 @@ Transform:
   - {fileID: 5513690645246406389}
   - {fileID: 7778992600924611179}
   - {fileID: 6071672600836687110}
+  - {fileID: 7657236843540535768}
   m_Father: {fileID: 5122463992445580722}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2509,8 +2573,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8cd8cd3ed17b5f94ab2937fd47f5cd04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  <WeaponInHandPoint>k__BackingField: {fileID: 6071672600836687110}
-  <WeaponIdlePoint>k__BackingField: {fileID: 3113978112358499664}
+  _weaponPoints:
+  - Type: 1
+    AttackPoint: {fileID: 6071672600836687110}
+    IdlePoint: {fileID: 3113978112358499664}
+  - Type: 2
+    AttackPoint: {fileID: 7657236843540535768}
+    IdlePoint: {fileID: 1145832828333162567}
 --- !u!1 &8309844512820974966
 GameObject:
   m_ObjectHideFlags: 0

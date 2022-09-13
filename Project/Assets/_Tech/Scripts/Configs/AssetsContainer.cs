@@ -8,7 +8,6 @@ public class AssetsContainer : ScriptableObject {
     public OverUnitWorldDataPanel BattleOverUnitDataPrefab;
     public DecalProjector UnderUnitDecalPrefab;
     public DecalProjector AttackUnderUnitDecalPrefab;
-    public WeaponPrefabsContainer WeaponPrefabsContainer;
     public GameObject DamageNumber;
     public MovementPointer MovementPointer;
     [Header("FX")]
@@ -17,4 +16,6 @@ public class AssetsContainer : ScriptableObject {
     public StunEffect StunEffect;
     [Header("Containers")]
     public UnitWeaponAnimatorsContainer AnimatorsContainer;
+    public WeaponPrefabsContainer WeaponPrefabsContainer;
+    public AbilitiesContainer AbilitiesContainer;
 }

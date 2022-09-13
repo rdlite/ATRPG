@@ -14,7 +14,6 @@ public abstract class UnitBase : MonoBehaviour {
     [SerializeField] protected Collider _characterRaycastDetector;
     [SerializeField] protected float _distanceToStartWalkingAnimation = 5f;
     [SerializeField] protected WeaponPrefabsType _weaponType;
-    [SerializeField] protected WeaponAnimationLayerType _weaponLayerType;
     [SerializeField] private Transform _attackPoint;
 
     protected Outline[] _childOutlines;
@@ -51,7 +50,7 @@ public abstract class UnitBase : MonoBehaviour {
         _weaponHandler = new UnitWeaponHandler();
         _animator = new UnitAnimator(
             GetComponentInChildren<Animator>(true), coroutineService, _weaponHandler, 
-            _skinContainer, _assetsContainer.AnimatorsContainer, _weaponLayerType);
+            _skinContainer, _assetsContainer.AnimatorsContainer, _assetsContainer.WeaponPrefabsContainer.GetWeaponLayerType(_weaponType));
 
         _weaponHandler.Init(
             assetsContainer, _skinContainer, gameObject.layer);

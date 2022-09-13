@@ -136,5 +136,5 @@ public class UnitAnimator {
 }
 
 public enum WeaponAnimationLayerType {
-    Hands, OneHandSword
+    Hands, OneHandSword, TwoHandedAxe
 }

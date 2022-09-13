@@ -14,5 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weapons_map:
   - Type: 1
+    LayerType: 1
     Prefab: {fileID: 6501937462996541420, guid: 8d82a69cb72b2f146a38692c8f9935b2,
       type: 3}
+    AbilitiesForThisWeapon:
+    - {fileID: 11400000, guid: 4609a0f1fb1d48a46b45eb6bd95ce634, type: 2}
+  - Type: 2
+    LayerType: 2
+    Prefab: {fileID: 6697599657402442460, guid: 6dc4703af78c13540b44f88c6f00d052,
+      type: 3}
+    AbilitiesForThisWeapon:
+    - {fileID: 11400000, guid: 7207c01ca242fe34b9f98a4101b4a382, type: 2}

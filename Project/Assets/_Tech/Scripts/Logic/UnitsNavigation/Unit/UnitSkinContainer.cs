@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class UnitSkinContainer : MonoBehaviour {
@@ -6,8 +7,7 @@ public class UnitSkinContainer : MonoBehaviour {
     public event Action OnWeaponShealtEventRaised;
     public event Action UniqueAnimationEvent;
 
-    [field: SerializeField] public Transform WeaponInHandPoint { get; private set; }
-    [field: SerializeField] public Transform WeaponIdlePoint { get; private set; }
+    [SerializeField] private List<WeaponPoint> _weaponPoints = new List<WeaponPoint>();
 
     public void RaiseWeaponWithdrawEvent() {
         OnWeaponWithdrawEventRaised?.Invoke();
@@ -33,5 +33,32 @@ public class UnitSkinContainer : MonoBehaviour {
                 }
             }
         }
+    }
+
+    public Transform GetWeaponAttackPointByType(WeaponAnimationLayerType layerType) {
+        for (int i = 0; i < _weaponPoints.Count; i++) {
+            if (_weaponPoints[i].Type == layerType) {
+                return _weaponPoints[i].AttackPoint;
+            }
+        }
+
+        return null;
+    }
+
+    public Transform GetWeaponIdlePointByType(WeaponAnimationLayerType layerType) {
+        for (int i = 0; i < _weaponPoints.Count; i++) {
+            if (_weaponPoints[i].Type == layerType) {
+                return _weaponPoints[i].IdlePoint;
+            }
+        }
+
+        return null;
+    }
+
+    [System.Serializable]
+    private class WeaponPoint {
+        public WeaponAnimationLayerType Type;
+        public Transform AttackPoint;
+        public Transform IdlePoint;
     }
 }

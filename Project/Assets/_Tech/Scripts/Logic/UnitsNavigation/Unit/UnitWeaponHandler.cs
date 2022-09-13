@@ -20,7 +20,7 @@ public class UnitWeaponHandler {
         if (weaponType != WeaponPrefabsType.None) {
             _createdWeapon = Object.Instantiate(_assetsContainer.WeaponPrefabsContainer.GetWeaponPrefab(weaponType));
             _currentWeaponType = weaponType;
-            _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
+            _createdWeapon.transform.SetParent(_skinContainer.GetWeaponIdlePointByType(CurrentWeaponLayerType()));
             _createdWeapon.transform.localPosition = Vector3.zero;
             _createdWeapon.transform.localRotation = Quaternion.identity;
             _createdWeapon.gameObject.layer = _characterLayer;
@@ -36,7 +36,7 @@ public class UnitWeaponHandler {
 
     public void SetWeaponInHand() {
         if (_createdWeapon != null) {
-            _createdWeapon.transform.SetParent(_skinContainer.WeaponInHandPoint);
+            _createdWeapon.transform.SetParent(_skinContainer.GetWeaponAttackPointByType(CurrentWeaponLayerType()));
             _createdWeapon.transform.localPosition = Vector3.zero;
             _createdWeapon.transform.localRotation = Quaternion.identity;
         }
@@ -44,7 +44,7 @@ public class UnitWeaponHandler {
 
     public void SetWeaponIdle() {
         if (_createdWeapon != null) {
-            _createdWeapon.transform.SetParent(_skinContainer.WeaponIdlePoint);
+            _createdWeapon.transform.SetParent(_skinContainer.GetWeaponIdlePointByType(CurrentWeaponLayerType()));
             _createdWeapon.transform.localPosition = Vector3.zero;
             _createdWeapon.transform.localRotation = Quaternion.identity;
         }
@@ -57,4 +57,6 @@ public class UnitWeaponHandler {
     public void DeactivateWeapon() {
         _createdWeapon?.SetActive(false);
     }
+
+    private WeaponAnimationLayerType CurrentWeaponLayerType() => _assetsContainer.WeaponPrefabsContainer.GetWeaponLayerType(_currentWeaponType);
 }

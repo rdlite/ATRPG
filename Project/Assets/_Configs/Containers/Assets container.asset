@@ -20,8 +20,6 @@ MonoBehaviour:
     type: 3}
   AttackUnderUnitDecalPrefab: {fileID: 7175649504760927070, guid: 6aa5a6443c5f9bd47869483b7a49388c,
     type: 3}
-  WeaponPrefabsContainer: {fileID: 11400000, guid: 3916b8be3eb3cd14397642793d68fc9a,
-    type: 2}
   DamageNumber: {fileID: 7661320510829381036, guid: a26a35a807867dd40834ee3d78b22b3f,
     type: 3}
   MovementPointer: {fileID: 4086343997873305283, guid: 1ef2a406b8c860247a0c9d7fd03f6af8,
@@ -33,3 +31,6 @@ MonoBehaviour:
   StunEffect: {fileID: 8613233491269307386, guid: b64d74cac0ebf8846b9cc91cf564bce2,
     type: 3}
   AnimatorsContainer: {fileID: 11400000, guid: 05b128506c163ae4da2efc3b10929bdc, type: 2}
+  WeaponPrefabsContainer: {fileID: 11400000, guid: 3916b8be3eb3cd14397642793d68fc9a,
+    type: 2}
+  AbilitiesContainer: {fileID: 11400000, guid: e11f294d97b901d4682abacb4a135e67, type: 2}
