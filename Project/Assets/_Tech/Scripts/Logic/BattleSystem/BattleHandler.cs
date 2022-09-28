@@ -29,9 +29,11 @@ public class BattleHandler {
     private BattleGridGenerator _gridGenerator;
     private ImposedPairsContainer _imposedPairsContainer;
     private MovementPointer _movementPointerStart, _movementPointerEnd;
+    private BattleFieldActionAbility _currentAttackAbility;
     private float _currentAppearRange = 0f;
     private bool _isCurrentlyShowWalkingDistance;
-    private bool _isCurrentlyShowAttacking;
+    private bool _isCurrentlyShowAttackingOneToOne;
+    private bool _isCurrentlyShowMeleeAttackInRadius;
     private bool _isRestrictedForDoAnything;
     private bool _isBattleEnded;
 
@@ -93,7 +95,6 @@ public class BattleHandler {
 
         _uiRoot.GetPanel<BattlePanel>().SignOnWaitButton(WaitButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().SignOnBackButton(BackButtonPressed);
-        _uiRoot.GetPanel<BattlePanel>().SignOnAbortImposionButton(AbortImposingButtonPressed);
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
         _turnsHandler.StartTurns();
@@ -106,7 +107,7 @@ public class BattleHandler {
             return;
         }
 
-        if (_isCurrentlyShowAttacking) {
+        if (_isCurrentlyShowAttackingOneToOne) {
             ProcessAttack();
         }
 
@@ -114,9 +115,16 @@ public class BattleHandler {
 
         ProcessMovementDecalAppearance();
 
-        if (_isCurrentlyShowAttacking) {
+        if (_isCurrentlyShowAttackingOneToOne) {
             if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
-                SwitchAttacking();
+                SwitchAttacking(AbilityType.None);
+                return;
+            }
+        } else if (_isCurrentlyShowMeleeAttackInRadius) {
+            ProcessMeleeRadiusAttack();
+
+            if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
+                SwitchAttacking(AbilityType.MeleeRangeAttack);
                 return;
             }
         }
@@ -224,7 +232,7 @@ public class BattleHandler {
                 }
 
                 if (isAttackPress) {
-                    TryAttackUnit(_currentSelectedUnit, _currentMouseOverSelectionUnit);
+                    TryAttackUnit(_currentSelectedUnit, _currentMouseOverSelectionUnit, _currentAttackAbility);
                 } else {
                     SetUnitSelect(_currentMouseOverSelectionUnit);
                 }
@@ -291,6 +299,34 @@ public class BattleHandler {
         _cameraFollower.SetTarget(nearestChar.transform);
     }
 
+    public void AbilityButtonPressed(BattleFieldActionAbility ability, bool imposed) {
+        if (ability.Type == AbilityType.Walk) {
+            if (!imposed) {
+                SwitchWalking();
+            } else {
+                AbortImposingButtonPressed();
+            }
+        } else if (
+            ability.Type == AbilityType.MeleeOneToOneAttack ||
+            ability.Type == AbilityType.MeleeRangeAttack || 
+            ability.Type == AbilityType.ShotAttack) {
+            _currentAttackAbility = ability;
+            SwitchAttacking(ability.Type);
+        }
+    }
+
+    public void AbilityButtonPointerEnter(BattleFieldActionAbility ability, bool imposed) {
+        if (ability.Type == AbilityType.Walk && !imposed) {
+            WalkingPointerEnter();
+        }
+    }
+
+    public void AbilityButtonPointerExit(BattleFieldActionAbility ability, bool imposed) {
+        if (ability.Type == AbilityType.Walk && !imposed) {
+            WalkingPointerExit();
+        }
+    }
+
     // WALK MODULE
     private Node _prevMovementNode;
     private Node _endMovementNode;
@@ -338,14 +374,13 @@ public class BattleHandler {
         _prevMovementNode = endNodeCheckInWorld;
     }
 
-    public void SwitchWalking() {
+    private void SwitchWalking() {
         if (_isRestrictedForDoAnything || !_turnsHandler.IsCanUnitWalk(_currentSelectedUnit) || !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit)) {
             return;
         }
 
-        if (_isCurrentlyShowAttacking) {
-            _isCurrentlyShowAttacking = false;
-            DeactivateAttackDecals();
+        if (_isCurrentlyShowAttackingOneToOne || _isCurrentlyShowMeleeAttackInRadius) {
+            StopAttackProcess();
         }
 
         _isCurrentlyShowWalkingDistance = !_isCurrentlyShowWalkingDistance;
@@ -365,15 +400,15 @@ public class BattleHandler {
         }
     }
 
-    public void WalkingPointerEnter() {
-        if (_isRestrictedForDoAnything || _isCurrentlyShowAttacking || !_turnsHandler.IsCanUnitWalk(_currentSelectedUnit) || !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit)) {
+    private void WalkingPointerEnter() {
+        if (_isRestrictedForDoAnything || _isCurrentlyShowAttackingOneToOne || !_turnsHandler.IsCanUnitWalk(_currentSelectedUnit) || !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit)) {
             return;
         }
 
         ShowWalkingDistance();
     }
 
-    public void WalkingPointerExit() {
+    private void WalkingPointerExit() {
         if (_isRestrictedForDoAnything) {
             return;
         }
@@ -645,28 +680,40 @@ public class BattleHandler {
     // END WALK MODULE
 
     // ATTACK MODULE
-    public void SwitchAttacking() {
+    public void SwitchAttacking(AbilityType attackType) {
         if (_isRestrictedForDoAnything || _isCurrentlyShowWalkingDistance || !_turnsHandler.IsItCurrentWalkingUnit(_currentSelectedUnit)) {
             return;
         }
 
         bool isCurrentlyAttacking = false;
 
-        for (int i = 0; i < _createdUnderUnitAttackDecals.Length; i++) {
-            if (_createdUnderUnitAttackDecals[i] != null) {
-                isCurrentlyAttacking = true;
-                break;
-            }
-        }
-
-        if (isCurrentlyAttacking) {
-            _isCurrentlyShowAttacking = !_isCurrentlyShowAttacking;
-
-            FindPossibleTargetsForAttack_MELEE(_isCurrentlyShowAttacking);
+        if (_isCurrentlyShowAttackingOneToOne || _isCurrentlyShowMeleeAttackInRadius) {
+            isCurrentlyAttacking = true;
 
             if (_isCurrentlyShowWalkingDistance) {
                 WalkingPointerExit();
             }
+        } else {
+            for (int i = 0; i < _createdUnderUnitAttackDecals.Length; i++) {
+                if (_createdUnderUnitAttackDecals[i] != null) {
+                    isCurrentlyAttacking = true;
+                    break;
+                }
+            }
+        }
+
+        if (attackType == AbilityType.MeleeOneToOneAttack) {
+            if (isCurrentlyAttacking) {
+                _isCurrentlyShowAttackingOneToOne = !_isCurrentlyShowAttackingOneToOne;
+                FindPossibleTargetsForAttack_MELEE(_isCurrentlyShowAttackingOneToOne);
+            }
+        } else if (attackType == AbilityType.MeleeRangeAttack){
+            if (isCurrentlyAttacking) {
+                _isCurrentlyShowMeleeAttackInRadius = !_isCurrentlyShowMeleeAttackInRadius;
+                FindPossibleTargetsForAttack_MELEE_POINTER_RADIUS(_isCurrentlyShowMeleeAttackInRadius);
+            }
+        } else if (attackType == AbilityType.ShotAttack){
+
         }
     }
 
@@ -696,6 +743,24 @@ public class BattleHandler {
         }
 
         return false;
+    }
+    
+    private void ProcessMeleeRadiusAttack() {
+        Vector3 lookDirection = (_cameraFollower.Camera.WorldToScreenPoint(_currentSelectedUnit.transform.position) - Input.mousePosition).normalized;
+
+        _currentSelectedUnit.transform.forward = Vector3.Lerp(_currentSelectedUnit.transform.forward, new Vector3(lookDirection.x, _currentSelectedUnit.transform.forward.y, lookDirection.y), 15f * Time.deltaTime);
+
+        // получать данные из сетки по дистанции и радиусу конуса
+        // отрисовывать декаль только при изменении т е по сути запрашивать
+        // отрисовывать под челами декали, что из вот-вот атакуют
+    }
+
+    private void FindPossibleTargetsForAttack_MELEE_POINTER_RADIUS(bool value) {
+        if (value) {
+
+        } else {
+            StopAttackProcess();
+        }
     }
 
     private void FindPossibleTargetsForAttack_MELEE(bool value) {
@@ -738,27 +803,28 @@ public class BattleHandler {
                 }
             }
         } else {
-            DeactivateAttackDecals();
+            StopAttackProcess();
         }
     }
 
-    private void DeactivateAttackDecals() {
-        _isCurrentlyShowAttacking = false;
+    private void StopAttackProcess() {
+        _isCurrentlyShowAttackingOneToOne = false;
+        _isCurrentlyShowMeleeAttackInRadius = false;
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
             _createdUnderUnitAttackDecals[i].gameObject.SetActive(false);
         }
         DeselectAllAttackUnits();
     }
 
-    public void ProcessAIAttack(UnitBase attacker, UnitBase target, System.Action callback, bool isImposedAttack = false, bool isPossibilityAttack = false) {
-        _coroutineService.StartCoroutine(AttackSequence(attacker, target, isImposedAttack, isPossibilityAttack, callback));
+    public void ProcessAIAttack(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, System.Action callback, bool isImposedAttack = false, bool isPossibilityAttack = false) {
+        _coroutineService.StartCoroutine(AttackSequence(attacker, target, ability, isImposedAttack, isPossibilityAttack, callback));
     }
 
-    private void TryAttackUnit(UnitBase attacker, UnitBase target, bool isImposedAttack = false, bool isPossibilityAttack = false) {
-        _coroutineService.StartCoroutine(AttackSequence(attacker, target, isImposedAttack, isPossibilityAttack, null));
+    private void TryAttackUnit(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isImposedAttack = false, bool isPossibilityAttack = false) {
+        _coroutineService.StartCoroutine(AttackSequence(attacker, target, ability, isImposedAttack, isPossibilityAttack, null));
     }
 
-    private IEnumerator AttackSequence(UnitBase attacker, UnitBase target, bool isImposedAttack, bool isPossibilityAttack, System.Action callback) {
+    private IEnumerator AttackSequence(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isImposedAttack, bool isPossibilityAttack, System.Action callback) {
         _isRestrictedForDoAnything = true;
         _uiRoot.GetPanel<BattlePanel>().DisableUnitsPanel(this);
 
@@ -773,7 +839,7 @@ public class BattleHandler {
             Quaternion endAttackerRotation = Quaternion.LookRotation((target.transform.position - attacker.transform.position).RemoveYCoord());
             Quaternion endTargetRotation = Quaternion.LookRotation((attacker.transform.position - target.transform.position).RemoveYCoord());
 
-            DeactivateAttackDecals();
+            StopAttackProcess();
 
             bool isTargetImposed = _imposedPairsContainer.HasPairWith(target);
 
@@ -793,7 +859,7 @@ public class BattleHandler {
         t = 0f;
 
         if (!isImposedAttack) {
-            _turnsHandler.SetUnitAttackedDefaultAttack(attacker);
+            _turnsHandler.UnitUsedAbility(attacker, ability);
         }
 
         bool endAttack = false;
@@ -869,10 +935,10 @@ public class BattleHandler {
     }
 
     private void AbortImposingButtonPressed() {
-        DeactivateAttackDecals();
-        UnitBase unitToAttack = _imposedPairsContainer.GetPairFor(_currentSelectedUnit);
+        StopAttackProcess();
+        UnitBase unitAttacker = _imposedPairsContainer.GetPairFor(_currentSelectedUnit);
         _imposedPairsContainer.TryRemovePair(_currentSelectedUnit);
-        TryAttackUnit(unitToAttack, _currentSelectedUnit, true, true);
+        TryAttackUnit(unitAttacker, _currentSelectedUnit, unitAttacker.GetDefaultUnitAttackAbility(), true, true);
     }
     // END ATTACK MODULE
 
@@ -891,7 +957,7 @@ public class BattleHandler {
             return;
         }
 
-        if (_isCurrentlyShowAttacking) {
+        if (_isCurrentlyShowAttackingOneToOne) {
             FindPossibleTargetsForAttack_MELEE(false);
         }
 
@@ -924,7 +990,7 @@ public class BattleHandler {
         _currentSelectedUnit.SetActiveOutline(true);
         _currentSelectedUnit.CreateSelectionAbove();
 
-        DeactivateAttackDecals();
+        StopAttackProcess();
 
         UnitPanelState viewState = UnitPanelState.CompletelyDeactivate;
         

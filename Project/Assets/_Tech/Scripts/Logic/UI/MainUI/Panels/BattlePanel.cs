@@ -1,21 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class BattlePanel : UIPanel {
-    [SerializeField] private Button _backToCurrentUnitButton, _abortImposionButton;
-    [SerializeField] private AbilityButton _waitButton, _walkButton, _attackButton, _abortImposed;
+    [SerializeField] private Button _backToCurrentUnitButton;
+    [SerializeField] private AbilityButton _waitButton, _abilityButtonPrefab;
+    [SerializeField] private Transform _buttonsLayout;
     [SerializeField] private TurnsUILayout _turnsLayoutHandler;
     [SerializeField] private CharacterStatsPanel _characterStatsPanel;
 
+    private List<AbilityButton> _createdAbilityButtons;
     private bool _isUnitPanelEnabled;
 
     protected override void LocalInit() {
+        _createdAbilityButtons = new List<AbilityButton>();
+
         _turnsLayoutHandler.Init();
         _waitButton.SetActiveObject(false);
-        _walkButton.SetActiveObject(false);
-        _attackButton.SetActiveObject(false);
-        _abortImposed.SetActiveObject(false);
         _characterStatsPanel.gameObject.SetActive(false);
         _backToCurrentUnitButton.gameObject.SetActive(false);
         _characterStatsPanel.Init();
@@ -28,15 +30,9 @@ public class BattlePanel : UIPanel {
 
         _characterStatsPanel.gameObject.SetActive(false);
         _waitButton.SetActiveObject(false);
-        _walkButton.SetActiveObject(false);
-        _attackButton.SetActiveObject(false);
 
         _waitButton.Button.onClick.RemoveAllListeners();
         _backToCurrentUnitButton.onClick.RemoveAllListeners();
-        _abortImposionButton.onClick.RemoveAllListeners();
-
-        _walkButton.Cleanup();
-        _attackButton.Cleanup();
     }
 
     public void AddTurnIcon(TurnsUILayout.IconType type, BattleHandler battleHadler, UnitBase unit) {
@@ -67,10 +63,6 @@ public class BattlePanel : UIPanel {
         _backToCurrentUnitButton.onClick.AddListener(() => callback?.Invoke());
     }
     
-    public void SignOnAbortImposionButton(Action callback) {
-        _abortImposionButton.onClick.AddListener(() => callback?.Invoke());
-    }
-
     public void EnableUnitPanel(
         BattleHandler battleHadler, UnitBase unit, UnitPanelState state,
         BattleTurnsHandler turnHandler, bool isImposed) {
@@ -79,19 +71,40 @@ public class BattlePanel : UIPanel {
         _characterStatsPanel.SetData(unit);
         _characterStatsPanel.gameObject.SetActive(true);
         _waitButton.SetActiveObject(true);
-        _abortImposed.SetActiveObject(true && isImposed);
-        _walkButton.SetActiveObject(true && !isImposed);
-        _attackButton.SetActiveObject(true);
 
         _waitButton.SetActiveView(state == UnitPanelState.UseTurn);
-        _walkButton.SetActiveView(state == UnitPanelState.UseTurn);
-        _abortImposed.SetActiveView(state == UnitPanelState.UseTurn);
-        _attackButton.SetActiveView(state == UnitPanelState.UseTurn && !turnHandler.IsUnitAttackedDefaultAttack(unit));
 
-        _walkButton.EventsMediator.OnClick += battleHadler.SwitchWalking;
-        _attackButton.EventsMediator.OnClick += battleHadler.SwitchAttacking;
-        _walkButton.EventsMediator.OnPointerEnter += battleHadler.WalkingPointerEnter;
-        _walkButton.EventsMediator.OnPointerExit += battleHadler.WalkingPointerExit;
+        foreach (var unitAbility in unit.GetUnitAbilitites()) {
+            AbilityButton createdAbilityButton = CreateButton(unitAbility);
+
+            if (unitAbility.Type == AbilityType.Walk) {
+                createdAbilityButton.SetImage(isImposed ? unitAbility.AdditionalButtonImage : unitAbility.ButtonImage);
+                createdAbilityButton.SetActiveObject(true);
+                createdAbilityButton.SetActiveView(state == UnitPanelState.UseTurn);
+            } else {
+                createdAbilityButton.SetImage(unitAbility.ButtonImage);
+                createdAbilityButton.SetActiveObject(true);
+                createdAbilityButton.SetActiveView(state == UnitPanelState.UseTurn && !turnHandler.IsUnitUsedAbility(unit, unitAbility));
+            }
+
+            if (unitAbility.IsHavePointerButtonEvents) {
+                createdAbilityButton.EventsMediator.OnPointerEnter += () => battleHadler.AbilityButtonPointerEnter(unitAbility, isImposed);
+                createdAbilityButton.EventsMediator.OnPointerExit += () => battleHadler.AbilityButtonPointerExit(unitAbility, isImposed);
+            }
+
+            createdAbilityButton.EventsMediator.OnClick += () => battleHadler.AbilityButtonPressed(unitAbility, isImposed);
+
+            _createdAbilityButtons.Add(createdAbilityButton);
+        }
+    }
+
+    private AbilityButton CreateButton(BattleFieldActionAbility abilityData) {
+        AbilityButton newAbilityButton = Instantiate(_abilityButtonPrefab);
+        newAbilityButton.transform.SetParent(_buttonsLayout);
+        newAbilityButton.transform.localScale = _abilityButtonPrefab.transform.localScale;
+        newAbilityButton.transform.localRotation = _abilityButtonPrefab.transform.localRotation;
+
+        return newAbilityButton;
     }
 
     public void DisableUnitsPanel(BattleHandler battleHadler) {
@@ -99,14 +112,12 @@ public class BattlePanel : UIPanel {
 
         _characterStatsPanel.gameObject.SetActive(false);
         _waitButton.SetActiveObject(false);
-        _walkButton.SetActiveObject(false);
-        _abortImposed.SetActiveObject(false);
-        _attackButton.SetActiveObject(false);
 
-        _walkButton.EventsMediator.OnClick -= battleHadler.SwitchWalking;
-        _attackButton.EventsMediator.OnClick -= battleHadler.SwitchAttacking;
-        _walkButton.EventsMediator.OnPointerEnter -= battleHadler.WalkingPointerEnter;
-        _walkButton.EventsMediator.OnPointerExit -= battleHadler.WalkingPointerExit;
+        foreach (var abilityButton in _createdAbilityButtons) {
+            Destroy(abilityButton.gameObject);
+        }
+
+        _createdAbilityButtons.Clear();
     }
 
     public bool IsUnitPanelAlreadyEnabled() {

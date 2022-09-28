@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public abstract class UnitBase : MonoBehaviour {
@@ -24,6 +25,7 @@ public abstract class UnitBase : MonoBehaviour {
     protected OverUnitWorldDataPanel _createdOverUnitData;
     protected UnitAnimator _animator;
     protected AssetsContainer _assetsContainer;
+    private List<BattleFieldActionAbility> _unitAbilities;
     private CameraSimpleFollower _mainCamera;
     private SelectionData _selectionData;
     private UnitSkinContainer _skinContainer;
@@ -71,6 +73,7 @@ public abstract class UnitBase : MonoBehaviour {
             CreateOverUnitUIData();
         }
 
+        FillAbilities();
         LocalInit();
     }
 
@@ -211,6 +214,15 @@ public abstract class UnitBase : MonoBehaviour {
         _animator.SetActiveWeapon(false);
     }
 
+    private void FillAbilities() {
+        _unitAbilities = new List<BattleFieldActionAbility>();
+        _unitAbilities.Add(_assetsContainer.AbilitiesContainer.GetAbility(AbilityType.Walk));
+
+        foreach (var weaponAbility in _assetsContainer.WeaponPrefabsContainer.GetWeaponAbilities(_weaponType)) {
+            _unitAbilities.Add(weaponAbility);
+        }
+    }
+
     //ANIMATOR METHODS
     public void WithdrawWeapon() {
         _animator.WithdrawWeapon();
@@ -238,6 +250,20 @@ public abstract class UnitBase : MonoBehaviour {
 
     public void PlayImposedImpactAnimation() {
         _animator.PlayImposedImpactAnimation();
+    }
+
+    public List<BattleFieldActionAbility> GetUnitAbilitites() {
+        return _unitAbilities;
+    }
+
+    public BattleFieldActionAbility GetDefaultUnitAttackAbility() {
+        for (int i = 0; i < _unitAbilities.Count; i++) {
+            if (_unitAbilities[i].IsDefaultAttack) {
+                return _unitAbilities[i];
+            }
+        }
+
+        return null;
     }
 
     public Transform GetAttackPoint() {

@@ -14,3 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Type: 3
   ButtonImage: {fileID: 21300000, guid: 3ddcb30d4ad7ca846b8774d7714a533a, type: 3}
+  AdditionalButtonImage: {fileID: 0}
+  IsHavePointerButtonEvents: 0
+  IsDefaultAttack: 1

@@ -12,5 +12,5 @@ public class AbilitiesContainer : ScriptableObject {
 }
 
 public enum AbilityType {
-    None, Walk, Attack, MeleeRangeAttack, ShotAttack
+    None, Walk, MeleeOneToOneAttack, MeleeRangeAttack, ShotAttack
 }

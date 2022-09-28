@@ -125,9 +125,7 @@ public class BattleTurnsHandler {
         }
 
         foreach (var unitData in _unitsRoundData_map) {
-            unitData.Value.IsCanWalk = true;
-            unitData.Value.IsDefaultAttacked = false;
-            unitData.Value.MovementLengthLast = unitData.Key.GetMovementLength();
+            unitData.Value.Clear(unitData.Key.GetMovementLength());
         }
     }
 
@@ -194,13 +192,13 @@ public class BattleTurnsHandler {
         _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
     }
 
-    public void SetUnitAttackedDefaultAttack(UnitBase attackedUnit) {
-        //_unitsRoundData_map[attackedUnit].IsDefaultAttacked = true;
+    public void UnitUsedAbility(UnitBase attackedUnit, BattleFieldActionAbility ability) {
+        //_unitsRoundData_map[attackedUnit].UsedAbilities.Add(ability);
     }
 
-    public bool IsUnitAttackedDefaultAttack(UnitBase attackedUnit) {
-        if (_unitsRoundData_map != null && _unitsRoundData_map.ContainsKey(attackedUnit)) {
-            return _unitsRoundData_map[attackedUnit].IsDefaultAttacked;
+    public bool IsUnitUsedAbility(UnitBase unit, BattleFieldActionAbility abilityToCheck) {
+        if (_unitsRoundData_map != null && _unitsRoundData_map.ContainsKey(unit)) {
+            return _unitsRoundData_map[unit].UsedAbilities.Contains(abilityToCheck);
         }
 
         return false;
@@ -272,12 +270,18 @@ public class BattleTurnsHandler {
     private class CurrentRoundUnitsData {
         public float MovementLengthLast;
         public bool IsCanWalk;
-        public bool IsDefaultAttacked;
+        public List<BattleFieldActionAbility> UsedAbilities;
 
         public CurrentRoundUnitsData(float movementRangeLast) {
             MovementLengthLast = movementRangeLast;
             IsCanWalk = true;
-            IsDefaultAttacked = false;
+            UsedAbilities = new List<BattleFieldActionAbility>();
+        }
+
+        public void Clear(float defaultMovementLength) {
+            IsCanWalk = true;
+            UsedAbilities.Clear();
+            MovementLengthLast = defaultMovementLength;
         }
     }
 }

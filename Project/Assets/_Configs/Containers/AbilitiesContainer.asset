@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: AbilitiesContainer
   m_EditorClassIdentifier: 
   _allAbilities:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 11400000, guid: 03d71221d79ea32478a4bbe8ece1a1de, type: 2}
+  - {fileID: 11400000, guid: 4609a0f1fb1d48a46b45eb6bd95ce634, type: 2}
+  - {fileID: 11400000, guid: 7207c01ca242fe34b9f98a4101b4a382, type: 2}
+  - {fileID: 11400000, guid: 6702267cfba479542bc2ba7dfd14df47, type: 2}

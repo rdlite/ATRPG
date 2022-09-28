@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class AIMovementResolver {
@@ -41,9 +42,9 @@ public class AIMovementResolver {
         yield return new WaitWhile(() => !endedWalk);
     }
 
-    private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target, bool isImposedAttack) {
+    private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isImposedAttack) {
         bool isAttackEnded = false;
-        _battleHandler.ProcessAIAttack(attacker, target, () => isAttackEnded = true, isImposedAttack);
+        _battleHandler.ProcessAIAttack(attacker, target, ability, () => isAttackEnded = true, isImposedAttack);
         yield return new WaitWhile(() => !isAttackEnded);
         yield return new WaitForSeconds(.5f);
     }
@@ -56,9 +57,11 @@ public class AIMovementResolver {
 
         yield return new WaitForSeconds(.5f);
 
+        BattleFieldActionAbility attackAbility = unitToMove.GetUnitAbilitites().Single(ability => ability.Type != AbilityType.Walk);
+
         if (_imposedPairsContainer.HasPairWith(unitToMove)) {
             UnitBase target = _imposedPairsContainer.GetPairFor(unitToMove);
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target, true));
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target, attackAbility, true));
         } else {
             Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
 
@@ -167,7 +170,7 @@ public class AIMovementResolver {
                 yield return _coroutineService.StartCoroutine(MovementRoutine(unitToMove, target.Item3.WorldPosition));
             }
 
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target.Item2, false));
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target.Item2, attackAbility, false));
         }
 
         // засунуть проверку на атаку
