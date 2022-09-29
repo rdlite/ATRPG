@@ -32,7 +32,7 @@ public class AIMovementResolver {
         if (!_isAIActing) {
             _coroutineService.StartCoroutine(FakeTurnSequence(characterToMove));
         } else {
-            _coroutineService.StartCoroutine(TurnSequence(characterToMove));
+            _coroutineService.StartCoroutine(OLD_TurnSequence(characterToMove));
         }
     }
 
@@ -44,12 +44,23 @@ public class AIMovementResolver {
 
     private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isImposedAttack) {
         bool isAttackEnded = false;
-        _battleHandler.ProcessAIAttack(attacker, target, ability, () => isAttackEnded = true, isImposedAttack);
+        _battleHandler.ProcessAIAttack(attacker, new List<UnitBase>() { target }, ability, () => isAttackEnded = true, isImposedAttack);
         yield return new WaitWhile(() => !isAttackEnded);
         yield return new WaitForSeconds(.5f);
     }
 
     private IEnumerator TurnSequence(UnitBase unitToMove) {
+        _battleHandler.SetRestriction(true);
+        _camera.SetTarget(unitToMove.transform);
+
+        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnit(unitToMove);
+
+        yield return new WaitForSeconds(.5f);
+
+
+    }
+
+    private IEnumerator OLD_TurnSequence(UnitBase unitToMove) {
         _battleHandler.SetRestriction(true);
         _camera.SetTarget(unitToMove.transform);
 
@@ -172,8 +183,6 @@ public class AIMovementResolver {
 
             yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target.Item2, attackAbility, false));
         }
-
-        // засунуть проверку на атаку
 
         _turnsHandler.AIEndedTurn();
         _battleHandler.SetRestriction(false);

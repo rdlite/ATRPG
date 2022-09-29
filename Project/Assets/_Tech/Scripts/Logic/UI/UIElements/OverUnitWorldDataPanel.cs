@@ -5,8 +5,8 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
     [SerializeField] private GameObject _fullInfo, _smallInfo;
     [SerializeField] private UISlider _healthSlider_FULL, _defenseSlider_FULL, _healthSlider_SMALL, _defenseSlider_SMALL;
     [SerializeField] private TextMeshProUGUI _nameText;
-    [SerializeField] private GameObject _damageAmountPanel, _attackIcon, _skullIcon, _imposedIcon;
-    [SerializeField] private TextMeshProUGUI _damageAmountText;
+    [SerializeField] private GameObject _imposedIcon;
+    [SerializeField] private DamageInfoPanel[] _damagePanels;
 
     private UnitBase _currentUnit;
 
@@ -18,10 +18,10 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
         _healthSlider_SMALL.Init();
         _defenseSlider_SMALL.Init();
 
-        _damageAmountPanel.SetActive(false);
+        for (int i = 0; i < _damagePanels.Length; i++) {
+            _damagePanels[i].DeactivatePanel();
+        }
 
-        _attackIcon.SetActive(false);
-        _skullIcon.SetActive(false);
         _imposedIcon.gameObject.SetActive(false);
 
         UpdateSliderValues();
@@ -32,10 +32,7 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
     }
 
     public void UpdateData(UnitStatsConfig attackerStats, bool imposed) {
-        _damageAmountPanel.SetActive(attackerStats != null);
-
-        _attackIcon.SetActive(true);
-        _skullIcon.SetActive(false);
+        bool isDeadlyDamage = false;
         _imposedIcon.gameObject.SetActive(imposed);
 
         float onDefenseDamage = 0f;
@@ -48,12 +45,17 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
                 onHealthDamage = attackerStats.DefaultAttackDamage - onDefenseDamage;
                 if (onHealthDamage > _currentUnit.GetUnitHealthContainer().GetCurrentHealth()) {
                     onHealthDamage = _currentUnit.GetUnitHealthContainer().GetCurrentHealth();
-                    _attackIcon.SetActive(false);
-                    _skullIcon.SetActive(true);
+                    isDeadlyDamage = true;
                 }
             }
-
-            _damageAmountText.text = attackerStats.DefaultAttackDamage.ToString();
+            
+            for (int i = 0; i < _damagePanels.Length; i++) {
+                if (attackerStats != null) {
+                    _damagePanels[i].SetActivePanel(isDeadlyDamage, (int)attackerStats.DefaultAttackDamage);
+                } else {
+                    _damagePanels[i].DeactivatePanel();
+                }
+            }
         }
 
         UpdateSliderValues(onHealthDamage, onDefenseDamage);
@@ -66,9 +68,14 @@ public class OverUnitWorldDataPanel : MonoBehaviour {
         _defenseSlider_SMALL.UpdateValue(_currentUnit.GetUnitHealthContainer().GetCurrentDefense(), _currentUnit.GetUnitHealthContainer().GetMaxDefense(), 0f);
     }
 
-    public void SetActivePanel(PanelActivationType activationType) {
+    public void SetActivePanel(PanelActivationType activationType, bool isShowData) {
         _smallInfo.SetActive(activationType == PanelActivationType.Small);
         _fullInfo.SetActive(activationType == PanelActivationType.Full);
+        if (!isShowData) {
+            for (int i = 0; i < _damagePanels.Length; i++) {
+                _damagePanels[i].DeactivatePanel();
+            }
+        }
     }
 
     public enum PanelActivationType {

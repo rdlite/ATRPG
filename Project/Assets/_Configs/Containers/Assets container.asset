@@ -20,6 +20,8 @@ MonoBehaviour:
     type: 3}
   AttackUnderUnitDecalPrefab: {fileID: 7175649504760927070, guid: 6aa5a6443c5f9bd47869483b7a49388c,
     type: 3}
+  AttackRangeDecalPrefab: {fileID: 8323012513708356470, guid: 2fd214bf5ff53604e8074d70d58e493e,
+    type: 3}
   DamageNumber: {fileID: 7661320510829381036, guid: a26a35a807867dd40834ee3d78b22b3f,
     type: 3}
   MovementPointer: {fileID: 4086343997873305283, guid: 1ef2a406b8c860247a0c9d7fd03f6af8,

@@ -489,6 +489,12 @@ public class AStarGrid : MonoBehaviour {
         return Physics.OverlapSphere(onGroundPos, _nodeRadius + _obstacleAvoidance, _obstacleLayerMask).Length != 0;
     }
 
+    public bool IsNodesContacts(Node nodeA, Node nodeB) {
+        int distanceByX = Mathf.Abs(nodeA.GridX - nodeB.GridX);
+        int distanceByY = Mathf.Abs(nodeA.GridY - nodeB.GridY);
+        return (distanceByX == 1 && distanceByY == 0) || (distanceByX == 0 && distanceByY == 1);
+    }
+
     private RaycastHit GroundHit(Vector3 worldStartPos) {
         RaycastHit hitInfo;
         Physics.Raycast(worldStartPos + Vector3.up * 20f, Vector3.down, out hitInfo, Mathf.Infinity, _walkableMask);
@@ -535,6 +541,53 @@ public class AStarGrid : MonoBehaviour {
         }
 
         return returnField;
+    }
+
+    public Node[,] GetNodesInRadius(Vector3 startPosition, Vector3 direction, float length, float angle) {
+        float checkLength = length;
+        Node[,] checkNodes = GetNodesFiledWithinWorldPoints(startPosition - new Vector3(_nodeDiameter * checkLength, 0f, _nodeDiameter * checkLength), startPosition + new Vector3(_nodeDiameter * (checkLength + 1), 0f, _nodeDiameter * (checkLength + 1)));
+        Node startNode = GetNodeFromWorldPoint(startPosition);
+
+        for (int x = 0; x < checkNodes.GetLength(0); x++) {
+            for (int y = 0; y < checkNodes.GetLength(1); y++) {
+                bool addNode = false;
+
+                if (Vector3.Distance(checkNodes[x, y].WorldPosition.RemoveYCoord(), startPosition.RemoveYCoord()) <= length && checkNodes[x, y] != startNode) {
+                    float angleToNode = Vector3.Angle((checkNodes[x, y].WorldPosition.RemoveYCoord() - startPosition.RemoveYCoord()).normalized, direction) * 2f;
+
+                    bool isPossibleToAttackNode = checkNodes[x, y].IsWalkable;
+
+                    if (angleToNode <= angle && isPossibleToAttackNode) {
+                        if (!IsHaveObstacleBetweenPoints(startPosition, checkNodes[x, y].WorldPosition)) {
+                            addNode = true;
+                        }
+                    }
+                }
+
+                if (!addNode) {
+                    checkNodes[x, y] = null;
+                }
+            }
+        }
+
+        return checkNodes;
+    }
+
+    private bool IsHaveObstacleBetweenPoints(Vector3 pointA, Vector3 pointB) {
+        float t = 0f;
+        float distance = Vector3.Distance(pointA, pointB) * _nodeDiameter;
+        float checksAmount = 12 * distance;
+        float pointsDistanceCheck = 1f / (float)checksAmount;
+
+        while (t <= 1f) {
+            t += pointsDistanceCheck;
+
+            if (!GetNodeFromWorldPoint(Vector3.Lerp(pointA, pointB, t)).IsWalkable) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void SetActiveDecal(bool value) {

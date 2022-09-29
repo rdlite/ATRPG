@@ -288,7 +288,7 @@ GameObject:
   - component: {fileID: 1221766661846162827}
   - component: {fileID: 4086343997873305283}
   m_Layer: 0
-  m_Name: MovementPointerDecal
+  m_Name: MovementPointer
   m_TagString: Untagged
   m_Icon: {fileID: 7422848464349959988, guid: 0000000000000000d000000000000000, type: 0}
   m_NavMeshLayer: 0

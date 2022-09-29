@@ -79,7 +79,7 @@ public class BattleGridGenerator : MonoBehaviour {
             _cameraFollower, _battleGridData, _decalProjector,
             _uiRoot, assetsContainer, _movementLinePrefab,
             transform, coroutineService, this,
-            _isAIActing, configsContainer.CharactersSelectionData, _isDebugAIMovementWeights);
+            _isAIActing, _isDebugAIMovementWeights);
     }
 
     public void StopBattle() {

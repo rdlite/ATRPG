@@ -8,6 +8,7 @@ public class AssetsContainer : ScriptableObject {
     public OverUnitWorldDataPanel BattleOverUnitDataPrefab;
     public DecalProjector UnderUnitDecalPrefab;
     public DecalProjector AttackUnderUnitDecalPrefab;
+    public DecalProjector AttackRangeDecalPrefab;
     public GameObject DamageNumber;
     public MovementPointer MovementPointer;
     [Header("FX")]

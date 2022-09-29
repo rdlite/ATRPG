@@ -161,17 +161,17 @@ public abstract class UnitBase : MonoBehaviour {
         _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
         _createdOverUnitData.gameObject.SetActive(false);
         _createdOverUnitData.Init(this, _unitHealth);
-        _createdOverUnitData.SetActivePanel(OverUnitWorldDataPanel.PanelActivationType.None);
+        _createdOverUnitData.SetActivePanel(OverUnitWorldDataPanel.PanelActivationType.None, false);
     }
 
     public void ActivateOverUnitData(bool isSmall, UnitStatsConfig attackerConfig = null, bool imposed = false) {
         _createdOverUnitData.gameObject.SetActive(true);
         _createdOverUnitData.UpdateData(attackerConfig, imposed);
-        _createdOverUnitData.SetActivePanel(isSmall ? OverUnitWorldDataPanel.PanelActivationType.Small : OverUnitWorldDataPanel.PanelActivationType.Full);
+        _createdOverUnitData.SetActivePanel(isSmall ? OverUnitWorldDataPanel.PanelActivationType.Small : OverUnitWorldDataPanel.PanelActivationType.Full, true);
     }
 
     public void DeactivateOverUnitData(bool completely) {
-        _createdOverUnitData.SetActivePanel(completely ? OverUnitWorldDataPanel.PanelActivationType.None : OverUnitWorldDataPanel.PanelActivationType.Small);
+        _createdOverUnitData.SetActivePanel(completely ? OverUnitWorldDataPanel.PanelActivationType.None : OverUnitWorldDataPanel.PanelActivationType.Small, false);
         if (completely) {
             _createdOverUnitData.gameObject.SetActive(false);
         }

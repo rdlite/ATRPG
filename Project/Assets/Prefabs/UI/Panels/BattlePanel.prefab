@@ -104,7 +104,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &2656528910348501792
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -865,6 +865,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: TurnsContainer
       objectReference: {fileID: 0}
+    - target: {fileID: 2207882742525066394, guid: 06baa94cff637e541b92e62dd3fbefe4,
+        type: 3}
+      propertyPath: m_Maskable
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6304434895040281761, guid: 06baa94cff637e541b92e62dd3fbefe4,
         type: 3}
       propertyPath: m_Pivot.x
@@ -968,6 +973,11 @@ PrefabInstance:
     - target: {fileID: 6304434895040281761, guid: 06baa94cff637e541b92e62dd3fbefe4,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6319039944285606924, guid: 06baa94cff637e541b92e62dd3fbefe4,
+        type: 3}
+      propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

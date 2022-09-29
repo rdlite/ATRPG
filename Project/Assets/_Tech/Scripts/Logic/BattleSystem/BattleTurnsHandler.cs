@@ -150,46 +150,58 @@ public class BattleTurnsHandler {
 
     private void GenerateOneRound() {
         // FOR DEBUG REASONS
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^2]));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[0]));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[0]);
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[1]));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[1]);
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[2]));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[2]);
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[3]));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[3]);
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^1]));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
-        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
-        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
-
-        List<UnitBase> listRandomize = new List<UnitBase>(_battleGridData.Units);
-
-        int removedUnits = 0;
-
-        for (int i = 0; i < listRandomize.Count; i++) {
-            if (listRandomize[i].IsDeadOnBattleField) {
-                listRandomize.RemoveAt(i);
-                i--;
-                removedUnits++;
-            }
+        if (!_battleGridData.Units[0].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[0]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[0]);
         }
-
-        for (int i = 0; i < _battleGridData.Units.Count - removedUnits; i++) {
-            UnitBase randomUnit = listRandomize[Random.Range(0, listRandomize.Count)];
-
-            listRandomize.Remove(randomUnit);
-
-            bool isPlayerTurn = randomUnit is PlayerUnit;
-
-            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, _battleHandler, randomUnit);
-            _turnsContainer.Add(new TurnData(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, randomUnit));
+        if (!_battleGridData.Units[1].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[1]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[1]);
         }
-
-        _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
+        if (!_battleGridData.Units[2].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[2]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[2]);
+        }
+        if (!_battleGridData.Units[3].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[3]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[3]);
+        }
+        if (!_battleGridData.Units[^2].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^2]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
+        }
+        if (!_battleGridData.Units[^1].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^1]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^1]);
+        }
         _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
+        _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
+
+        //List<UnitBase> listRandomize = new List<UnitBase>(_battleGridData.Units);
+
+        //int removedUnits = 0;
+
+        //for (int i = 0; i < listRandomize.Count; i++) {
+        //    if (listRandomize[i].IsDeadOnBattleField) {
+        //        listRandomize.RemoveAt(i);
+        //        i--;
+        //        removedUnits++;
+        //    }
+        //}
+
+        //for (int i = 0; i < _battleGridData.Units.Count - removedUnits; i++) {
+        //    UnitBase randomUnit = listRandomize[Random.Range(0, listRandomize.Count)];
+
+        //    listRandomize.Remove(randomUnit);
+
+        //    bool isPlayerTurn = randomUnit is PlayerUnit;
+
+        //    _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, _battleHandler, randomUnit);
+        //    _turnsContainer.Add(new TurnData(isPlayerTurn ? TurnsUILayout.IconType.Player : TurnsUILayout.IconType.Enemy, randomUnit));
+        //}
+
+        //_uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
+        //_turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
     }
 
     public void UnitUsedAbility(UnitBase attackedUnit, BattleFieldActionAbility ability) {
@@ -205,6 +217,10 @@ public class BattleTurnsHandler {
     }
 
     public void MarkUnitAsDead(UnitBase deadUnit, bool isCallNextTurn) {
+        if (_battleHandler.IsBattleStopped) {
+            return;
+        }
+
         if (deadUnit is EnemyUnit) {
             for (int i = 0; i < _turnsContainer.Count; i++) {
                 if (_turnsContainer[i].Unit == deadUnit) {
@@ -214,17 +230,19 @@ public class BattleTurnsHandler {
                 }
             }
 
-            TryFillTurns();
             CheckBattleEnd();
         } else {
             RemoveOnePlayerIconFromEachRound(deadUnit);
-            TryFillTurns();
             CheckBattleEnd();
         }
 
         if (isCallNextTurn) {
             CallNextTurn();
         }
+    }
+
+    public void ForceFillTurns() {
+        TryFillTurns();
     }
 
     private void RemoveOnePlayerIconFromEachRound(UnitBase deadUnit) {
