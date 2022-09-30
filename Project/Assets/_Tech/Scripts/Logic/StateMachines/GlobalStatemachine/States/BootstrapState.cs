@@ -15,6 +15,7 @@ public class BootstrapState : IState {
 
     private void RegisterSystems(ICoroutineService coroutineService, UIRoot uiRoot, AssetsContainer assetsContainer) {
         ServicesContainer.Instance.Set(new LevelsLoadingService(coroutineService));
+        ServicesContainer.Instance.Set(new InputService());
 
         uiRoot.Init(
             _gameStateMachine, assetsContainer, coroutineService);

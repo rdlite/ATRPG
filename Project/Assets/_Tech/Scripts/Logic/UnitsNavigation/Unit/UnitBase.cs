@@ -284,6 +284,10 @@ public abstract class UnitBase : MonoBehaviour {
         return _selectionData.WalkingGridColor;
     }
 
+    public void HealAfterBattle() {
+        _unitHealth.ResetData();
+    }
+
     public void Revive() {
         _characterRaycastDetector.gameObject.SetActive(true);
         IsDeadOnBattleField = false;
@@ -291,6 +295,7 @@ public abstract class UnitBase : MonoBehaviour {
         _weaponHandler.SetWeaponIdle();
         _weaponHandler.ActivateWeapon();
         _animator.StandUp();
+        HealAfterBattle();
         _unitHealth.ResetData();
     }
 }

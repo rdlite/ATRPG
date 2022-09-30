@@ -29,6 +29,7 @@ public class BattleHandler {
     private LineRenderer _movementLinePrefab;
     private LineRenderer _createdLinePrefab;
     private BattleTurnsHandler _turnsHandler;
+    private InputService _inputService;
     private ICoroutineService _coroutineService;
     private BattleGridGenerator _gridGenerator;
     private ImposedPairsContainer _imposedPairsContainer;
@@ -45,7 +46,8 @@ public class BattleHandler {
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
         Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator,
-        bool isAIActing, bool isDebugAIMovementWeights) {
+        InputService inputService, bool isAIActing, bool isDebugAIMovementWeights) {
+        _inputService = inputService;
         _coroutineService = coroutineService;
         _cameraFollower = cameraFollower;
         _movementLinePrefab = movementLinePrefab;
@@ -117,14 +119,14 @@ public class BattleHandler {
         }
 
         if (_isCurrentlyShowAttackingOneToOne) {
-            if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
+            if (Input.GetMouseButtonDown(1) && !_inputService.IsPointerOverUIObject() && _currentSelectedUnit != null) {
                 SwitchAttacking(AbilityType.None);
                 return;
             }
         } else if (_isCurrentlyShowMeleeAttackInRadius) {
             ProcessMeleeRadiusAttack();
 
-            if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
+            if (Input.GetMouseButtonDown(1) && !_inputService.IsPointerOverUIObject() && _currentSelectedUnit != null) {
                 SwitchAttacking(AbilityType.MeleeRangeAttack);
                 return;
             }
@@ -134,12 +136,12 @@ public class BattleHandler {
         ProcessMovementDecalAppearance();
 
         if (_isCurrentlyShowWalkingDistance) {
-            if (Input.GetMouseButtonDown(1) && !IsPointerOverUIObject() && _currentSelectedUnit != null) {
+            if (Input.GetMouseButtonDown(1) && !_inputService.IsPointerOverUIObject() && _currentSelectedUnit != null) {
                 HideWalkingDistance(true);
                 return;
             }
 
-            if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
+            if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject()) {
                 SetUnitDestination();
                 return;
             } else {
@@ -177,6 +179,10 @@ public class BattleHandler {
                 Object.Destroy(_createdUnderUnitAttackDecals[i].gameObject);
 
                 if (!_battleGridData.Units[i].IsDeadOnBattleField) {
+                    if (_battleGridData.Units[i] is PlayerUnit) {
+                        _battleGridData.Units[i].HealAfterBattle();
+                    }
+
                     _battleGridData.Units[i].ShealtWeapon();
                 } else {
                     if (_battleGridData.Units[i] is EnemyUnit) {
@@ -202,7 +208,7 @@ public class BattleHandler {
         bool hasTarget = false;
 
         for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            if (_battleGridData.Units[i] == currentOverSelectedUnitForAttack && _battleGridData.Units[i] is EnemyUnit && _createdUnderUnitAttackDecals[i].gameObject.activeSelf && !IsPointerOverUIObject()) {
+            if (_battleGridData.Units[i] == currentOverSelectedUnitForAttack && _battleGridData.Units[i] is EnemyUnit && _createdUnderUnitAttackDecals[i].gameObject.activeSelf && !_inputService.IsPointerOverUIObject()) {
                 _currentAttackingMap[i] = true;
                 _selectionForAttackMap[i] = _battleGridData.Units[i];
                 hasTarget = true;
@@ -226,7 +232,7 @@ public class BattleHandler {
     }
 
     private void SelectionMousePress() {
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject() && !_isCurrentlyShowMeleeAttackInRadius && _currentMouseOverSelectionUnit != null) {
+        if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject() && !_isCurrentlyShowMeleeAttackInRadius && _currentMouseOverSelectionUnit != null) {
             if (_currentMouseOverSelectionUnit != _currentSelectedUnit) {
                 bool isAttackPress = false;
 
@@ -255,7 +261,7 @@ public class BattleHandler {
             }
 
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                if (!_currentAttackingMap[i] && _battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i] && !IsPointerOverUIObject()) {
+                if (!_currentAttackingMap[i] && _battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverSelectionMap[i] && !_inputService.IsPointerOverUIObject()) {
                     _mouseOverSelectionMap[i] = true;
                     _battleGridData.Units[i].SetActiveOutline(true);
                 } else if (!_currentAttackingMap[i] && _battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverSelectionMap[i]) {
@@ -267,7 +273,7 @@ public class BattleHandler {
             }
 
             for (int i = 0; i < _battleGridData.Units.Count; i++) {
-                if (!_currentAttackingMap[i] && _battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverDataSelectionMap[i] && !IsPointerOverUIObject()) {
+                if (!_currentAttackingMap[i] && _battleGridData.Units[i] == _currentMouseOverSelectionUnit && !_mouseOverDataSelectionMap[i] && !_inputService.IsPointerOverUIObject()) {
                     _mouseOverDataSelectionMap[i] = true;
                     ShowOverUnitData(_battleGridData.Units[i]);
                 } else if (!_currentAttackingMap[i] && _battleGridData.Units[i] != _currentMouseOverSelectionUnit && _mouseOverDataSelectionMap[i]) {
@@ -276,14 +282,6 @@ public class BattleHandler {
                 }
             }
         }
-    }
-
-    private bool IsPointerOverUIObject() {
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
     }
 
     public void FocusCameraToNearestAllyUnit(UnitBase unitToCheck) {
@@ -818,7 +816,7 @@ public class BattleHandler {
             }
         }
 
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
+        if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject()) {
             List<UnitBase> unitsToAttackInRange = new List<UnitBase>();
 
             for (int i = 0; i < _battleGridData.Units.Count; i++) {

@@ -13,12 +13,12 @@ public class GameStateMachine : UpdateStateMachine
                 assetsContainer),
             [typeof(LoadLevelState)] = new LoadLevelState(
                 ServicesContainer.Instance.Get<LevelsLoadingService>(), this, configsContainer,
-                assetsContainer, coroutineService),
+                assetsContainer, coroutineService, ServicesContainer.Instance.Get<InputService>()),
             [typeof(WordWalkingState)] = new WordWalkingState(
                 this, uiRoot),
             [typeof(BattleState)] = new BattleState(
                 uiRoot, assetsContainer, coroutineService,
-                configsContainer)
+                ServicesContainer.Instance.Get<InputService>())
         };
     }
 }

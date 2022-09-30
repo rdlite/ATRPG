@@ -3,6 +3,7 @@ using UnityEngine;
 using Object = UnityEngine.Object;
 
 public class LoadLevelState : IPayloadState<string> {
+    private InputService _inputService;
     private ICoroutineService _coroutineService;
     private AssetsContainer _assetsContainer;
     private ConfigsContainer _configsContainer;
@@ -11,7 +12,8 @@ public class LoadLevelState : IPayloadState<string> {
 
     public LoadLevelState(
         LevelsLoadingService levelsLoadingService, GameStateMachine globalStatemachine, ConfigsContainer configsContainer,
-         AssetsContainer assetsContainer, ICoroutineService coroutineService) {
+         AssetsContainer assetsContainer, ICoroutineService coroutineService, InputService inputService) {
+        _inputService = inputService;
         _coroutineService = coroutineService;
         _assetsContainer = assetsContainer;
         _configsContainer = configsContainer;
@@ -44,9 +46,11 @@ public class LoadLevelState : IPayloadState<string> {
         charactersGroupContainer.Init(
             fieldRaycaster, globalGrid, abstractEntitiesMediator,
             _configsContainer, _assetsContainer, cameraFollower,
-            _coroutineService);
+            _coroutineService, _inputService);
         cameraFollower.Init(charactersGroupContainer.MainCharacter.transform, globalGrid.LDPoint, globalGrid.RUPoint);
-        fieldRaycaster.Init(mainCamera, globalGrid, charactersGroupContainer);
+        fieldRaycaster.Init(
+            mainCamera, globalGrid, charactersGroupContainer,
+            _inputService);
 
         BetweenStatesDataContainer statesDataContainer = new BetweenStatesDataContainer(
             fieldRaycaster, charactersGroupContainer, battleGridGenerator,

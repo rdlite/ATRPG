@@ -9,12 +9,15 @@ public class OnFieldRaycaster : MonoBehaviour {
 
     private List<DecalMovementPointer> _createdDecals;
     private Camera _camera;
+    private InputService _inputService;
     private PlayerUnitsGroupContainer _charactersGroupContainer;
     private AStarGrid _globalGrid;
     private Vector2 _start1ButtonPresPosition;
 
     public void Init(
-        Camera camera, AStarGrid globalGrid, PlayerUnitsGroupContainer charactersGroupContainer) {
+        Camera camera, AStarGrid globalGrid, PlayerUnitsGroupContainer charactersGroupContainer,
+        InputService inputService) {
+        _inputService = inputService;
         _charactersGroupContainer = charactersGroupContainer;
         _globalGrid = globalGrid;
         _camera = camera;
@@ -23,23 +26,15 @@ public class OnFieldRaycaster : MonoBehaviour {
     }
 
     public void Tick() {
-        if (Input.GetMouseButtonDown(0) && !IsPointerOverUIObject()) {
+        if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject()) {
             _start1ButtonPresPosition = Input.mousePosition;
         }
 
-        if (Input.GetMouseButtonUp(0) && !IsPointerOverUIObject()) {
+        if (Input.GetMouseButtonUp(0) && !_inputService.IsPointerOverUIObject()) {
             if (Vector2.Distance(_start1ButtonPresPosition, Input.mousePosition) < _minDeltaForTouch) {
                 TrySendCharacterToPoint(Input.mousePosition);
             }
         }
-    }
-
-    private bool IsPointerOverUIObject() {
-        PointerEventData eventDataCurrentPosition = new PointerEventData(EventSystem.current);
-        eventDataCurrentPosition.position = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
-        List<RaycastResult> results = new List<RaycastResult>();
-        EventSystem.current.RaycastAll(eventDataCurrentPosition, results);
-        return results.Count > 0;
     }
 
     private void TrySendCharacterToPoint(Vector3 screenPosition) {

@@ -8,13 +8,17 @@ public class PlayerUnitsGroupContainer : MonoBehaviour {
 
     [SerializeField] private List<UnitBase> _unitsInGroup;
 
+    private InputService _inputService;
     private AStarGrid _grid;
+    private OnFieldRaycaster _fieldRaycaster;
 
     public void Init(
         OnFieldRaycaster fieldRaycaster, AStarGrid grid, SceneAbstractEntitiesMediator abstractEntitiesMediator,
         ConfigsContainer configsContainer, AssetsContainer assetsContainer, CameraSimpleFollower cameraFollower,
-        ICoroutineService coroutineService) {
+        ICoroutineService coroutineService, InputService inputService) {
+        _inputService = inputService;
         _grid = grid;
+        _fieldRaycaster = fieldRaycaster;
 
         foreach (UnitBase character in _unitsInGroup) {
             character.Init(
@@ -24,7 +28,14 @@ public class PlayerUnitsGroupContainer : MonoBehaviour {
     }
 
     public void Tick() {
+        if (Input.GetMouseButtonDown(1) && !_inputService.IsPointerOverUIObject()) {
+            AbortUnitsMovement();
+        }
+    }
 
+    private void AbortUnitsMovement() {
+        _fieldRaycaster.ClearWalkPoints();
+        StopUnits();
     }
 
     public void StopUnits() {
