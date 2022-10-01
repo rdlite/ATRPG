@@ -4,6 +4,8 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
 public class BattleHandler {
+    private BattleStateMachine _battleSM; 
+
     public bool IsBattleStopped {
         get => _isBattleEnded;
     }
@@ -46,6 +48,8 @@ public class BattleHandler {
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
         Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator,
         InputService inputService, bool isAIActing, bool isDebugAIMovementWeights) {
+        _battleSM = new BattleStateMachine();
+
         _inputService = inputService;
         _coroutineService = coroutineService;
         _cameraFollower = cameraFollower;
@@ -107,6 +111,10 @@ public class BattleHandler {
     }
 
     public void Tick() {
+        _battleSM.UpdateState();
+
+        return;
+
         _currentAttackingMap = new bool[_battleGridData.Units.Count];
 
         if (_isRestrictedForDoAnything) {
