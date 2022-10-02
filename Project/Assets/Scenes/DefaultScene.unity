@@ -7201,6 +7201,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 5052610839338524692, guid: 41d78a7e119f946469ab7b0438e69e5d,
         type: 3}
+      propertyPath: _isAIActing
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5052610839338524692, guid: 41d78a7e119f946469ab7b0438e69e5d,
+        type: 3}
       propertyPath: _isDebugAIMovementWeights
       value: 0
       objectReference: {fileID: 0}

@@ -4,6 +4,7 @@ using UnityEngine;
 public class BattleTurnsHandler {
     private List<TurnData> _turnsContainer;
     private Dictionary<UnitBase, CurrentRoundUnitsData> _unitsRoundData_map;
+    private UpdateStateMachine _battleSM;
     private BattleHandler _battleHandler;
     private UIRoot _uiRoot;
     private BattleGridData _battleGridData;
@@ -13,7 +14,8 @@ public class BattleTurnsHandler {
     public BattleTurnsHandler(
         BattleGridData battleGridData, UIRoot ui, BattleHandler battleHandler,
         ICoroutineService coroutineService, CameraSimpleFollower camera, bool isAIActing, 
-        ImposedPairsContainer imposedPairsContainer, bool isDebugAIMovementWeights) {
+        ImposedPairsContainer imposedPairsContainer, bool isDebugAIMovementWeights, UpdateStateMachine battleSM) {
+        _battleSM = battleSM;
         _battleHandler = battleHandler;
         _uiRoot = ui;
         _battleGridData = battleGridData;
@@ -22,7 +24,7 @@ public class BattleTurnsHandler {
         _aiMovementResolver = new AIMovementResolver(
             battleGridData, battleHandler, this,
             camera, coroutineService, isAIActing,
-            imposedPairsContainer, isDebugAIMovementWeights);
+            imposedPairsContainer, isDebugAIMovementWeights, battleSM);
 
         TryFillTurns();
         RefreshUnitsData();
@@ -38,10 +40,13 @@ public class BattleTurnsHandler {
     public void StartTurns() {
         if (_turnsContainer[0].IconType == TurnsUILayout.IconType.Enemy) {
             StartAITurn(_turnsContainer[0].Unit);
+        } else {
+            _battleSM.Enter<IdlePlayerMovementState>();
         }
     }
 
     public void CallNextTurn() {
+        _battleSM.Enter<StateMachineIdleState>();
         SetCurrentWalker(null);
 
         UnitBase endUnit = _turnsContainer[0].Unit;
@@ -64,7 +69,7 @@ public class BattleTurnsHandler {
     }
 
     private void StartAITurn(UnitBase unit) {
-        _aiMovementResolver.MoveUnit(unit);
+        _battleSM.Enter<AIMovementState, UnitBase>(unit);
     }
 
     public void AIEndedTurn() {
@@ -101,6 +106,10 @@ public class BattleTurnsHandler {
 
     public bool IsCanUnitWalk(UnitBase unit) {
         return _unitsRoundData_map[unit].IsCanWalk;
+    }
+
+    public bool IsUnitHaveLengthToMove(UnitBase unit) {
+        return _unitsRoundData_map[unit].MovementLengthLast >= 1f;
     }
 
     public void SetUnitWalked(UnitBase unit) {
@@ -217,7 +226,7 @@ public class BattleTurnsHandler {
     }
 
     public void MarkUnitAsDead(UnitBase deadUnit, bool isCallNextTurn) {
-        if (_battleHandler.IsBattleStopped) {
+        if (_battleHandler.IsBattleEnded) {
             return;
         }
 
@@ -273,6 +282,10 @@ public class BattleTurnsHandler {
                 }
             }
         }
+    }
+
+    public AIMovementResolver GetAIMovementResolver() {
+        return _aiMovementResolver;
     }
 
     private class TurnData {

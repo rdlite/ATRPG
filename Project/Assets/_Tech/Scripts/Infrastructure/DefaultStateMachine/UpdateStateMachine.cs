@@ -1,4 +1,4 @@
-using UnityEngine;
+using System;
 
 public class UpdateStateMachine : StateMachine {
     public virtual void UpdateState() {
@@ -14,6 +14,16 @@ public class UpdateStateMachine : StateMachine {
     public virtual void LateUpdateState() {
         if (_activeState is ILateUpdateState lateUpdateState)
             lateUpdateState.LateUpdate();
+    }
+
+    public IExitableState GetStateOfType(Type type) {
+        foreach (var state in _states) {
+            if (state.Key == type) {
+                return state.Value;
+            }
+        }
+
+        return null;
     }
 
     public IExitableState GetActiveState() {

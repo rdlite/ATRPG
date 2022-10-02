@@ -36,7 +36,6 @@ public class ImposedPairsContainer {
                 }
 
                 _pairs.RemoveAt(i);
-
                 return;
             }
         }

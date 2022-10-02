@@ -9,6 +9,7 @@ public class AIMovementResolver {
     private BattleGridData _battleGridData;
     private BattleHandler _battleHandler;
     private BattleTurnsHandler _turnsHandler;
+    private UpdateStateMachine _battleSM;
     private ImposedPairsContainer _imposedPairsContainer;
     private bool _isAIActing;
     private bool _isDebugAIMovementWeights;
@@ -16,7 +17,8 @@ public class AIMovementResolver {
     public AIMovementResolver(
         BattleGridData battleGridData, BattleHandler battleHandler, BattleTurnsHandler turnsHandler,
         CameraSimpleFollower camera, ICoroutineService coroutineService, bool isAIActing,
-        ImposedPairsContainer imposedPairsContainer, bool isDebugAIMovementWeights) {
+        ImposedPairsContainer imposedPairsContainer, bool isDebugAIMovementWeights, UpdateStateMachine battleSM) {
+        _battleSM = battleSM;
         _imposedPairsContainer = imposedPairsContainer;
         _isAIActing = isAIActing;
         _coroutineService = coroutineService;
@@ -28,7 +30,6 @@ public class AIMovementResolver {
     }
 
     public void MoveUnit(UnitBase characterToMove) {
-        _battleHandler.SetEnemyTurn();
         if (!_isAIActing) {
             _coroutineService.StartCoroutine(FakeTurnSequence(characterToMove));
         } else {
@@ -44,16 +45,15 @@ public class AIMovementResolver {
 
     private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isImposedAttack) {
         bool isAttackEnded = false;
-        _battleHandler.ProcessAIAttack(attacker, new List<UnitBase>() { target }, ability, () => isAttackEnded = true, isImposedAttack);
+        //_battleHandler.ProcessAIAttack(attacker, new List<UnitBase>() { target }, ability, () => isAttackEnded = true, isImposedAttack);
         yield return new WaitWhile(() => !isAttackEnded);
         yield return new WaitForSeconds(.5f);
     }
 
     private IEnumerator TurnSequence(UnitBase unitToMove) {
-        _battleHandler.SetRestriction(true);
-        _camera.SetTarget(unitToMove.transform);
+        _battleHandler.StartFocusCamera(unitToMove.transform, () => _battleSM.Enter<AIMovementState>());
 
-        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnit(unitToMove);
+        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
 
         yield return new WaitForSeconds(.5f);
 
@@ -74,10 +74,9 @@ public class AIMovementResolver {
     }
 
     private IEnumerator OLD_TurnSequence(UnitBase unitToMove) {
-        _battleHandler.SetRestriction(true);
-        _camera.SetTarget(unitToMove.transform);
+        _battleHandler.StartFocusCamera(unitToMove.transform, () => _battleSM.Enter<AIMovementState>());
 
-        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnit(unitToMove);
+        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
 
         yield return new WaitForSeconds(.5f);
 
@@ -198,16 +197,13 @@ public class AIMovementResolver {
         }
 
         _turnsHandler.AIEndedTurn();
-        _battleHandler.SetRestriction(false);
     }
 
-    private IEnumerator FakeTurnSequence(UnitBase characterToMove) {
-        _battleHandler.SetRestriction(true);
-        _camera.SetTarget(characterToMove.transform);
+    private IEnumerator FakeTurnSequence(UnitBase unitToMove) {
+        _battleHandler.StartFocusCamera(unitToMove.transform, () => _battleSM.Enter<AIMovementState>());
 
         yield return new WaitForSeconds(1f);
 
         _turnsHandler.AIEndedTurn();
-        _battleHandler.SetRestriction(false);
     }
 }
