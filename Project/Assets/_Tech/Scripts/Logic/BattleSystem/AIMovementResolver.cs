@@ -31,7 +31,7 @@ public class AIMovementResolver {
 
     public void MoveUnit(UnitBase characterToMove) {
         if (!_isAIActing) {
-            _coroutineService.StartCoroutine(FakeTurnSequence(characterToMove));
+            _coroutineService.StartCoroutine(TurnSequence(characterToMove));
         } else {
             _coroutineService.StartCoroutine(OLD_TurnSequence(characterToMove));
         }
@@ -57,8 +57,22 @@ public class AIMovementResolver {
 
         yield return new WaitForSeconds(.5f);
 
+        AIAction bestEnemyAction = new AIAction();
+        List<AIAction> possibleAIActions = new List<AIAction>();
+
+        foreach (var ability in unitToMove.GetUnitAbilitites()) {
+            if (ability.Type == AbilityType.Walk) {
+                AIAction newAction = new AIAction();
+                yield return _coroutineService.StartCoroutine(GetWalkingBestTurn(walkPoints, unitToMove, newAction));
+                possibleAIActions.Add(newAction);
+            }
+
+            yield return null;
+        }
+
         // пробежаться по всем доступным персонажу абилкам
         // действия для каждого движения уникальные - разбить по отдельным рутинам
+        // движение к ближайшей если нет врагов в ренже
         // для атаки один на один 
             // проверять импозед, в общем-то вытащить полностью из текущего алгоритма
             // если нет целей в ренже атаки, то ирдти к ближайшей к врагу ноде (сделать универсальную функцию поиска для переиспользования)
@@ -70,7 +84,14 @@ public class AIMovementResolver {
             // проверять заебывается ли юнит в импозед, если нет, то прибавлять к общему числу, то есть отдавать приоритет атакам не вовлекающим в бой
             // если не может ни по кому попасть, то двигать к ближайшей к врагу ноде
         // записать пройденное действие в словарь
+        // спрашивать делал ли юнит это действие за этот ход
         // продолжить цикл по возможным абилкам, если нет, то заканчивать ход
+
+        _turnsHandler.AIEndedTurn();
+    }
+
+    private IEnumerator GetWalkingBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestEnemyAction) {
+        yield return new WaitForSeconds(1f);
     }
 
     private IEnumerator OLD_TurnSequence(UnitBase unitToMove) {
@@ -205,5 +226,14 @@ public class AIMovementResolver {
         yield return new WaitForSeconds(1f);
 
         _turnsHandler.AIEndedTurn();
+    }
+
+    private class AIAction {
+        public float Points = -100000f;
+        public Node EndNodeWalking;
+        public bool IsAttack;
+        public UnitBase Target;
+        public Vector3 AttackDirection;
+        public BattleFieldActionAbility Ability;
     }
 }
