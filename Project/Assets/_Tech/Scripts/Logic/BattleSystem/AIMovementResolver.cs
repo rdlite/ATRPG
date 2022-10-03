@@ -48,9 +48,18 @@ public class AIMovementResolver {
         yield return new WaitWhile(() => !endedWalk);
     }
 
-    private IEnumerator MeleeAttack(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isImposedAttack) {
+    private IEnumerator MeleeAttack(UnitBase attacker, List<UnitBase> targets, BattleFieldActionAbility ability, bool isImposedAttack) {
         bool isAttackEnded = false;
-        //_battleHandler.ProcessAIAttack(attacker, new List<UnitBase>() { target }, ability, () => isAttackEnded = true, isImposedAttack);
+
+        _turnsHandler.UnitUsedAbility(attacker, ability);
+
+        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action callback)>(
+            (attacker, targets, ability, isImposedAttack, 
+            () => {
+                _battleSM.Enter<AIMovementState>();
+                isAttackEnded = true;
+            }));
+
         yield return new WaitWhile(() => !isAttackEnded);
         yield return new WaitForSeconds(.5f);
     }
@@ -66,34 +75,40 @@ public class AIMovementResolver {
         bool hasNoAbilities = unitToMove.GetUnitAbilitites().Count == 0;
 
         while (!hasNoAbilities) {
-            List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
-
             foreach (var ability in unitToMove.GetUnitAbilitites()) {
-                if (ability.Type == AbilityType.Walk && _turnsHandler.IsUnitHaveLengthToMove(unitToMove)) {
+                List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
+
+                if (ability.Type == AbilityType.Walk && _turnsHandler.IsUnitHaveLengthToMove(unitToMove) && !_imposedPairsContainer.HasPairWith(unitToMove)) {
                     AIAction newAction = new AIAction();
-                    yield return _coroutineService.StartCoroutine(GetWalkingBestTurn(walkPoints, unitToMove, newAction));
+
+                    yield return _coroutineService.StartCoroutine(GetWalkingBestTurn(walkPoints, unitToMove, newAction, ability));
+
                     possibleAIActions.Add(newAction);
-                }
+                } else if (ability.Type == AbilityType.MeleeOneToOneAttack && !_turnsHandler.IsUnitUsedAbility(unitToMove, ability)) {
+                    AIAction newAction = new AIAction();
 
-                if (possibleAIActions.Count > 0) {
-                    bestAIAction = possibleAIActions[0];
+                    yield return _coroutineService.StartCoroutine(GetOneToOneMeleeAttackBestTurn(walkPoints, unitToMove, newAction, ability));
 
-                    float bestActionPointsAmount = -Mathf.Infinity;
-                    int removeAtPossibleActions = 0;
-
-                    for (int i = 0; i < possibleAIActions.Count; i++) {
-                        if (bestActionPointsAmount > possibleAIActions[i].Points) {
-                            EqualizeTwoActions(bestAIAction, possibleAIActions[i]);
-                            removeAtPossibleActions = i;
-                        }
+                    if (newAction.IsCanBeUsed) {
+                        possibleAIActions.Add(newAction);
                     }
+                }
+                yield return null;
+            }
 
-                    possibleAIActions.RemoveAt(removeAtPossibleActions);
+            if (possibleAIActions.Count > 0) {
+                bestAIAction = possibleAIActions[0];
 
-                    yield return _coroutineService.StartCoroutine(ImplementAIAction(unitToMove, bestAIAction));
+                float bestActionPointsAmount = -Mathf.Infinity;
+
+                for (int i = 0; i < possibleAIActions.Count; i++) {
+                    if (bestActionPointsAmount < possibleAIActions[i].Points) {
+                        bestActionPointsAmount = possibleAIActions[i].Points;
+                        EqualizeTwoActions(bestAIAction, possibleAIActions[i]);
+                    }
                 }
 
-                yield return null;
+                yield return _coroutineService.StartCoroutine(ImplementAIAction(unitToMove, bestAIAction));
             }
 
             if (possibleAIActions.Count == 0) {
@@ -103,20 +118,13 @@ public class AIMovementResolver {
             }
         }
 
-        // пробежатьс€ по всем доступным персонажу абилкам
-        // действи€ дл€ каждого движени€ уникальные - разбить по отдельным рутинам
-        // движение к ближайшей если нет врагов в ренже
-        // дл€ атаки один на один 
-            // провер€ть импозед, в общем-то вытащить полностью из текущего алгоритма
-            // если нет целей в ренже атаки, то ирдти к ближайшей к врагу ноде (сделать универсальную функцию поиска дл€ переиспользовани€)
-            // вообще создать юнита с секирой
+        // создать юнита с секирой
         // дл€ атаки мили-ренж
-            // провер€ть импозед, если да, то просто атаковать
-            // дл€ каждой точки с радиусом до врага смотреть атаку в 8 сторон
-            // прибавл€ть очки по урону по врагам, уменьшать по урону по союзникам
-            // провер€ть заебываетс€ ли юнит в импозед, если нет, то прибавл€ть к общему числу, то есть отдавать приоритет атакам не вовлекающим в бой
-            // если не может ни по кому попасть, то двигать к ближайшей к врагу ноде
-        // записать пройденное действие в словарь
+        // провер€ть импозед, если да, то просто атаковать
+        // дл€ каждой точки с радиусом до врага смотреть атаку в 8 сторон
+        // прибавл€ть очки по урону по врагам, уменьшать по урону по союзникам
+        // провер€ть заебываетс€ ли юнит в импозед, если нет, то прибавл€ть к общему числу, то есть отдавать приоритет атакам не вовлекающим в бой
+        // если не может ни по кому попасть, то двигать к ближайшей к врагу ноде
         // спрашивать делал ли юнит это действие за этот ход
         // продолжить цикл по возможным абилкам, если нет, то заканчивать ход
 
@@ -126,11 +134,17 @@ public class AIMovementResolver {
     private IEnumerator ImplementAIAction(UnitBase unit, AIAction aIAction) {
         if (!aIAction.IsAttack) {
             yield return _coroutineService.StartCoroutine(MovementRoutine(unit, aIAction.EndNodeWalking.WorldPosition));
-            yield return new WaitForSeconds(1f);
+        } else {
+            if (aIAction.EndNodeWalking != _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unit.transform.position)) {
+                yield return _coroutineService.StartCoroutine(MovementRoutine(unit, aIAction.EndNodeWalking.WorldPosition));
+            }
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unit, aIAction.Targets, aIAction.Ability, false));
         }
+
+        yield return new WaitForSeconds(1f);
     }
 
-    private IEnumerator GetWalkingBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction) {
+    private IEnumerator GetWalkingBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction, BattleFieldActionAbility actionAbility) {
         AIAction bestWalkingAction = new AIAction();
         AIAction worstWalkingAction = new AIAction();
         float bestTacticalPoints = -Mathf.Infinity;
@@ -184,9 +198,124 @@ public class AIMovementResolver {
             }
         }
 
+        bestWalkingAction.IsCanBeUsed = true;
+
         yield return null;
 
         EqualizeTwoActions(bestAIAction, bestWalkingAction);
+        bestAIAction.Ability = actionAbility;
+    }
+
+    private IEnumerator GetOneToOneMeleeAttackBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction, BattleFieldActionAbility attackAbility) {
+        if (_imposedPairsContainer.HasPairWith(unitToMove)) {
+            UnitBase target = _imposedPairsContainer.GetPairFor(unitToMove);
+            bestAIAction.IsAttack = true;
+            bestAIAction.IsCanBeUsed = true;
+            SetAttackActionTemplate(bestAIAction, GetDamageOnTarget(unitToMove, target, attackAbility, false), _battleGridData.GlobalGrid.GetNodeFromWorldPoint(target.transform.position), new List<UnitBase>() { target }, Vector3.forward, attackAbility);
+        }
+
+        yield return null;
+
+        List<(UnitBase, List<Node>)> unitAttackData = new List<(UnitBase, List<Node>)>();
+        Node attackerNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
+
+        if (walkPoints == null || walkPoints.Count == 0) {
+            walkPoints = new List<Node>();
+            walkPoints.Add(attackerNode);
+        }
+
+        for (int j = 0; j < _battleGridData.Units.Count; j++) {
+            if (!_battleGridData.Units[j].IsDeadOnBattleField && _battleGridData.Units[j].GetType() != unitToMove.GetType()) {
+                Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[j].transform.position);
+
+                unitAttackData.Add(new(_battleGridData.Units[j], new List<Node>()));
+
+                for (int x = -1; x < 2; x++) {
+                    for (int y = -1; y < 2; y++) {
+                        if (x == 0 || y == 0) {
+                            if (x == 0 && y == 0) {
+                                continue;
+                            }
+
+                            Node nodeToAdd = _battleGridData.GlobalGrid.GetNodesGrid()[targetUnitNode.GridX + x, targetUnitNode.GridY + y];
+
+                            if (walkPoints.Contains(nodeToAdd)) {
+                                unitAttackData[^1].Item2.Add(nodeToAdd);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (_isDebugAIMovementWeights) {
+            bool isFirst = false;
+            foreach (var item in Object.FindObjectsOfType<TMPro.TextMeshPro>()) {
+                if (!isFirst) {
+                    isFirst = true;
+                    continue;
+                }
+                Object.Destroy(item.gameObject);
+            }
+
+            Object.FindObjectOfType<TMPro.TextMeshPro>().transform.position = Vector3.one * 10000f;
+        }
+
+        List<(float, UnitBase, Node)> targets = new List<(float, UnitBase, Node)>();
+
+        for (int i = 0; i < unitAttackData.Count; i++) {
+            if (unitAttackData[i].Item2.Count > 0) {
+                List<(float, Node)> nodesByTacticalPoints = new List<(float, Node)>(unitAttackData[i].Item2.Count);
+
+                Node bestNodeToAttackFrom = unitAttackData[i].Item2[0];
+
+                for (int j = 0; j < unitAttackData[i].Item2.Count; j++) {
+                    Vector3 attackDirection = (unitAttackData[i].Item1.transform.position.RemoveYCoord() - unitAttackData[i].Item2[j].WorldPosition.RemoveYCoord()).normalized;
+                    bool isAttackFromBehind = _imposedPairsContainer.HasPairWith(unitAttackData[i].Item1) && (Vector3.Dot(attackDirection, unitAttackData[i].Item1.transform.forward.RemoveYCoord()) >= .9f);
+
+                    float tacticalPoints = GetDamageOnTarget(unitToMove, unitAttackData[i].Item1, attackAbility, false);
+
+                    // add more tactical points the health is closer to zero
+                    float targetUnitHealthCompleteness = unitAttackData[i].Item1.GetUnitHealthContainer().GetHealthCompleteness();
+                    float remappedTactitialPointsValue = Mathf.Lerp(tacticalPoints, tacticalPoints * 1.25f, Mathf.InverseLerp(1f, 0f, targetUnitHealthCompleteness));
+
+                    float distToTarget = Vector3.Distance(unitAttackData[i].Item2[j].WorldPosition, unitToMove.transform.position);
+                    tacticalPoints -= distToTarget / 8f;
+
+                    nodesByTacticalPoints.Add(new(tacticalPoints, unitAttackData[i].Item2[j]));
+                }
+
+                float maxTacticalAttackPoints = -Mathf.Infinity;
+
+                for (int j = 0; j < nodesByTacticalPoints.Count; j++) {
+                    if (_isDebugAIMovementWeights) {
+                        TMPro.TextMeshPro worldText = Object.Instantiate(Object.FindObjectOfType<TMPro.TextMeshPro>());
+                        worldText.transform.position = Vector3.up + nodesByTacticalPoints[j].Item2.WorldPosition;
+                        worldText.text = nodesByTacticalPoints[j].Item1.ToString("F1");
+                    }
+
+                    if (nodesByTacticalPoints[j].Item1 > maxTacticalAttackPoints) {
+                        maxTacticalAttackPoints = nodesByTacticalPoints[j].Item1;
+                        bestNodeToAttackFrom = nodesByTacticalPoints[j].Item2;
+                    }
+                }
+
+                targets.Add(new(maxTacticalAttackPoints, unitAttackData[i].Item1, bestNodeToAttackFrom));
+            }
+        }
+
+        if (targets.Count != 0) {
+            float maxTacticalPoints = -Mathf.Infinity;
+            (float, UnitBase, Node) bestAttackTarget = (maxTacticalPoints, null, null);
+            for (int i = 0; i < targets.Count; i++) {
+                if (targets[i].Item1 > maxTacticalPoints) {
+                    maxTacticalPoints = targets[i].Item1;
+                    bestAttackTarget = targets[i];
+                }
+            }
+
+            SetAttackActionTemplate(bestAIAction, maxTacticalPoints, bestAttackTarget.Item3, new List<UnitBase>() { bestAttackTarget.Item2 }, Vector3.forward, attackAbility);
+        }
     }
 
     private IEnumerator OLD_TurnSequence(UnitBase unitToMove) {
@@ -200,7 +329,7 @@ public class AIMovementResolver {
 
         if (_imposedPairsContainer.HasPairWith(unitToMove)) {
             UnitBase target = _imposedPairsContainer.GetPairFor(unitToMove);
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target, attackAbility, true));
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, new List<UnitBase>() { target }, attackAbility, true));
         } else {
             Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
 
@@ -309,10 +438,26 @@ public class AIMovementResolver {
                 yield return _coroutineService.StartCoroutine(MovementRoutine(unitToMove, target.Item3.WorldPosition));
             }
 
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, target.Item2, attackAbility, false));
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, new List<UnitBase>() { target.Item2 }, attackAbility, false));
         }
 
         _turnsHandler.AIEndedTurn();
+    }
+
+    private float GetDamageOnTarget(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isAttackFromBehind) {
+        (bool, float) attackResult = target.GetUnitHealthContainer().GedModifiedDamageAmount(attacker.GetUnitConfig().DefaultAttackDamage);
+
+        float resultDamage = attackResult.Item2;
+
+        if (attackResult.Item1) {
+            resultDamage = 100000f;
+        } else {
+            if (isAttackFromBehind) {
+                resultDamage += attackResult.Item2 * .2f;
+            }
+        }
+
+        return resultDamage;
     }
 
     private IEnumerator FakeTurnSequence(UnitBase unitToMove) {
@@ -323,11 +468,22 @@ public class AIMovementResolver {
         _turnsHandler.AIEndedTurn();
     }
 
+    private void SetAttackActionTemplate(AIAction baseAction, float points, Node endNodeWalking, List<UnitBase> targets, Vector3 attackDirection, BattleFieldActionAbility ability) {
+        baseAction.Points = points;
+        baseAction.EndNodeWalking = endNodeWalking;
+        baseAction.Targets = targets;
+        baseAction.AttackDirection = attackDirection;
+        baseAction.Ability = ability;
+        baseAction.IsAttack = true;
+        baseAction.IsCanBeUsed = true;
+    }
+
     private void EqualizeTwoActions(AIAction action1, AIAction action2) {
         action1.Points = action2.Points;
         action1.EndNodeWalking = action2.EndNodeWalking;
         action1.IsAttack = action2.IsAttack;
-        action1.Target = action2.Target;
+        action1.IsCanBeUsed = action2.IsCanBeUsed;
+        action1.Targets = action2.Targets;
         action1.AttackDirection = action2.AttackDirection;
         action1.Ability = action2.Ability;
     }
@@ -336,7 +492,8 @@ public class AIMovementResolver {
         public float Points = -100000f;
         public Node EndNodeWalking;
         public bool IsAttack;
-        public UnitBase Target;
+        public bool IsCanBeUsed;
+        public List<UnitBase> Targets;
         public Vector3 AttackDirection;
         public BattleFieldActionAbility Ability;
     }

@@ -166,6 +166,10 @@ public class BattleTurnsHandler {
         if (!_battleGridData.Units[^1].IsDeadOnBattleField) {
             _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^1]));
             _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^1]);
+        }        
+        if (!_battleGridData.Units[^3].IsDeadOnBattleField) {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^3]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^3]);
         }
         if (!_battleGridData.Units[1].IsDeadOnBattleField) {
             _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[1]));
@@ -214,6 +218,11 @@ public class BattleTurnsHandler {
     }
 
     public void UnitUsedAbility(UnitBase attackedUnit, BattleFieldActionAbility ability) {
+        // FOR DEBUG REASONS
+        if (attackedUnit is EnemyUnit) {
+            _unitsRoundData_map[attackedUnit].UsedAbilities.Add(ability);
+        }
+
         //_unitsRoundData_map[attackedUnit].UsedAbilities.Add(ability);
     }
 
