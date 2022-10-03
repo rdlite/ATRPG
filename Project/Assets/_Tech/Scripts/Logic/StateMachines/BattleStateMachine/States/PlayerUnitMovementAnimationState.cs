@@ -29,9 +29,7 @@ public class PlayerUnitMovementAnimationState : IPayloadState<Node> {
         StartUnitMovement();
     }
 
-    public void Exit() {
-
-    }
+    public void Exit() { }
 
     private void StartUnitMovement() {
         Node startMovementNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleHandler.CurrentSelectedUnit.transform.position);

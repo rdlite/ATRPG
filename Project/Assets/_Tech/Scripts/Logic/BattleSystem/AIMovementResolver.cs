@@ -31,15 +31,20 @@ public class AIMovementResolver {
 
     public void MoveUnit(UnitBase characterToMove) {
         if (!_isAIActing) {
-            _coroutineService.StartCoroutine(TurnSequence(characterToMove));
+            _coroutineService.StartCoroutine(FakeTurnSequence(characterToMove));
         } else {
-            _coroutineService.StartCoroutine(OLD_TurnSequence(characterToMove));
+            _coroutineService.StartCoroutine(TurnSequence(characterToMove));
         }
     }
 
-    private IEnumerator MovementRoutine(UnitBase characterToMove, Vector3 endPoint) {
+    private IEnumerator MovementRoutine(UnitBase unitToMove, Vector3 endPoint) {
+        Node startMovementNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
+        Node endMovementNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(endPoint);
+        _turnsHandler.SetCurrentWalker(unitToMove);
+        _turnsHandler.RemovePossibleLengthForUnit(unitToMove, _battleGridData.GlobalGrid.GetPathLength(startMovementNode, endMovementNode));
         bool endedWalk = false;
-        characterToMove.GoToPoint(endPoint, false, true, null, () => endedWalk = true);
+        unitToMove.GoToPoint(endPoint, false, true, null, () => endedWalk = true);
+
         yield return new WaitWhile(() => !endedWalk);
     }
 
@@ -53,21 +58,49 @@ public class AIMovementResolver {
     private IEnumerator TurnSequence(UnitBase unitToMove) {
         _battleHandler.StartFocusCamera(unitToMove.transform, () => _battleSM.Enter<AIMovementState>());
 
-        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
+        yield return new WaitForSeconds(1f);
 
-        yield return new WaitForSeconds(.5f);
+        AIAction bestAIAction = new AIAction();
+        List<AIAction> possibleAIActions = new List<AIAction>(unitToMove.GetUnitAbilitites().Count);
 
-        AIAction bestEnemyAction = new AIAction();
-        List<AIAction> possibleAIActions = new List<AIAction>();
+        bool hasNoAbilities = unitToMove.GetUnitAbilitites().Count == 0;
 
-        foreach (var ability in unitToMove.GetUnitAbilitites()) {
-            if (ability.Type == AbilityType.Walk) {
-                AIAction newAction = new AIAction();
-                yield return _coroutineService.StartCoroutine(GetWalkingBestTurn(walkPoints, unitToMove, newAction));
-                possibleAIActions.Add(newAction);
+        while (!hasNoAbilities) {
+            List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
+
+            foreach (var ability in unitToMove.GetUnitAbilitites()) {
+                if (ability.Type == AbilityType.Walk && _turnsHandler.IsUnitHaveLengthToMove(unitToMove)) {
+                    AIAction newAction = new AIAction();
+                    yield return _coroutineService.StartCoroutine(GetWalkingBestTurn(walkPoints, unitToMove, newAction));
+                    possibleAIActions.Add(newAction);
+                }
+
+                if (possibleAIActions.Count > 0) {
+                    bestAIAction = possibleAIActions[0];
+
+                    float bestActionPointsAmount = -Mathf.Infinity;
+                    int removeAtPossibleActions = 0;
+
+                    for (int i = 0; i < possibleAIActions.Count; i++) {
+                        if (bestActionPointsAmount > possibleAIActions[i].Points) {
+                            EqualizeTwoActions(bestAIAction, possibleAIActions[i]);
+                            removeAtPossibleActions = i;
+                        }
+                    }
+
+                    possibleAIActions.RemoveAt(removeAtPossibleActions);
+
+                    yield return _coroutineService.StartCoroutine(ImplementAIAction(unitToMove, bestAIAction));
+                }
+
+                yield return null;
             }
 
-            yield return null;
+            if (possibleAIActions.Count == 0) {
+                hasNoAbilities = true;
+            } else {
+                possibleAIActions.Clear();
+            }
         }
 
         // пробежаться по всем доступным персонажу абилкам
@@ -76,7 +109,7 @@ public class AIMovementResolver {
         // для атаки один на один 
             // проверять импозед, в общем-то вытащить полностью из текущего алгоритма
             // если нет целей в ренже атаки, то ирдти к ближайшей к врагу ноде (сделать универсальную функцию поиска для переиспользования)
-        // вообще создать юнита с секирой
+            // вообще создать юнита с секирой
         // для атаки мили-ренж
             // проверять импозед, если да, то просто атаковать
             // для каждой точки с радиусом до врага смотреть атаку в 8 сторон
@@ -90,8 +123,70 @@ public class AIMovementResolver {
         _turnsHandler.AIEndedTurn();
     }
 
-    private IEnumerator GetWalkingBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestEnemyAction) {
-        yield return new WaitForSeconds(1f);
+    private IEnumerator ImplementAIAction(UnitBase unit, AIAction aIAction) {
+        if (!aIAction.IsAttack) {
+            yield return _coroutineService.StartCoroutine(MovementRoutine(unit, aIAction.EndNodeWalking.WorldPosition));
+            yield return new WaitForSeconds(1f);
+        }
+    }
+
+    private IEnumerator GetWalkingBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction) {
+        AIAction bestWalkingAction = new AIAction();
+        AIAction worstWalkingAction = new AIAction();
+        float bestTacticalPoints = -Mathf.Infinity;
+        float worstTacticalPoints = Mathf.Infinity;
+
+        if (_isDebugAIMovementWeights) {
+            bool isFirst = false;
+            foreach (var item in Object.FindObjectsOfType<TMPro.TextMeshPro>()) {
+                if (!isFirst) {
+                    isFirst = true;
+                    continue;
+                }
+                Object.Destroy(item.gameObject);
+            }
+
+            Object.FindObjectOfType<TMPro.TextMeshPro>().transform.position = Vector3.one * 10000f;
+        }
+
+        foreach (Node node in walkPoints) {
+            if (!node.CheckWalkability || node == _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position)) {
+                continue;
+            }
+
+            float summaryDistanceToUnits = 0f;
+            int unitsAmount = 0;
+            for (int i = 0; i < _battleGridData.Units.Count; i++) {
+                if (unitToMove != _battleGridData.Units[i] && !_battleGridData.Units[i].IsDeadOnBattleField && unitToMove.GetType() != _battleGridData.Units[i].GetType()) {
+                    summaryDistanceToUnits += Vector3.Distance(node.WorldPosition.RemoveYCoord(), _battleGridData.Units[i].transform.position.RemoveYCoord());
+                    unitsAmount++;
+                }
+            }
+
+            float tacticalPointForCurrentNode = (float)unitsAmount / summaryDistanceToUnits * Random.Range(.9f, 1.1f) * 10f;
+
+            if (_isDebugAIMovementWeights) {
+                TMPro.TextMeshPro worldText = Object.Instantiate(Object.FindObjectOfType<TMPro.TextMeshPro>());
+                worldText.transform.position = Vector3.up + node.WorldPosition;
+                worldText.text = tacticalPointForCurrentNode.ToString("F1");
+            }
+
+            if (tacticalPointForCurrentNode < worstTacticalPoints) {
+                worstTacticalPoints = tacticalPointForCurrentNode;
+                worstWalkingAction.Points = worstTacticalPoints;
+                worstWalkingAction.EndNodeWalking = node;
+            }
+
+            if (tacticalPointForCurrentNode > bestTacticalPoints) {
+                bestTacticalPoints = tacticalPointForCurrentNode;
+                bestWalkingAction.Points = bestTacticalPoints;
+                bestWalkingAction.EndNodeWalking = node;
+            }
+        }
+
+        yield return null;
+
+        EqualizeTwoActions(bestAIAction, bestWalkingAction);
     }
 
     private IEnumerator OLD_TurnSequence(UnitBase unitToMove) {
@@ -226,6 +321,15 @@ public class AIMovementResolver {
         yield return new WaitForSeconds(1f);
 
         _turnsHandler.AIEndedTurn();
+    }
+
+    private void EqualizeTwoActions(AIAction action1, AIAction action2) {
+        action1.Points = action2.Points;
+        action1.EndNodeWalking = action2.EndNodeWalking;
+        action1.IsAttack = action2.IsAttack;
+        action1.Target = action2.Target;
+        action1.AttackDirection = action2.AttackDirection;
+        action1.Ability = action2.Ability;
     }
 
     private class AIAction {

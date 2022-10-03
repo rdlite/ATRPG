@@ -5984,8 +5984,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 22
+  m_fontSizeBase: 22
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -6419,7 +6419,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4f231c4fb786f3946a6b90b886c48677, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_SendPointerHoverToParent: 1
   m_HorizontalAxis: Horizontal
   m_VerticalAxis: Vertical
   m_SubmitButton: Submit
@@ -7202,12 +7201,12 @@ PrefabInstance:
     - target: {fileID: 5052610839338524692, guid: 41d78a7e119f946469ab7b0438e69e5d,
         type: 3}
       propertyPath: _isAIActing
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5052610839338524692, guid: 41d78a7e119f946469ab7b0438e69e5d,
         type: 3}
       propertyPath: _isDebugAIMovementWeights
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5052610839338524693, guid: 41d78a7e119f946469ab7b0438e69e5d,
         type: 3}

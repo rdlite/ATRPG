@@ -82,7 +82,7 @@ Material:
     - _WalkPointsTextureOffset: -0.0042
     - _WalkingPointsTextureOffset: 0
     m_Colors:
-    - _AppearCenterPointUV: {r: 0.4206301, g: 0.6565181, b: 0, a: 0}
+    - _AppearCenterPointUV: {r: 0.49830005, g: 0.66568005, b: 0, a: 0}
     - _FillColor: {r: 0.18792273, g: 0.9486765, b: 0.9716981, a: 1}
     - _InlineAlphaColor: {r: 1, g: 1, b: 1, a: 0.772549}
     - _InlineColor: {r: 0, g: 1, b: 0.9374714, a: 1}
