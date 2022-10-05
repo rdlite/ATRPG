@@ -1,9 +1,11 @@
-public class GameService {
+public class GameService
+{
     private GameStateMachine _gameStateMachine;
 
     public GameService(
         ICoroutineService corounieSystem, ConfigsContainer configsContainer, UIRoot uiRoot,
-        AssetsContainer assetsContainer) {
+        AssetsContainer assetsContainer)
+    {
         _gameStateMachine = new GameStateMachine(
             corounieSystem, configsContainer, uiRoot,
             assetsContainer);
@@ -11,15 +13,18 @@ public class GameService {
         _gameStateMachine.Enter<BootstrapState>();
     }
 
-    public void GameUpdate() {
+    public void GameUpdate()
+    {
         _gameStateMachine.UpdateState();
     }
 
-    public void GameFixedUpdate() {
+    public void GameFixedUpdate()
+    {
         _gameStateMachine.FixedUpdateState();
     }
 
-    public void GameLateUpdate() {
+    public void GameLateUpdate()
+    {
         _gameStateMachine.LateUpdateState();
     }
 }

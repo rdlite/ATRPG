@@ -3,7 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AStarPathfinder {
+public class AStarPathfinder
+{
     private List<Node> _openSet;
     private bool[,] _listOpenSetContains;
     private bool[,] _listCloseSetContains;
@@ -12,7 +13,8 @@ public class AStarPathfinder {
     private Vector3 _exactEndPos;
     private bool _isMoveToNodePoint;
 
-    public void Init(AStarGrid grid, PathRequestManager pathRequestManager) {
+    public void Init(AStarGrid grid, PathRequestManager pathRequestManager)
+    {
         _grid = grid;
         _pathRequestManager = pathRequestManager;
 
@@ -22,12 +24,14 @@ public class AStarPathfinder {
         _listCloseSetContains = new bool[_grid.GridWidth, _grid.GridHeight];
     }
 
-    public void StartFindPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToNodePoint, bool isIgnorePenalty) {
+    public void StartFindPath(Vector3 wPosStart, Vector3 wPosEnd, bool isMoveToNodePoint, bool isIgnorePenalty)
+    {
         _isMoveToNodePoint = isMoveToNodePoint;
         _grid.StartCoroutine(Pathfinding(wPosStart, wPosEnd, isIgnorePenalty));
     }
 
-    private IEnumerator Pathfinding(Vector3 startPos, Vector3 endPos, bool isIgnorePenalty) {
+    private IEnumerator Pathfinding(Vector3 startPos, Vector3 endPos, bool isIgnorePenalty)
+    {
         _exactEndPos = endPos;
 
         Vector3[] resultWaypoints = new Vector3[0];
@@ -36,13 +40,15 @@ public class AStarPathfinder {
         Node startNode = _grid.GetNodeFromWorldPoint(startPos);
         Node endNode = _grid.GetNodeFromWorldPoint(endPos);
 
-        if (!startNode.CheckWalkability) {
+        if (!startNode.CheckWalkability)
+        {
             startNode = _grid.GetFirstNearestWalkableNode(startNode, true);
             startPos = startNode.WorldPosition;
         }
 
-        if (!endNode.CheckWalkability) {
-            endNode = _grid.GetFirstNearestWalkableNode(endNode,true);
+        if (!endNode.CheckWalkability)
+        {
+            endNode = _grid.GetFirstNearestWalkableNode(endNode, true);
         }
 
         int gridW = _grid.GridWidth;
@@ -53,12 +59,15 @@ public class AStarPathfinder {
 
         int frameSkip = 0;
 
-        if (distanceCheck >= 1) {
+        if (distanceCheck >= 1)
+        {
             frameSkip = Mathf.RoundToInt(distanceCheck);
         }
 
-        for (int x = 0; x < gridW; x++) {
-            for (int y = 0; y < gridH; y++) {
+        for (int x = 0; x < gridW; x++)
+        {
+            for (int y = 0; y < gridH; y++)
+            {
                 _listOpenSetContains[x, y] = false;
                 _listCloseSetContains[x, y] = false;
             }
@@ -72,8 +81,10 @@ public class AStarPathfinder {
         int opensetCount = 0;
         int passesCount = 0;
 
-        while (_openSet.Count > 0) {
-            if (frameSkip != 0 && passesCount > 1500 / frameSkip) {
+        while (_openSet.Count > 0)
+        {
+            if (frameSkip != 0 && passesCount > 1500 / frameSkip)
+            {
                 passesCount = 0;
                 yield return null;
             }
@@ -84,10 +95,12 @@ public class AStarPathfinder {
 
             opensetCount = _openSet.Count;
 
-            for (int i = 0; i < opensetCount; i++) {
+            for (int i = 0; i < opensetCount; i++)
+            {
                 currentCheckNode = _openSet[i];
 
-                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost) {
+                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost)
+                {
                     currentNode = currentCheckNode;
                 }
             }
@@ -96,26 +109,31 @@ public class AStarPathfinder {
             _openSet.Remove(currentNode);
             _listCloseSetContains[currentNode.GridX, currentNode.GridY] = true;
 
-            if (currentNode == endNode) {
+            if (currentNode == endNode)
+            {
                 pathSuccess = true;
 
                 break;
             }
 
-            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true)) {
-                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true))
+            {
+                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                {
                     continue;
                 }
 
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode) + (isIgnorePenalty ? 0 : neighbourNode.MovementPenalty);
 
-                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                {
                     neighbourNode.gCost = newMovementCostToNeighbour;
                     neighbourNode.hCost = GetDistance(neighbourNode, endNode);
                     neighbourNode.UpdateFCost();
                     neighbourNode.Parent = currentNode;
 
-                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                    {
                         _openSet.Add(neighbourNode);
                         _listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY] = true;
                     }
@@ -123,13 +141,15 @@ public class AStarPathfinder {
             }
         }
 
-        if (pathSuccess) {
+        if (pathSuccess)
+        {
             resultWaypoints = RetracePath(startNode, endNode);
         }
 
         if (startNode == endNode ||
             resultWaypoints.Length == 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask) ||
-            resultWaypoints.Length > 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask)) {
+            resultWaypoints.Length > 1 && Physics.Linecast(startPos + Vector3.up, resultWaypoints[0] + Vector3.up, _grid.ObstacleMask))
+        {
             pathSuccess = false;
         }
 
@@ -141,23 +161,28 @@ public class AStarPathfinder {
         _pathRequestManager.FinishedProcessingPath(resultWaypoints, pathSuccess);
     }
 
-    public Vector3[] CalculatePath(Node startNode, Node endNode) {
+    public Vector3[] CalculatePath(Node startNode, Node endNode)
+    {
         Vector3[] resultWaypoints = new Vector3[0];
         bool pathSuccess = false;
 
-        if (!startNode.CheckWalkability) {
+        if (!startNode.CheckWalkability)
+        {
             startNode = _grid.GetFirstNearestWalkableNode(startNode, true);
         }
 
-        if (!endNode.CheckWalkability) {
+        if (!endNode.CheckWalkability)
+        {
             endNode = _grid.GetFirstNearestWalkableNode(endNode, true);
         }
 
         int gridW = _grid.GridWidth;
         int gridH = _grid.GridHeight;
 
-        for (int x = 0; x < gridW; x++) {
-            for (int y = 0; y < gridH; y++) {
+        for (int x = 0; x < gridW; x++)
+        {
+            for (int y = 0; y < gridH; y++)
+            {
                 _listOpenSetContains[x, y] = false;
                 _listCloseSetContains[x, y] = false;
             }
@@ -170,16 +195,19 @@ public class AStarPathfinder {
         Node currentCheckNode = null;
         int opensetCount = 0;
 
-        while (_openSet.Count > 0) {
+        while (_openSet.Count > 0)
+        {
 
             Node currentNode = _openSet[0];
 
             opensetCount = _openSet.Count;
 
-            for (int i = 0; i < opensetCount; i++) {
+            for (int i = 0; i < opensetCount; i++)
+            {
                 currentCheckNode = _openSet[i];
 
-                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost) {
+                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost)
+                {
                     currentNode = currentCheckNode;
                 }
             }
@@ -188,26 +216,31 @@ public class AStarPathfinder {
             _openSet.Remove(currentNode);
             _listCloseSetContains[currentNode.GridX, currentNode.GridY] = true;
 
-            if (currentNode == endNode) {
+            if (currentNode == endNode)
+            {
                 pathSuccess = true;
 
                 break;
             }
 
-            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true)) {
-                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true))
+            {
+                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                {
                     continue;
                 }
 
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode);
 
-                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                {
                     neighbourNode.gCost = newMovementCostToNeighbour;
                     neighbourNode.hCost = GetDistance(neighbourNode, endNode);
                     neighbourNode.UpdateFCost();
                     neighbourNode.Parent = currentNode;
 
-                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                    {
                         _openSet.Add(neighbourNode);
                         _listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY] = true;
                     }
@@ -215,19 +248,23 @@ public class AStarPathfinder {
             }
         }
 
-        if (pathSuccess) {
+        if (pathSuccess)
+        {
             resultWaypoints = RetracePathWithStartPoint(startNode, endNode);
         }
 
         return resultWaypoints;
     }
 
-    public float GetPathLength(Node startNode, Node endNode) {
+    public float GetPathLength(Node startNode, Node endNode)
+    {
         int gridW = _grid.GridWidth;
         int gridH = _grid.GridHeight;
 
-        for (int x = 0; x < gridW; x++) {
-            for (int y = 0; y < gridH; y++) {
+        for (int x = 0; x < gridW; x++)
+        {
+            for (int y = 0; y < gridH; y++)
+            {
                 _listOpenSetContains[x, y] = false;
                 _listCloseSetContains[x, y] = false;
             }
@@ -240,15 +277,18 @@ public class AStarPathfinder {
         Node currentCheckNode = null;
         int opensetCount = 0;
 
-        while (_openSet.Count > 0) {
+        while (_openSet.Count > 0)
+        {
             Node currentNode = _openSet[0];
 
             opensetCount = _openSet.Count;
 
-            for (int i = 0; i < opensetCount; i++) {
+            for (int i = 0; i < opensetCount; i++)
+            {
                 currentCheckNode = _openSet[i];
 
-                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost) {
+                if (currentCheckNode.fCost < currentNode.fCost || currentCheckNode.fCost == currentNode.fCost && currentCheckNode.hCost < currentNode.hCost)
+                {
                     currentNode = currentCheckNode;
                 }
             }
@@ -257,24 +297,29 @@ public class AStarPathfinder {
             _openSet.Remove(currentNode);
             _listCloseSetContains[currentNode.GridX, currentNode.GridY] = true;
 
-            if (currentNode == endNode) {
+            if (currentNode == endNode)
+            {
                 break;
             }
 
-            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true)) {
-                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+            foreach (Node neighbourNode in _grid.GetNeighbours(currentNode, true))
+            {
+                if (!neighbourNode.CheckWalkability || _listCloseSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                {
                     continue;
                 }
 
                 int newMovementCostToNeighbour = currentNode.gCost + GetDistance(currentNode, neighbourNode) + neighbourNode.MovementPenalty;
 
-                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                if (newMovementCostToNeighbour < neighbourNode.gCost || !_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                {
                     neighbourNode.gCost = newMovementCostToNeighbour;
                     neighbourNode.hCost = GetDistance(neighbourNode, endNode);
                     neighbourNode.UpdateFCost();
                     neighbourNode.Parent = currentNode;
 
-                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY]) {
+                    if (!_listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY])
+                    {
                         _openSet.Add(neighbourNode);
                         _listOpenSetContains[neighbourNode.GridX, neighbourNode.GridY] = true;
                     }
@@ -285,10 +330,12 @@ public class AStarPathfinder {
         return RetracePathLength(startNode, endNode);
     }
 
-    private Vector3[] RetracePath(Node startNode, Node endNode) {
+    private Vector3[] RetracePath(Node startNode, Node endNode)
+    {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
-        while (currentNode != startNode) {
+        while (currentNode != startNode)
+        {
             path.Add(currentNode);
             currentNode = currentNode.Parent;
         }
@@ -298,12 +345,14 @@ public class AStarPathfinder {
 
         return waypoints;
     }
-    
-    private Vector3[] RetracePathWithStartPoint(Node startNode, Node endNode) {
+
+    private Vector3[] RetracePathWithStartPoint(Node startNode, Node endNode)
+    {
         List<Node> path = new List<Node>();
         Node currentNode = endNode;
 
-        while (currentNode != startNode) {
+        while (currentNode != startNode)
+        {
             path.Add(currentNode);
             currentNode = currentNode.Parent;
         }
@@ -316,11 +365,13 @@ public class AStarPathfinder {
         return waypoints;
     }
 
-    private float RetracePathLength(Node startNode, Node endNode) {
+    private float RetracePathLength(Node startNode, Node endNode)
+    {
         Node currentNode = endNode;
         float length = 0f;
 
-        while (currentNode != startNode) {
+        while (currentNode != startNode)
+        {
             float xDist = currentNode.GridX - currentNode.Parent.GridX;
             float yDist = currentNode.GridY - currentNode.Parent.GridY;
 
@@ -332,27 +383,33 @@ public class AStarPathfinder {
         return length;
     }
 
-    private Vector3[] ConvertPathByExactPoints(List<Node> path) {
+    private Vector3[] ConvertPathByExactPoints(List<Node> path)
+    {
         List<Vector3> result = new List<Vector3>();
 
-        for (int i = 0; i < path.Count; i++) {
+        for (int i = 0; i < path.Count; i++)
+        {
             result.Add(path[i].WorldPosition);
         }
 
         return result.ToArray();
     }
 
-    private Vector3[] ConvertPath(List<Node> path) {
+    private Vector3[] ConvertPath(List<Node> path)
+    {
         List<Vector3> result = new List<Vector3>();
 
-        if (!_isMoveToNodePoint) {
+        if (!_isMoveToNodePoint)
+        {
             result.Add(_exactEndPos);
         }
 
         Vector3 directionOld = Vector3.zero;
-        for (int i = 1; i < path.Count; i++) {
+        for (int i = 1; i < path.Count; i++)
+        {
             Vector3 directionNew = path[i - 1].WorldPosition - path[i].WorldPosition;
-            if (directionNew != directionOld) {
+            if (directionNew != directionOld)
+            {
                 result.Add(path[i].WorldPosition);
             }
 
@@ -362,14 +419,16 @@ public class AStarPathfinder {
         return result.ToArray();
     }
 
-    private int GetDistance(Node nodeA, Node nodeB) {
+    private int GetDistance(Node nodeA, Node nodeB)
+    {
         int dstX = nodeA.GridX - nodeB.GridX;
         int dstY = nodeA.GridY - nodeB.GridY;
 
         dstX = dstX < 0 ? -dstX : dstX;
         dstY = dstY < 0 ? -dstY : dstY;
 
-        if (dstX > dstY) {
+        if (dstX > dstY)
+        {
             return 14 * dstY + 10 * (dstX - dstY);
         }
 

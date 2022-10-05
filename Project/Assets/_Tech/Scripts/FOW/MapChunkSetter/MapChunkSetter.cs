@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public class MapChunkSetter : MonoBehaviour {
+public class MapChunkSetter : MonoBehaviour
+{
     private static int resAdd;
 
     [SerializeField] private int _textureResolution = 64;
@@ -15,10 +16,12 @@ public class MapChunkSetter : MonoBehaviour {
 
     private RenderTexture _savedRenderTextureData;
 
-    private void Start() {
+    private void Start()
+    {
         RenderTexture loadedRT = _fogOfWarSaver.LoadFOW(_textureResolution);
 
-        if (loadedRT != null) {
+        if (loadedRT != null)
+        {
             _savedRenderTextureData = new RenderTexture(loadedRT.width, loadedRT.height, 8);
             _savedRenderTextureData.width = _textureResolution;
             _savedRenderTextureData.height = _textureResolution;
@@ -40,12 +43,14 @@ public class MapChunkSetter : MonoBehaviour {
         resAdd++;
     }
 
-    private RenderTexture GenerateTexture() {
+    private RenderTexture GenerateTexture()
+    {
         RenderTexture rt = new RenderTexture(
             _textureResolution + resAdd,
             _textureResolution + resAdd,
             0,
-            _fogTextureFormat) { filterMode = _filterMode };
+            _fogTextureFormat)
+        { filterMode = _filterMode };
         rt.antiAliasing = _antiAliasing;
 
         return rt;

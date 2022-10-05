@@ -7,7 +7,8 @@ public class GameStateMachine : UpdateStateMachine
         ICoroutineService coroutineService, ConfigsContainer configsContainer, UIRoot uiRoot,
         AssetsContainer assetsContainer)
     {
-        _states = new Dictionary<Type, IExitableState>() {
+        _states = new Dictionary<Type, IExitableState>()
+        {
             [typeof(BootstrapState)] = new BootstrapState(
                 this, coroutineService, uiRoot,
                 assetsContainer),
@@ -23,7 +24,8 @@ public class GameStateMachine : UpdateStateMachine
     }
 }
 
-public class BetweenStatesDataContainer {
+public class BetweenStatesDataContainer
+{
     public OnFieldRaycaster FieldRaycaster;
     public PlayerUnitsGroupContainer CharactersGroupContainer;
     public EnemyUnit EnemyDetected;
@@ -32,7 +34,8 @@ public class BetweenStatesDataContainer {
 
     public BetweenStatesDataContainer(
         OnFieldRaycaster fieldRaycaster, PlayerUnitsGroupContainer charactersGroupContainer, BattleGridGenerator battleGridGenerator,
-        CameraSimpleFollower camera) {
+        CameraSimpleFollower camera)
+    {
         Camera = camera;
         CharactersGroupContainer = charactersGroupContainer;
         FieldRaycaster = fieldRaycaster;

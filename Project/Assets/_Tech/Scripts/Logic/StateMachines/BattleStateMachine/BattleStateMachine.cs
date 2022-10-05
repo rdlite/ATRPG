@@ -30,6 +30,7 @@ public class BattleStateMachine : UpdateStateMachine {
                 coroutineService, uiRoot, battleHandler,
                 imposedPairsContainer, turnsHandler, assetsContainer,
                 battleGridData, this, cameraFollower),
+
             [typeof(PlayerMeleeAttackOneToOneState)] = new PlayerMeleeAttackOneToOneState(
                 this, battleHandler, battleGridData,
                 imposedPairsContainer, battleRaycaster, inputService),
@@ -37,6 +38,7 @@ public class BattleStateMachine : UpdateStateMachine {
                 this, battleHandler, battleGridData,
                 imposedPairsContainer, battleRaycaster, inputService,
                 cameraFollower),
+            
             [typeof(UnitSelectionState)] = new UnitSelectionState(
                 battleHandler, this, turnsHandler,
                 uiRoot, imposedPairsContainer),

@@ -2,22 +2,26 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 
-public class BloodDecalAppearance : MonoBehaviour {
+public class BloodDecalAppearance : MonoBehaviour
+{
     [SerializeField] private TexturesContainer _bloodTextures;
     [SerializeField] private DecalProjector _projector;
     [SerializeField] private Vector2 _randomWidthSize, _randomHeightSize;
 
     private bool _isDecalDestroy;
 
-    public void ThrowDecalOnSurface(Vector3 hitPosition, Vector3 outDirection) {
+    public void ThrowDecalOnSurface(Vector3 hitPosition, Vector3 outDirection)
+    {
         StartCoroutine(DecalAppearance(hitPosition, outDirection));
     }
 
-    public void DestroyDecal() {
+    public void DestroyDecal()
+    {
         _isDecalDestroy = true;
     }
 
-    private IEnumerator DecalAppearance(Vector3 hitPosition, Vector3 outDirection) {
+    private IEnumerator DecalAppearance(Vector3 hitPosition, Vector3 outDirection)
+    {
         transform.position = hitPosition + Vector3.up * 2f;
         transform.forward = outDirection;
         transform.eulerAngles = new Vector3(transform.eulerAngles.x + 70f, transform.eulerAngles.y + Random.Range(-30f, 30f), transform.eulerAngles.z);
@@ -33,7 +37,8 @@ public class BloodDecalAppearance : MonoBehaviour {
 
         float t = 0f;
 
-        while (t <= 1f) {
+        while (t <= 1f)
+        {
             t += Time.deltaTime;
 
             _projector.size = Vector3.Lerp(_projector.size, new Vector3(endSizeX, endSizeY, _projector.size.z), 30f * Time.deltaTime);
@@ -49,7 +54,8 @@ public class BloodDecalAppearance : MonoBehaviour {
         t = 1f;
         float destroySpeed = Random.Range(.1f, .2f);
 
-        while (t >= 0f) {
+        while (t >= 0f)
+        {
             t -= Time.deltaTime * destroySpeed;
 
             _projector.fadeFactor = t;

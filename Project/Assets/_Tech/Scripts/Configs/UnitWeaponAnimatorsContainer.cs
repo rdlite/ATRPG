@@ -3,27 +3,33 @@ using System.Linq;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New animators container", menuName = "Containers/WeaponAnimatorsContainer")]
-public class UnitWeaponAnimatorsContainer : ScriptableObject {
+public class UnitWeaponAnimatorsContainer : ScriptableObject
+{
     [SerializeField] private List<WeaponDataPair> _weapons_map = new List<WeaponDataPair>();
 
-    public RuntimeAnimatorController GetAnimatorByType(WeaponAnimationLayerType type) {
+    public RuntimeAnimatorController GetAnimatorByType(WeaponAnimationLayerType type)
+    {
         return _weapons_map.Single((item) => item.Type == type).Animator;
     }
 
-    public int GetAttackAnimationsAmount(WeaponAnimationLayerType type) {
+    public int GetAttackAnimationsAmount(WeaponAnimationLayerType type)
+    {
         return _weapons_map.Single((item) => item.Type == type).AttackAnimationsAmount;
     }
 
-    public int GetImposeAttackAnimationsAmount(WeaponAnimationLayerType type) {
+    public int GetImposeAttackAnimationsAmount(WeaponAnimationLayerType type)
+    {
         return _weapons_map.Single((item) => item.Type == type).ImposAnimationsAttackAmount;
     }
 
-    public int GetImposeImpactAnimationsAmount(WeaponAnimationLayerType type) {
+    public int GetImposeImpactAnimationsAmount(WeaponAnimationLayerType type)
+    {
         return _weapons_map.Single((item) => item.Type == type).ImposeAnimationsImpactAmount;
     }
 
     [System.Serializable]
-    private class WeaponDataPair {
+    private class WeaponDataPair
+    {
         public WeaponAnimationLayerType Type;
         public RuntimeAnimatorController Animator;
         public int AttackAnimationsAmount;

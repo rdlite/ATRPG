@@ -2,7 +2,8 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class UnitBase : MonoBehaviour {
+public abstract class UnitBase : MonoBehaviour
+{
     public bool IsDeadOnBattleField;
     public bool IsBusy;
 
@@ -36,7 +37,8 @@ public abstract class UnitBase : MonoBehaviour {
 
     public void Init(
         OnFieldRaycaster fieldRaycaster, SceneAbstractEntitiesMediator abstractEntitiesMediator, ConfigsContainer configsContainer,
-        AssetsContainer assetsContainer, CameraSimpleFollower mainCamera, ICoroutineService coroutineService) {
+        AssetsContainer assetsContainer, CameraSimpleFollower mainCamera, ICoroutineService coroutineService)
+    {
         _mainCamera = mainCamera;
         _assetsContainer = assetsContainer;
         _configsContainer = configsContainer;
@@ -51,25 +53,30 @@ public abstract class UnitBase : MonoBehaviour {
 
         _weaponHandler = new UnitWeaponHandler();
         _animator = new UnitAnimator(
-            GetComponentInChildren<Animator>(true), coroutineService, _weaponHandler, 
+            GetComponentInChildren<Animator>(true), coroutineService, _weaponHandler,
             _skinContainer, _assetsContainer.AnimatorsContainer, _assetsContainer.WeaponPrefabsContainer.GetWeaponLayerType(_weaponType));
 
         _weaponHandler.Init(
             assetsContainer, _skinContainer, gameObject.layer);
 
-        if (this is EnemyUnit) {
+        if (this is EnemyUnit)
+        {
             _selectionData = _configsContainer.CharactersSelectionData.EnemySelection;
-        } else if (this is PlayerUnit) {
+        }
+        else if (this is PlayerUnit)
+        {
             _selectionData = _configsContainer.CharactersSelectionData.PlayerSelection;
         }
 
-        for (int i = 0; i < _childOutlines.Length; i++) {
+        for (int i = 0; i < _childOutlines.Length; i++)
+        {
             _childOutlines[i].SetOutlineValues(_selectionData);
         }
 
         _weaponHandler.CreateWeapon(_weaponType);
 
-        if (_createdOverUnitData == null) {
+        if (_createdOverUnitData == null)
+        {
             CreateOverUnitUIData();
         }
 
@@ -81,18 +88,24 @@ public abstract class UnitBase : MonoBehaviour {
 
     public void GoToPoint(
         Vector3 worldPos, bool isMoveToExactPoint, bool isIgnorePenalty = false,
-        Action<PathCallbackData> callback = null, Action onReachCallback = null) {
-        _agent.SetDestination(worldPos, isMoveToExactPoint, isIgnorePenalty, (val) => {
+        Action<PathCallbackData> callback = null, Action onReachCallback = null)
+    {
+        _agent.SetDestination(worldPos, isMoveToExactPoint, isIgnorePenalty, (val) =>
+        {
             callback?.Invoke(val);
             _animator.SetMovementMagnitude(_agent.GetPathLength() > _distanceToStartWalkingAnimation ? 1f : .5f);
             _agent.MovementSpeed = _agent.GetPathLength() > _distanceToStartWalkingAnimation ? _defaultSpeed : _defaultSpeed / 2f;
         }, onReachCallback);
     }
 
-    protected virtual void Update() {
-        if (!_isCurrentlyMoving && _agent.IsWalkingByPath) {
+    protected virtual void Update()
+    {
+        if (!_isCurrentlyMoving && _agent.IsWalkingByPath)
+        {
             StartMove();
-        } else if (_isCurrentlyMoving && !_agent.IsWalkingByPath) {
+        }
+        else if (_isCurrentlyMoving && !_agent.IsWalkingByPath)
+        {
             StopMove();
         }
 
@@ -100,63 +113,78 @@ public abstract class UnitBase : MonoBehaviour {
         MoveDataAbove();
     }
 
-    private void MoveSelection() {
-        if (_createdUnitSelection != null) {
+    private void MoveSelection()
+    {
+        if (_createdUnitSelection != null)
+        {
             _createdUnitSelection.transform.position = GetOverUnitPoint();
         }
     }
 
-    private void MoveDataAbove() {
-        if (_createdOverUnitData != null) {
+    private void MoveDataAbove()
+    {
+        if (_createdOverUnitData != null)
+        {
             _createdOverUnitData.transform.position = Vector3.Lerp(_createdOverUnitData.transform.position, GetOverUnitPoint() + _createdOverUnitData.transform.up * (_createdUnitSelection == null ? .5f : 1f), 13f * Time.deltaTime);
             _createdOverUnitData.transform.forward = _mainCamera.transform.forward;
         }
     }
 
-    public virtual void AbortMovement() {
+    public virtual void AbortMovement()
+    {
         StopMove();
         _agent.StopMovement();
     }
 
-    public void SetActiveOutline(bool value) {
-        for (int i = 0; i < _childOutlines.Length; i++) {
+    public void SetActiveOutline(bool value)
+    {
+        for (int i = 0; i < _childOutlines.Length; i++)
+        {
             _childOutlines[i].enabled = value;
         }
     }
 
-    public virtual void StartMove() {
+    public virtual void StartMove()
+    {
         _collider.enabled = false;
         _isCurrentlyMoving = true;
         _animator.SetMovementAnimation(true);
     }
 
-    public virtual void StopMove() {
+    public virtual void StopMove()
+    {
         _collider.enabled = true;
         _isCurrentlyMoving = false;
         _animator.SetMovementAnimation(false);
     }
 
-    public Vector3 GetOverUnitPoint() {
+    public Vector3 GetOverUnitPoint()
+    {
         return _overUnitPoint.transform.position;
     }
 
-    public void CreateSelectionAbove() {
+    public void CreateSelectionAbove()
+    {
         DestroySelection();
 
         _createdUnitSelection = Instantiate(_selectionAboveCharacter);
     }
 
-    public void DestroySelection() {
-        if (_createdUnitSelection != null) {
+    public void DestroySelection()
+    {
+        if (_createdUnitSelection != null)
+        {
             Destroy(_createdUnitSelection);
         }
     }
 
-    public Color GetUnitColor() {
+    public Color GetUnitColor()
+    {
         return _selectionData.OutlineColor;
     }
 
-    private void CreateOverUnitUIData() {
+    private void CreateOverUnitUIData()
+    {
         _createdOverUnitData = Instantiate(_assetsContainer.BattleOverUnitDataPrefab);
         _createdOverUnitData.transform.position = GetOverUnitPoint() + Vector3.up * 1.25f;
         _createdOverUnitData.gameObject.SetActive(false);
@@ -164,37 +192,46 @@ public abstract class UnitBase : MonoBehaviour {
         _createdOverUnitData.SetActivePanel(OverUnitWorldDataPanel.PanelActivationType.None, false);
     }
 
-    public void ActivateOverUnitData(bool isSmall, UnitStatsConfig attackerConfig = null, bool imposed = false) {
+    public void ActivateOverUnitData(bool isSmall, UnitStatsConfig attackerConfig = null, bool imposed = false)
+    {
         _createdOverUnitData.gameObject.SetActive(true);
         _createdOverUnitData.UpdateData(attackerConfig, imposed);
         _createdOverUnitData.SetActivePanel(isSmall ? OverUnitWorldDataPanel.PanelActivationType.Small : OverUnitWorldDataPanel.PanelActivationType.Full, true);
     }
 
-    public void DeactivateOverUnitData(bool completely) {
+    public void DeactivateOverUnitData(bool completely)
+    {
         _createdOverUnitData.SetActivePanel(completely ? OverUnitWorldDataPanel.PanelActivationType.None : OverUnitWorldDataPanel.PanelActivationType.Small, false);
-        if (completely) {
+        if (completely)
+        {
             _createdOverUnitData.gameObject.SetActive(false);
         }
     }
 
-    public UnitStatsConfig GetUnitConfig() {
+    public UnitStatsConfig GetUnitConfig()
+    {
         return _statsData;
     }
 
-    public UnitHealth GetUnitHealthContainer() {
+    public UnitHealth GetUnitHealthContainer()
+    {
         return _unitHealth;
     }
 
-    public UnitSkinContainer GetUnitSkinContainer() {
+    public UnitSkinContainer GetUnitSkinContainer()
+    {
         return _skinContainer;
     }
 
-    public float GetMovementLength() {
+    public float GetMovementLength()
+    {
         return _statsData.MovementLength;
     }
 
-    public bool TakeDamage(float damage) {
-        if (_unitHealth.TakeDamage(damage)) {
+    public bool TakeDamage(float damage)
+    {
+        if (_unitHealth.TakeDamage(damage))
+        {
             OnBattleFieldDieEvent();
             return true;
         }
@@ -202,7 +239,8 @@ public abstract class UnitBase : MonoBehaviour {
         return false;
     }
 
-    private void OnBattleFieldDieEvent() {
+    private void OnBattleFieldDieEvent()
+    {
         PlayDeadAnimation();
         _characterRaycastDetector.gameObject.SetActive(false);
         IsDeadOnBattleField = true;
@@ -210,55 +248,69 @@ public abstract class UnitBase : MonoBehaviour {
         _weaponHandler.DeactivateWeapon();
     }
 
-    public void DeactivateWeapon() {
+    public void DeactivateWeapon()
+    {
         _animator.SetActiveWeapon(false);
     }
 
-    private void FillAbilities() {
+    private void FillAbilities()
+    {
         _unitAbilities = new List<BattleFieldActionAbility>();
         _unitAbilities.Add(_assetsContainer.AbilitiesContainer.GetAbility(AbilityType.Walk));
 
-        foreach (var weaponAbility in _assetsContainer.WeaponPrefabsContainer.GetWeaponAbilities(_weaponType)) {
+        foreach (var weaponAbility in _assetsContainer.WeaponPrefabsContainer.GetWeaponAbilities(_weaponType))
+        {
             _unitAbilities.Add(weaponAbility);
         }
     }
 
     //ANIMATOR METHODS
-    public void WithdrawWeapon() {
+    public void WithdrawWeapon()
+    {
         _animator.WithdrawWeapon();
     }
 
-    public void ShealtWeapon() {
+    public void ShealtWeapon()
+    {
         _animator.ShealtWeapon();
     }
 
-    public void PlayAttackAnimation() {
+    public void PlayAttackAnimation()
+    {
         _animator.PlayAttackAnimation();
     }
 
-    public void PlayImpactFromSwordAnimation() {
+    public void PlayImpactFromSwordAnimation()
+    {
         _animator.PlayImpactFromSwordAnimation();
     }
 
-    public void PlayDeadAnimation() {
+    public void PlayDeadAnimation()
+    {
         _animator.PlayDeadAnimation();
     }
 
-    public void PlayImposedAttackAnimation() {
+    public void PlayImposedAttackAnimation()
+    {
         _animator.PlayImposedAttackAnimation();
     }
 
-    public void PlayImposedImpactAnimation() {
+    public void PlayImposedImpactAnimation()
+    {
         _animator.PlayImposedImpactAnimation();
     }
 
-    public List<BattleFieldActionAbility> GetUnitAbilitites() {
+    public List<BattleFieldActionAbility> GetUnitAbilitites()
+    {
         return _unitAbilities;
     }
 
-    public BattleFieldActionAbility GetDefaultUnitAttackAbility() {
-        for (int i = 0; i < _unitAbilities.Count; i++) {
-            if (_unitAbilities[i].IsDefaultAttack) {
+    public BattleFieldActionAbility GetDefaultUnitAttackAbility()
+    {
+        for (int i = 0; i < _unitAbilities.Count; i++)
+        {
+            if (_unitAbilities[i].IsDefaultAttack)
+            {
                 return _unitAbilities[i];
             }
         }
@@ -266,29 +318,35 @@ public abstract class UnitBase : MonoBehaviour {
         return null;
     }
 
-    public Transform GetAttackPoint() {
+    public Transform GetAttackPoint()
+    {
         return _attackPoint;
     }
 
-    public Transform GetHeadPoint() {
+    public Transform GetHeadPoint()
+    {
         return _headPoint;
     }
 
-    public StunEffect CreateStunParticle() {
+    public StunEffect CreateStunParticle()
+    {
         StunEffect stunParticle = Instantiate(_assetsContainer.StunEffect);
         stunParticle.SnapToPoint(GetHeadPoint());
         return stunParticle;
     }
 
-    public Color GetWalkingGridColor() {
+    public Color GetWalkingGridColor()
+    {
         return _selectionData.WalkingGridColor;
     }
 
-    public void HealAfterBattle() {
+    public void HealAfterBattle()
+    {
         _unitHealth.ResetData();
     }
 
-    public void Revive() {
+    public void Revive()
+    {
         _characterRaycastDetector.gameObject.SetActive(true);
         IsDeadOnBattleField = false;
         _collider.enabled = true;

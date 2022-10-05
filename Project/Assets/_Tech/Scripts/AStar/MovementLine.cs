@@ -1,6 +1,7 @@
 using UnityEngine;
 
-public struct MovementLine {
+public struct MovementLine
+{
     private const float _verticalLineGradient = 1e5f;
 
     private Vector3 _pointOnLine_1, _pointOnLine_2;
@@ -9,22 +10,29 @@ public struct MovementLine {
     private float _gradientPerpendicular;
     private bool _approachSide;
 
-    public MovementLine(Vector3 pointOnLine, Vector2 pointRependicularToLine) {
+    public MovementLine(Vector3 pointOnLine, Vector2 pointRependicularToLine)
+    {
         _gradient = 0;
         _approachSide = false;
 
         float dx = pointOnLine.x - pointRependicularToLine.x;
         float dy = pointOnLine.z - pointRependicularToLine.y;
 
-        if (dx == 0f) {
+        if (dx == 0f)
+        {
             _gradientPerpendicular = _verticalLineGradient;
-        } else {
+        }
+        else
+        {
             _gradientPerpendicular = dy / dx;
         }
 
-        if (_gradientPerpendicular == 0) {
+        if (_gradientPerpendicular == 0)
+        {
             _gradient = _verticalLineGradient;
-        } else {
+        }
+        else
+        {
             _gradient = -1 / _gradientPerpendicular;
         }
 
@@ -35,15 +43,18 @@ public struct MovementLine {
         _approachSide = GetSide(pointRependicularToLine);
     }
 
-    private bool GetSide(Vector2 p) {
+    private bool GetSide(Vector2 p)
+    {
         return (p.x - _pointOnLine_1.x) * (_pointOnLine_2.y - _pointOnLine_1.y) > (p.y - _pointOnLine_1.y) * (_pointOnLine_2.x - _pointOnLine_1.x);
     }
 
-    public bool HasCrossedLine(Vector2 p) {
+    public bool HasCrossedLine(Vector2 p)
+    {
         return GetSide(p) != _approachSide;
     }
 
-    public void DrawWithGizmos(float length) {
+    public void DrawWithGizmos(float length)
+    {
         Vector3 lineDir = new Vector3(1, 0, _gradient).normalized;
         Vector3 lineCentre = _pointOnLine_1;
         Gizmos.DrawLine(lineCentre - lineDir * length / 4f, lineCentre + lineDir * length / 4f);

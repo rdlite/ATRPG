@@ -2,23 +2,28 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class StateMachine : IStateMachine {
+public abstract class StateMachine : IStateMachine
+{
     protected Dictionary<Type, IExitableState> _states;
     protected IExitableState _activeState;
 
-    public void Enter<TState>() where TState : class, IState {
+    public void Enter<TState>() where TState : class, IState
+    {
         ChangeState<TState>().Enter();
     }
 
-    public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadState<TPayload> {
-        if (_activeState is TState) {
+    public void Enter<TState, TPayload>(TPayload payload) where TState : class, IPayloadState<TPayload>
+    {
+        if (_activeState is TState)
+        {
             return;
         }
 
         ChangeState<TState>().Enter(payload);
     }
 
-    private TState ChangeState<TState>() where TState : class, IExitableState {
+    private TState ChangeState<TState>() where TState : class, IExitableState
+    {
         _activeState?.Exit();
 
         TState state = GetState<TState>();
@@ -27,7 +32,8 @@ public abstract class StateMachine : IStateMachine {
         return state;
     }
 
-    private TState GetState<TState>() where TState : class, IExitableState {
+    private TState GetState<TState>() where TState : class, IExitableState
+    {
         return _states[typeof(TState)] as TState;
     }
 }

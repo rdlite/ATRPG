@@ -204,7 +204,8 @@ public class BattleGridGenerator : MonoBehaviour {
     }
 }
 
-public class BattleGridData {
+public class BattleGridData
+{
     public AStarGrid GlobalGrid;
     public Texture2D ViewTexture;
     public Texture2D WalkingPointsTexture;

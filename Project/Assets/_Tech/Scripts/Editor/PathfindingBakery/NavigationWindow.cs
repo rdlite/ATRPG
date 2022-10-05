@@ -7,7 +7,8 @@ using System;
 using System.Reflection;
 using System.Text;
 
-public class NavigationWindow : EditorWindow {
+public class NavigationWindow : EditorWindow
+{
     public AStarGrid.TerrainType[] TerrainType;
     public int NotWalkableAroundPenalty;
     public LayerMask ObstacleLayerMask;
@@ -21,12 +22,15 @@ public class NavigationWindow : EditorWindow {
     private float _deactTimer = .001f;
 
     [MenuItem("Window/AI/A* Pathfinding")]
-    public static void ShowWindow() {
+    public static void ShowWindow()
+    {
         GetWindow(typeof(NavigationWindow));
     }
 
-    private void OnFocus() {
-        if (!_isWindowActive) {
+    private void OnFocus()
+    {
+        if (!_isWindowActive)
+        {
             _isWindowActive = true;
             _deactTimer = .3f;
 
@@ -34,25 +38,31 @@ public class NavigationWindow : EditorWindow {
         }
     }
 
-    private void OnInspectorUpdate() {
-        if (!_isWindowActive) {
+    private void OnInspectorUpdate()
+    {
+        if (!_isWindowActive)
+        {
             _deactTimer -= Time.deltaTime;
 
-            if (_deactTimer <= 0f) {
+            if (_deactTimer <= 0f)
+            {
                 _isWindowActive = true;
                 FindObjectOfType<AStarGrid>().SetActiveDecal(true);
             }
         }
     }
 
-    private void OnLostFocus() {
-        if (_isWindowActive) {
+    private void OnLostFocus()
+    {
+        if (_isWindowActive)
+        {
             _isWindowActive = false;
             FindObjectOfType<AStarGrid>().SetActiveDecal(false);
         }
     }
 
-    private void OnGUI() {
+    private void OnGUI()
+    {
         GUILayout.Space(20);
 
         ScriptableObject target = this;
@@ -76,17 +86,21 @@ public class NavigationWindow : EditorWindow {
 
         GUILayout.Space(20);
 
-        if (GUILayout.Button("Bake")) {
+        if (GUILayout.Button("Bake"))
+        {
             BakeField();
         }
 
-        if (GUILayout.Button("Clear")) {
+        if (GUILayout.Button("Clear"))
+        {
             ClearField();
         }
     }
 
-    private void ClearField() {
-        if (File.Exists(StringsContainer.NAVGRID_PATH + "/" + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name + StringsContainer.NAVGRID_RESOLUTION)) {
+    private void ClearField()
+    {
+        if (File.Exists(StringsContainer.NAVGRID_PATH + "/" + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name + StringsContainer.NAVGRID_RESOLUTION))
+        {
             File.Delete(StringsContainer.NAVGRID_PATH + "/" + UnityEngine.SceneManagement.SceneManager.GetActiveScene().name + StringsContainer.NAVGRID_RESOLUTION);
         }
 
@@ -95,12 +109,16 @@ public class NavigationWindow : EditorWindow {
         grid.SetActiveDecal(false);
     }
 
-    private void BakeField() {
+    private void BakeField()
+    {
         AStarGrid grid = FindObjectOfType<AStarGrid>();
 
-        if (grid != null) {
+        if (grid != null)
+        {
             BakeGrid(grid);
-        } else {
+        }
+        else
+        {
             grid = Instantiate(Resources.Load("Pathfinding/AStarGrid") as GameObject).GetComponent<AStarGrid>();
 
             GameObject LDPoint = new GameObject("LDPoint");
@@ -118,7 +136,8 @@ public class NavigationWindow : EditorWindow {
         }
     }
 
-    private void BakeGrid(AStarGrid grid) {
+    private void BakeGrid(AStarGrid grid)
+    {
         GridSettings settings = new GridSettings(
                 TerrainType, NotWalkableAroundPenalty, ObstacleLayerMask,
                 NodeRadius, ObstacleAvoidance, HeightDelink,
@@ -133,14 +152,16 @@ public class NavigationWindow : EditorWindow {
 
         string data = JsonUtility.ToJson(gridSaveData);
 
-        if (!Directory.Exists(StringsContainer.NAVGRID_PATH)) {
+        if (!Directory.Exists(StringsContainer.NAVGRID_PATH))
+        {
 
             Directory.CreateDirectory(StringsContainer.NAVGRID_PATH);
         }
 
         byte[] byteData = Encoding.ASCII.GetBytes(data);
 
-        for (int i = 0; i < byteData.Length; i++) {
+        for (int i = 0; i < byteData.Length; i++)
+        {
             byteData[i] = (byte)(byteData[i] ^ _encodingKey);
         }
 

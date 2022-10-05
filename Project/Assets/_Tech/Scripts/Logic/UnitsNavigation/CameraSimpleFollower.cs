@@ -1,7 +1,8 @@
 using System;
 using UnityEngine;
 
-public class CameraSimpleFollower : MonoBehaviour {
+public class CameraSimpleFollower : MonoBehaviour
+{
     [field: SerializeField] public Camera Camera { get; private set; }
 
     [SerializeField] private Vector3 _offset;
@@ -30,7 +31,8 @@ public class CameraSimpleFollower : MonoBehaviour {
     private bool _isSnapping;
     private bool _isRestrictedMovement;
 
-    public void Init(Transform target, Vector3 cameraGlobalLDPoint, Vector3 cameraGlobalRUPoint) {
+    public void Init(Transform target, Vector3 cameraGlobalLDPoint, Vector3 cameraGlobalRUPoint)
+    {
         _defaultOffset = _offset;
 
         _cameraGlobalLDPoint = cameraGlobalLDPoint;
@@ -46,31 +48,40 @@ public class CameraSimpleFollower : MonoBehaviour {
         _freeMovementPoint.transform.position = _target.transform.position;
     }
 
-    public void SetTarget(Transform newTarget) {
+    public void SetTarget(Transform newTarget)
+    {
         _target = newTarget;
         _isSnapping = true;
     }
 
-    public void SetMovementRestrictions(Vector3 ldPosition, Vector3 ruPosition) {
+    public void SetMovementRestrictions(Vector3 ldPosition, Vector3 ruPosition)
+    {
         _isRestrictedMovement = true;
         _cameraBattleFieldLDPoint = ldPosition;
         _cameraBattleFieldRUPoint = ruPosition;
     }
 
-    public void SetFreeMovement() {
+    public void SetFreeMovement()
+    {
         _isRestrictedMovement = false;
     }
 
-    private void LateUpdate() {
-        if (_isSnapping) {
-            if (IsPressedMovementKeys()) {
+    private void LateUpdate()
+    {
+        if (_isSnapping)
+        {
+            if (IsPressedMovementKeys())
+            {
                 _isSnapping = false;
             }
 
             transform.position = Vector3.Lerp(transform.position, _target.position + _offset * _currentZooming, 15f * Time.deltaTime);
             _freeMovementPoint.transform.position = _target.transform.position;
-        } else {
-            if (Input.GetKeyDown(KeyCode.C)) {
+        }
+        else
+        {
+            if (Input.GetKeyDown(KeyCode.C))
+            {
                 _isSnapping = true;
                 _freeMovementVelocity = Vector2.zero;
             }
@@ -80,7 +91,7 @@ public class CameraSimpleFollower : MonoBehaviour {
 
             float minXPos = _isRestrictedMovement ? _cameraBattleFieldLDPoint.x : _cameraGlobalLDPoint.x + 5f;
             float maxXPos = _isRestrictedMovement ? _cameraBattleFieldRUPoint.x : _cameraGlobalRUPoint.x - 5f;
-            float minZPos = _isRestrictedMovement ? _cameraBattleFieldLDPoint.z : _cameraGlobalLDPoint.z + _offset.z * 1.5f; 
+            float minZPos = _isRestrictedMovement ? _cameraBattleFieldLDPoint.z : _cameraGlobalLDPoint.z + _offset.z * 1.5f;
             float maxZPos = _isRestrictedMovement ? _cameraBattleFieldRUPoint.z : _cameraGlobalRUPoint.z - _offset.z * 1.5f;
 
             _freeMovementPoint.position = new Vector3(
@@ -99,7 +110,8 @@ public class CameraSimpleFollower : MonoBehaviour {
         _offset.z = _defaultOffset.z + Mathf.Lerp(_zZoomingPosition.x, _zZoomingPosition.y, Mathf.InverseLerp(_zoomClamp.x, _zoomClamp.y, _zoom));
     }
 
-    private bool IsPressedMovementKeys() {
+    private bool IsPressedMovementKeys()
+    {
         return Input.GetKey(KeyCode.W) || Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.S) || Input.GetKey(KeyCode.D) ||
             Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.UpArrow) || Input.GetKey(KeyCode.RightArrow) || Input.GetKey(KeyCode.DownArrow);
     }

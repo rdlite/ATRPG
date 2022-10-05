@@ -59,8 +59,8 @@ public class PlayerAttackMeleeRangeState : IPayloadState<(BattleFieldActionAbili
             }
 
             if (Time.frameCount % 4 == 0) {
-                _attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadius(_battleHandler.CurrentSelectedUnit.transform.position, _battleHandler.CurrentSelectedUnit.transform.forward, 20f, 90f);
-                //_attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadius(_currentSelectedUnit.transform.position, _currentSelectedUnit.transform.forward, 5f, 90f);
+                _attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(_battleHandler.CurrentSelectedUnit.transform.position, _battleHandler.CurrentSelectedUnit.transform.forward, 20f, 90f);
+                //_attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(_battleHandler.CurrentSelectedUnit.transform.position, _battleHandler.CurrentSelectedUnit.transform.forward, 3f, 100f);
 
                 if (_attackRadiusNodesMatrix.GetLength(0) != 0) {
                     _battleHandler.AttackRangeDecalProjector.gameObject.SetActive(true);

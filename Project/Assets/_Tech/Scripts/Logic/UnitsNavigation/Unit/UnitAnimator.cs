@@ -2,7 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class UnitAnimator {
+public class UnitAnimator
+{
     private int IS_MOVING_HASH = Animator.StringToHash("IsMoving");
     private int IS_DEAD_HASH = Animator.StringToHash("IsDead");
     private int MOVEMENT_MAGNITUDE_HASH = Animator.StringToHash("MovementMagnitude");
@@ -27,8 +28,9 @@ public class UnitAnimator {
     private float _layerChangeDuration = .3f;
 
     public UnitAnimator(
-        Animator animator, ICoroutineService coroutineService, UnitWeaponHandler weaponHandler, 
-        UnitSkinContainer skinContainer, UnitWeaponAnimatorsContainer animatorsContainer, WeaponAnimationLayerType weaponType) {
+        Animator animator, ICoroutineService coroutineService, UnitWeaponHandler weaponHandler,
+        UnitSkinContainer skinContainer, UnitWeaponAnimatorsContainer animatorsContainer, WeaponAnimationLayerType weaponType)
+    {
         _animatorsContainer = animatorsContainer;
         _coroutineService = coroutineService;
         _animator = animator;
@@ -43,18 +45,22 @@ public class UnitAnimator {
         _skinContainer.OnWeaponShealtEventRaised += ShealthWeaponToIdle;
     }
 
-    public void SetMovementAnimation(bool value) {
+    public void SetMovementAnimation(bool value)
+    {
         _animator.SetBool(IS_MOVING_HASH, value);
     }
 
-    public void SetMovementMagnitude(float value) {
+    public void SetMovementMagnitude(float value)
+    {
         _animator.SetFloat(MOVEMENT_MAGNITUDE_HASH, value);
     }
 
-    public void WithdrawWeapon() {
+    public void WithdrawWeapon()
+    {
         _animator.runtimeAnimatorController = _animatorsContainer.GetAnimatorByType(_currentWeapon);
 
-        if (_smoothLayerChangeRoutine != null) {
+        if (_smoothLayerChangeRoutine != null)
+        {
             _coroutineService.StopCoroutine(_smoothLayerChangeRoutine);
         }
 
@@ -63,10 +69,12 @@ public class UnitAnimator {
         _animator.SetTrigger(WITHDRAWWEAPON_TRIGGER_HASH);
     }
 
-    public void ShealtWeapon() {
+    public void ShealtWeapon()
+    {
         _animator.runtimeAnimatorController = _animatorsContainer.GetAnimatorByType(_currentWeapon);
 
-        if (_smoothLayerChangeRoutine != null) {
+        if (_smoothLayerChangeRoutine != null)
+        {
             _coroutineService.StopCoroutine(_smoothLayerChangeRoutine);
         }
 
@@ -75,53 +83,65 @@ public class UnitAnimator {
         _animator.SetTrigger(SHEALTWEAPON_TRIGGER_HASH);
     }
 
-    public void PlayAttackAnimation() {
+    public void PlayAttackAnimation()
+    {
         SetRandomAnimation(_animatorsContainer.GetAttackAnimationsAmount(_currentWeapon));
         _animator.SetTrigger(ATTACK_TRIGGER_HASH);
     }
 
-    public void PlayImpactFromSwordAnimation() {
+    public void PlayImpactFromSwordAnimation()
+    {
         _animator.SetTrigger(IMPART_TRIIGER_HASH);
     }
 
-    public void PlayDeadAnimation() {
+    public void PlayDeadAnimation()
+    {
         SetRandomAnimation(9);
         _animator.SetBool(IS_DEAD_HASH, true);
     }
 
-    private void WithdrawWeaponToHand() {
+    private void WithdrawWeaponToHand()
+    {
         _weaponHandler.SetWeaponInHand();
     }
 
-    private void ShealthWeaponToIdle() {
+    private void ShealthWeaponToIdle()
+    {
         _weaponHandler.SetWeaponIdle();
     }
 
-    public void SetActiveWeapon(bool value) {
-        if (!value) {
+    public void SetActiveWeapon(bool value)
+    {
+        if (!value)
+        {
             _weaponHandler.DeactivateWeapon();
         }
     }
 
-    public void PlayImposedAttackAnimation() {
+    public void PlayImposedAttackAnimation()
+    {
         _animator.SetTrigger(IMPOSED_ATTACK_TRIGGER_HASH);
     }
-    
-    public void PlayImposedImpactAnimation() {
+
+    public void PlayImposedImpactAnimation()
+    {
         _animator.SetTrigger(IMPOSED_IMPACT_TRIGGER_HASH);
     }
 
-    private IEnumerator SetSmoothLayerWeight(int layerID, float startValue, float endValue) {
+    private IEnumerator SetSmoothLayerWeight(int layerID, float startValue, float endValue)
+    {
         float t = 0f;
 
-        while (t <= 1f) {
+        while (t <= 1f)
+        {
             t += Time.deltaTime / _layerChangeDuration;
             _animator.SetLayerWeight(layerID, Mathf.Lerp(startValue, endValue, t));
             yield return null;
         }
     }
 
-    public void StandUp() {
+    public void StandUp()
+    {
         _animator.SetLayerWeight(0, 1f);
         _animator.SetLayerWeight(1, 0f);
 
@@ -129,12 +149,14 @@ public class UnitAnimator {
         _animator.SetTrigger(STAND_UP_TRIGGER_HASH);
     }
 
-    private void SetRandomAnimation(int animationsAmount) {
+    private void SetRandomAnimation(int animationsAmount)
+    {
         int randomAnimation = Random.Range(0, animationsAmount);
         _animator.SetFloat(ANIMATIONS_RANDOM, randomAnimation);
     }
 }
 
-public enum WeaponAnimationLayerType {
+public enum WeaponAnimationLayerType
+{
     Hands, OneHandSword, TwoHandedAxe
 }

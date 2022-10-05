@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public static class DataExtension {
+public static class DataExtension
+{
     public static string ToJson(this object obj) =>
         JsonUtility.ToJson(obj);
 

@@ -1,14 +1,18 @@
 using UnityEngine;
 
-public class StunEffect : MonoBehaviour {
+public class StunEffect : MonoBehaviour
+{
     private Transform _snapPoint;
 
-    public void SnapToPoint(Transform snapPoint) {
+    public void SnapToPoint(Transform snapPoint)
+    {
         _snapPoint = snapPoint;
     }
 
-    private void Update() {
-        if (_snapPoint != null) {
+    private void Update()
+    {
+        if (_snapPoint != null)
+        {
             transform.position = _snapPoint.transform.position;
         }
     }
