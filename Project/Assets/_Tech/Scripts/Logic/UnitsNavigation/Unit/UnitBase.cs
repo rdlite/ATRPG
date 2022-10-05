@@ -275,9 +275,9 @@ public abstract class UnitBase : MonoBehaviour
         _animator.ShealtWeapon();
     }
 
-    public void PlayAttackAnimation()
+    public void PlayAttackAnimation(bool isDefaultAttackAnimation)
     {
-        _animator.PlayAttackAnimation();
+        _animator.PlayAttackAnimation(isDefaultAttackAnimation);
     }
 
     public void PlayImpactFromSwordAnimation()

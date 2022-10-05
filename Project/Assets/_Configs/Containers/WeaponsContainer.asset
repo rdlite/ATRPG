@@ -19,11 +19,13 @@ MonoBehaviour:
       type: 3}
     AbilitiesForThisWeapon:
     - {fileID: 11400000, guid: 4609a0f1fb1d48a46b45eb6bd95ce634, type: 2}
+    - {fileID: 11400000, guid: 4cfad4e4e7c11ab4f93e4f21c9529675, type: 2}
   - Type: 2
     LayerType: 2
     Prefab: {fileID: 6697599657402442460, guid: 6dc4703af78c13540b44f88c6f00d052,
       type: 3}
     AbilitiesForThisWeapon:
+    - {fileID: 11400000, guid: 1c0eb17d5bde17f49ad8b9a49a196bea, type: 2}
     - {fileID: 11400000, guid: 7207c01ca242fe34b9f98a4101b4a382, type: 2}
   - Type: 0
     LayerType: 0

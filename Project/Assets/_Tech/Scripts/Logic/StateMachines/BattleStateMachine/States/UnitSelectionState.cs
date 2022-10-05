@@ -1,7 +1,4 @@
-﻿using System;
-using UnityEngine;
-
-public class UnitSelectionState : IPayloadState<(UnitBase, IExitableState)> {
+﻿public class UnitSelectionState : IPayloadState<(UnitBase, IExitableState)> {
     private ImposedPairsContainer _imposedPairsContainer;
     private UIRoot _uiRoot;
     private BattleTurnsHandler _turnsHandler;
@@ -53,7 +50,7 @@ public class UnitSelectionState : IPayloadState<(UnitBase, IExitableState)> {
         }
 
         if (data.Item1 is EnemyUnit) {
-            _battleHandler.ShowUnitWalkingDistance(data.Item1);
+            _battleHandler.ShowUnitWalkingDistance(data.Item1, true);
         }
     }
 

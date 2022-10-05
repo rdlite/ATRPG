@@ -43,6 +43,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _BlinkSpeed: 2
     - _DecalAngleFadeSupported: 1
     - _DecalMeshBiasType: 0
     - _DecalMeshDepthBias: 0
@@ -53,7 +54,9 @@ Material:
     - _Roundness1: 0
     m_Colors:
     - _Color: {r: 0.8018868, g: 0.15181819, b: 0.08699717, a: 1}
+    - _Default: {r: 1, g: 0.070754655, b: 0.070754655, a: 1}
     - _DefaultColor: {r: 0.8, g: 0.15294118, b: 0.08627451, a: 1}
+    - _HighlightedColor: {r: 0.9622642, g: 0.54515845, b: 0.4765931, a: 1}
     - _Offset: {r: 0, g: 0, b: 0, a: 0}
     - _SelectedColor: {r: 0.8509804, g: 0.49019608, b: 0.4509804, a: 1}
   m_BuildTextureStacks: []

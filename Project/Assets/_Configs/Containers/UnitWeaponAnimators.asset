@@ -25,6 +25,6 @@ MonoBehaviour:
     ImposeAnimationsImpactAmount: 3
   - Type: 2
     Animator: {fileID: 9100000, guid: a13e9c00fb1f3c44f96c38d21b4c5e0b, type: 2}
-    AttackAnimationsAmount: 3
+    AttackAnimationsAmount: 1
     ImposAnimationsAttackAmount: 1
     ImposeAnimationsImpactAmount: 2

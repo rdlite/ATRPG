@@ -1,0 +1,2463 @@
+fileFormatVersion: 2
+guid: 8057e68d52de9c6489ad4e8cdd80cc36
+ModelImporter:
+  serializedVersion: 21300
+  internalIDToNameTable:
+  - first:
+      74: -2785938601993163899
+    second: Bindpose
+  - first:
+      74: -9106341598642828826
+    second: Sword_Attack_R
+  - first:
+      74: 8611985264181430692
+    second: Sword_Attack_RL
+  - first:
+      74: 7551123040708574148
+    second: Sword_Attack_RLL
+  - first:
+      74: -7110681476643943615
+    second: Sword_Attack_RLLR
+  - first:
+      74: -1979077553685638187
+    second: Sword_Attack_Combo_LL
+  - first:
+      74: 3211806168481538385
+    second: Sowrd_Attack_Combo_CL_Heavy
+  - first:
+      74: -4994596902841482892
+    second: Sword_Kick_R
+  - first:
+      74: 242237310945721464
+    second: Sword_Attack_Sp_R
+  - first:
+      74: 8815148132599014455
+    second: Sword_Attack_Sp_RL
+  - first:
+      74: -5362901552578725610
+    second: Sword_Attack_Sp_LRound
+  - first:
+      74: -6726071873081974342
+    second: Sword_Attack_Sp_RL2
+  - first:
+      74: -1608823567218156644
+    second: Sword_Attack_Sp_U
+  - first:
+      74: 1941533274141695979
+    second: Sword_Attack_Sp_RRound
+  - first:
+      74: -7065483546573618979
+    second: Sword_Attack_SP_RLd
+  - first:
+      74: -4770397433238392775
+    second: Sword_Attack_Ld
+  - first:
+      74: -2340216313410830204
+    second: Sword_Attack_Ushort
+  - first:
+      74: -4201249946707942592
+    second: Sword_Attack_Sp_RdL
+  - first:
+      74: 805846559870921658
+    second: Sword_Attack_Rd
+  - first:
+      74: 4424056624825515408
+    second: Sword_Attack_U2
+  - first:
+      74: 578706736374775470
+    second: Sword_Attack_Ld2
+  - first:
+      74: 8497946843998555811
+    second: Sword_Attack_R_Whirlwind
+  - first:
+      74: -2436511846749116454
+    second: Sword_Attack_Ld3_quick
+  - first:
+      74: 7259673515651788008
+    second: Sword_Attack_Combo_LL_fast
+  - first:
+      74: 8570775800666428633
+    second: Sowrd_Attack_Combo_CL_Heavy_fast
+  - first:
+      74: -598985598998141124
+    second: Sword_Attack_Sp_R_fast
+  - first:
+      74: 2090780961352484826
+    second: Sword_Attack_Sp_RL_fast
+  - first:
+      74: 9050068849131355215
+    second: Sword_Attack_Sp_LRound_fast
+  - first:
+      74: -4092381612135276219
+    second: Sword_Attack_Sp_RL2_fast
+  - first:
+      74: 5570122578440739326
+    second: Sword_Attack_Sp_U_fast
+  - first:
+      74: -4386874939474326402
+    second: Sword_Attack_Sp_RRound_fast
+  - first:
+      74: -5829567819174879625
+    second: Sword_Attack_Ld3_quick_fast
+  - first:
+      74: 6359867617742514297
+    second: Sword_Attack_R_Whirlwind_fast
+  - first:
+      74: -6664522316950513105
+    second: Sword_Attack_Ld2_fast
+  - first:
+      74: -6118439936423362795
+    second: Sword_Attack_U2_fast
+  - first:
+      74: 5145591473374000905
+    second: Sword_Attack_Rd_fast
+  - first:
+      74: 6680890534885831957
+    second: Sword_Attack_Sp_RdL_fast
+  - first:
+      74: 8494201101093265393
+    second: Sword_Attack_Ld_fast
+  - first:
+      74: -9201096032772168935
+    second: Sword_Counter_Rd_Whirlwind
+  - first:
+      74: -4047429114464551151
+    second: Sword_Counter_Rd_Whirlwind_fast
+  - first:
+      74: 340922313199927133
+    second: Sword_Counter_R
+  - first:
+      74: 3070254040642624652
+    second: Sword_Counter_R_fast
+  - first:
+      74: 84494016990091966
+    second: Sword_Counter_L
+  - first:
+      74: -7436753252429339851
+    second: Sword_Counter_L_fast
+  - first:
+      74: 1127909093383694146
+    second: Sword_Counter_Sheildbash
+  externalObjects: {}
+  materials:
+    materialImportMode: 2
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    removeConstantScaleCurves: 1
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: "\nClip 'Sword_Attack_R' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Spine1' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\nClip 'Sword_Attack_RL'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_RLL' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_RLLR' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Combo_LL' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sowrd_Attack_Combo_CL_Heavy' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'Spine1' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Sword_Kick_R' has import animation warnings
+      that might lower retargeting quality:\nNote: Activate translation DOF on avatar
+      to improve retargeting quality.\n\t'Spine1' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n\nClip 'Sword_Attack_Sp_R'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RL' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_LRound' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RL2' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_U' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RRound' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_SP_RLd' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Ld' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Ushort' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RdL' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Rd' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_U2' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Ld2' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_R_Whirlwind' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Ld3_quick' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Combo_LL_fast' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'Spine1' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Sowrd_Attack_Combo_CL_Heavy_fast' has import
+      animation warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'Spine1' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'Sword_Attack_Sp_R_fast'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RL_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_LRound_fast' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'Spine1' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Sword_Attack_Sp_RL2_fast' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'Spine1' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'Sword_Attack_Sp_U_fast'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RRound_fast' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'Spine1' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Sword_Attack_Ld3_quick_fast' has import animation
+      warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'Spine1' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'Sword_Attack_R_Whirlwind_fast'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Ld2_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_U2_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Rd_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Sp_RdL_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Attack_Ld_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Counter_Rd_Whirlwind' has import animation warnings that might lower
+      retargeting quality:\nNote: Activate translation DOF on avatar to improve retargeting
+      quality.\n\t'Spine1' is inbetween humanoid transforms and has rotation animation
+      that will be discarded.\n\nClip 'Sword_Counter_Rd_Whirlwind_fast' has import
+      animation warnings that might lower retargeting quality:\nNote: Activate translation
+      DOF on avatar to improve retargeting quality.\n\t'Spine1' is inbetween humanoid
+      transforms and has rotation animation that will be discarded.\n\nClip 'Sword_Counter_R'
+      has import animation warnings that might lower retargeting quality:\nNote:
+      Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Counter_R_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Counter_L' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Counter_L_fast' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n\nClip
+      'Sword_Counter_Sheildbash' has import animation warnings that might lower retargeting
+      quality:\nNote: Activate translation DOF on avatar to improve retargeting quality.\n\t'Spine1'
+      is inbetween humanoid transforms and has rotation animation that will be discarded.\n"
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 3
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: Bindpose
+      takeName: Bindpose
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 150
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_R
+      takeName: Sword_Attack_R
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_RL
+      takeName: Sword_Attack_RL
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_RLL
+      takeName: Sword_Attack_RLL
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_RLLR
+      takeName: Sword_Attack_RLLR
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 39
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Combo_LL
+      takeName: Sword_Attack_Combo_LL
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 70
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sowrd_Attack_Combo_CL_Heavy
+      takeName: Sowrd_Attack_Combo_CL_Heavy
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 106
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Kick_R
+      takeName: Sword_Kick_R
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 46
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_R
+      takeName: Sword_Attack_Sp_R
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 64
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RL
+      takeName: Sword_Attack_Sp_RL
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 90
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_LRound
+      takeName: Sword_Attack_Sp_LRound
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 58
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RL2
+      takeName: Sword_Attack_Sp_RL2
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 73
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_U
+      takeName: Sword_Attack_Sp_U
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 71
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RRound
+      takeName: Sword_Attack_Sp_RRound
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 62
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_SP_RLd
+      takeName: Sword_Attack_SP_RLd
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 97
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ld
+      takeName: Sword_Attack_Ld
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 50
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ushort
+      takeName: Sword_Attack_Ushort
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 37
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RdL
+      takeName: Sword_Attack_Sp_RdL
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 62
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Rd
+      takeName: Sword_Attack_Rd
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 62
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_U2
+      takeName: Sword_Attack_U2
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 42
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ld2
+      takeName: Sword_Attack_Ld2
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 45
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_R_Whirlwind
+      takeName: Sword_Attack_R_Whirlwind
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 61
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ld3_quick
+      takeName: Sword_Attack_Ld3_quick
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 43
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Combo_LL_fast
+      takeName: Sword_Attack_Combo_LL_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 57
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sowrd_Attack_Combo_CL_Heavy_fast
+      takeName: Sowrd_Attack_Combo_CL_Heavy_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 80
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_R_fast
+      takeName: Sword_Attack_Sp_R_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 52
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RL_fast
+      takeName: Sword_Attack_Sp_RL_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 68
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_LRound_fast
+      takeName: Sword_Attack_Sp_LRound_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 49
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RL2_fast
+      takeName: Sword_Attack_Sp_RL2_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_U_fast
+      takeName: Sword_Attack_Sp_U_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 58
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RRound_fast
+      takeName: Sword_Attack_Sp_RRound_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 56
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 1
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ld3_quick_fast
+      takeName: Sword_Attack_Ld3_quick_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 36
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_R_Whirlwind_fast
+      takeName: Sword_Attack_R_Whirlwind_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 57
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ld2_fast
+      takeName: Sword_Attack_Ld2_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 40
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_U2_fast
+      takeName: Sword_Attack_U2_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 38
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Rd_fast
+      takeName: Sword_Attack_Rd_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 58
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Sp_RdL_fast
+      takeName: Sword_Attack_Sp_RdL_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 56
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Attack_Ld_fast
+      takeName: Sword_Attack_Ld_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 43
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_Rd_Whirlwind
+      takeName: Sword_Counter_Rd_Whirlwind
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 52
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_Rd_Whirlwind_fast
+      takeName: Sword_Counter_Rd_Whirlwind_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 44
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_R
+      takeName: Sword_Counter_R
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 66
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_R_fast
+      takeName: Sword_Counter_R_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 54
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_L
+      takeName: Sword_Counter_L
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 53
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_L_fast
+      takeName: Sword_Counter_L_fast
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 48
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Sword_Counter_Sheildbash
+      takeName: Sword_Counter_Sheildbash
+      internalID: 0
+      firstFrame: 0
+      lastFrame: 65
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    isReadable: 0
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    sortHierarchyByName: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    nodeNameCollisionStrategy: 1
+    fileIdsGeneration: 2
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    keepQuads: 0
+    weldVertices: 1
+    bakeAxisConversion: 0
+    preserveHierarchy: 0
+    skinWeightsMode: 0
+    maxBonesPerVertex: 4
+    minBoneWeight: 0.001
+    optimizeBones: 1
+    meshOptimizationFlags: -1
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVMarginMethod: 1
+    secondaryUVMinLightmapResolution: 40
+    secondaryUVMinObjectScale: 1
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  referencedClips: []
+  importAnimation: 1
+  humanDescription:
+    serializedVersion: 3
+    human:
+    - boneName: Hips
+      humanName: Hips
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftUpLeg
+      humanName: LeftUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightUpLeg
+      humanName: RightUpperLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftLeg
+      humanName: LeftLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightLeg
+      humanName: RightLowerLeg
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftFoot
+      humanName: LeftFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightFoot
+      humanName: RightFoot
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Spine
+      humanName: Spine
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Neck
+      humanName: Neck
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: Head
+      humanName: Head
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftShoulder
+      humanName: LeftShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightShoulder
+      humanName: RightShoulder
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftArm
+      humanName: LeftUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightArm
+      humanName: RightUpperArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftForeArm
+      humanName: LeftLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightForeArm
+      humanName: RightLowerArm
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHand
+      humanName: LeftHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHand
+      humanName: RightHand
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftToeBase
+      humanName: LeftToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightToeBase
+      humanName: RightToes
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandThumb1
+      humanName: Left Thumb Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandThumb2
+      humanName: Left Thumb Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandThumb3
+      humanName: Left Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandIndex1
+      humanName: Left Index Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandIndex2
+      humanName: Left Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandIndex3
+      humanName: Left Index Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandMiddle1
+      humanName: Left Middle Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandMiddle2
+      humanName: Left Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandMiddle3
+      humanName: Left Middle Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandRing1
+      humanName: Left Ring Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandRing2
+      humanName: Left Ring Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandRing3
+      humanName: Left Ring Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandPinky1
+      humanName: Left Little Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandPinky2
+      humanName: Left Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: LeftHandPinky3
+      humanName: Left Little Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandThumb1
+      humanName: Right Thumb Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandThumb2
+      humanName: Right Thumb Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandThumb3
+      humanName: Right Thumb Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandIndex1
+      humanName: Right Index Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandIndex2
+      humanName: Right Index Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandIndex3
+      humanName: Right Index Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandMiddle1
+      humanName: Right Middle Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandMiddle2
+      humanName: Right Middle Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandMiddle3
+      humanName: Right Middle Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandRing1
+      humanName: Right Ring Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandRing2
+      humanName: Right Ring Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandRing3
+      humanName: Right Ring Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandPinky1
+      humanName: Right Little Proximal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandPinky2
+      humanName: Right Little Intermediate
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    - boneName: RightHandPinky3
+      humanName: Right Little Distal
+      limit:
+        min: {x: 0, y: 0, z: 0}
+        max: {x: 0, y: 0, z: 0}
+        value: {x: 0, y: 0, z: 0}
+        length: 0
+        modified: 0
+    skeleton:
+    - name: SwordShieldAnimsetPro_part2(Clone)
+      parentName: 
+      position: {x: 0, y: 0, z: 0}
+      rotation: {x: 0, y: 0, z: 0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Root
+      parentName: SwordShieldAnimsetPro_part2(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: -1.9106857e-15, y: -0.000000043711392, z: -0.00000004371139, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: Hips
+      parentName: Root
+      position: {x: -0.000000096480086, y: 0.9915367, z: 7.91745e-15}
+      rotation: {x: 4.2351647e-22, y: 3.5527137e-15, z: 0.00000008742278, w: 1}
+      scale: {x: 1, y: 0.99999994, z: 1}
+    - name: RightUpLeg
+      parentName: Hips
+      position: {x: 0.11994001, y: 0.00000025401295, z: -0.00000002097099}
+      rotation: {x: 0.5106355, y: -0.47630522, z: -0.5041926, w: 0.5081089}
+      scale: {x: 0.99999994, y: 0.99999976, z: 0.99999976}
+    - name: RightUpLegRoll
+      parentName: RightUpLeg
+      position: {x: 0.25699177, y: 0.000000017943513, z: 0.00000022397667}
+      rotation: {x: -0.000000089456805, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightLeg
+      parentName: RightUpLeg
+      position: {x: 0.4459063, y: 0.0000000067612715, z: -0.00000003464626}
+      rotation: {x: 0.00000011920929, y: -0, z: -0.028270513, w: 0.99960035}
+      scale: {x: 0.99999994, y: 1, z: 1.0000002}
+    - name: RightLegRoll
+      parentName: RightLeg
+      position: {x: 0.25561854, y: -0.000000069443296, z: 0.00000013499185}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightFoot
+      parentName: RightLeg
+      position: {x: 0.41624933, y: 0.000000019268546, z: -0.0000002629369}
+      rotation: {x: 0.06601771, y: 0.095978156, z: 0.52489597, w: 0.8431572}
+      scale: {x: 1.0000004, y: 1.0000006, z: 1.0000005}
+    - name: RightToeBase
+      parentName: RightFoot
+      position: {x: 0.17912616, y: -0.00000010134995, z: -0.00000037295976}
+      rotation: {x: 0.15120827, y: 0.10709101, z: 0.21143362, w: 0.95966846}
+      scale: {x: 0.99999976, y: 1, z: 0.99999994}
+    - name: RightToeBase_END
+      parentName: RightToeBase
+      position: {x: 0.096135154, y: 0.00000017818634, z: 0.00000021560201}
+      rotation: {x: 0.30749094, y: -0.000000012147696, z: -0.0000000039254933, w: 0.951551}
+      scale: {x: 0.9999999, y: 0.9999999, z: 0.99999976}
+    - name: LeftUpLeg
+      parentName: Hips
+      position: {x: -0.119939744, y: -2.842171e-16, z: 2.1175823e-24}
+      rotation: {x: -0.50810885, y: -0.5041926, z: 0.47630522, w: 0.51063555}
+      scale: {x: 1.0000004, y: 1, z: 1.0000002}
+    - name: LeftUpLegRoll
+      parentName: LeftUpLeg
+      position: {x: -0.25699112, y: 4.440892e-18, z: -1.7763568e-17}
+      rotation: {x: -0.000000089456805, y: 0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftLeg
+      parentName: LeftUpLeg
+      position: {x: -0.4459065, y: 0.0000000071525554, z: 0.000000019073477}
+      rotation: {x: -0, y: -0.000000029802319, z: -0.02827045, w: 0.9996003}
+      scale: {x: 0.9999997, y: 0.9999999, z: 1}
+    - name: LeftLegRoll
+      parentName: LeftLeg
+      position: {x: -0.25561854, y: 8.8817837e-17, z: 1.7763575e-17}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    - name: LeftFoot
+      parentName: LeftLeg
+      position: {x: -0.41624922, y: 0.00000001069738, z: -0.000000010534252}
+      rotation: {x: 0.06601765, y: -0.013112538, z: -0.53343755, w: -0.8431573}
+      scale: {x: 1.0000001, y: 1.0000004, z: 1.0000002}
+    - name: LeftToeBase
+      parentName: LeftFoot
+      position: {x: -0.17912558, y: -7.888609e-33, z: -3.5527136e-17}
+      rotation: {x: 0.0000006100163, y: 0.00000009825453, z: 0.23700772, w: 0.9715078}
+      scale: {x: 0.9999999, y: 1, z: 1}
+    - name: LeftToeBase_END
+      parentName: LeftToeBase
+      position: {x: -0.096135765, y: -0.000000009536743, z: -0.000000009536743}
+      rotation: {x: -9.9503475e-11, y: -0.000000012766207, z: -1.2702819e-18, w: 1}
+      scale: {x: 0.9999999, y: 0.9999999, z: 0.99999976}
+    - name: Spine
+      parentName: Hips
+      position: {x: 0.000000019484096, y: 0.1172419, z: 1.3518631e-15}
+      rotation: {x: -0.028183332, y: 0.000000047389825, z: -0.00000003999824, w: 0.9996028}
+      scale: {x: 1.0000004, y: 1.0000002, z: 0.99999994}
+    - name: Spine1
+      parentName: Spine
+      position: {x: -0.0000000055014895, y: 0.21435943, z: 0.0039671953}
+      rotation: {x: -0.009337388, y: -0.00000003577973, z: 3.3411718e-10, w: 0.9999565}
+      scale: {x: 0.99999934, y: 1, z: 1}
+    - name: RightShoulder
+      parentName: Spine1
+      position: {x: 0.03546743, y: 0.19059406, z: 0.0026854929}
+      rotation: {x: 0.9982759, y: -0.058697496, z: -0.000000063562766, w: 0.000000057841937}
+      scale: {x: 1.0000011, y: 1.0000001, z: 1.0000002}
+    - name: RightArm
+      parentName: RightShoulder
+      position: {x: 0.16987494, y: 0.000007964248, z: 0.00000066770383}
+      rotation: {x: -0.0015051763, y: 0.0019343494, z: -0.023881977, w: 0.9997118}
+      scale: {x: 0.9999998, y: 1.0000004, z: 1.0000002}
+    - name: RightArmRoll
+      parentName: RightArm
+      position: {x: 0.12099669, y: 0.00000457359, z: 0.00000093895443}
+      rotation: {x: -0.00000014945253, y: 6.617445e-24, z: 9.889939e-31, w: 1}
+      scale: {x: 1.0000001, y: 1, z: 1.0000002}
+    - name: RightForeArm
+      parentName: RightArm
+      position: {x: 0.27103955, y: -0.0000052501487, z: -0.0000004830787}
+      rotation: {x: -0.013677399, y: 0.0223926, z: -0.032886274, w: 0.9991146}
+      scale: {x: 0.99999994, y: 1, z: 1.0000004}
+    - name: RightForeArmRoll
+      parentName: RightForeArm
+      position: {x: 0.14892064, y: 0.0000026945236, z: -0.000001420859}
+      rotation: {x: 0.000000018626448, y: 2.775557e-16, z: 0.000000014901161, w: 1}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+    - name: RightHand
+      parentName: RightForeArm
+      position: {x: 0.28277272, y: 0.0000037394702, z: 0.00000078103074}
+      rotation: {x: 0.053187236, y: -0.060726505, z: 0.12767306, w: 0.9885257}
+      scale: {x: 1, y: 0.9999998, z: 1.0000002}
+    - name: RightHandProp
+      parentName: RightHand
+      position: {x: 0.07023746, y: 0.015750349, z: 0.004073711}
+      rotation: {x: 0.000023584964, y: -0.000028129305, z: 0.70710737, w: 0.7071062}
+      scale: {x: 1, y: 1.0000002, z: 1}
+    - name: RightHandThumb1
+      parentName: RightHand
+      position: {x: 0.011835694, y: -0.00000491528, z: -0.021989543}
+      rotation: {x: -0.70904976, y: -0.2536915, z: 0.2721703, w: -0.5990095}
+      scale: {x: 0.9999998, y: 0.9999997, z: 0.9999997}
+    - name: RightHandThumb2
+      parentName: RightHandThumb1
+      position: {x: 0.053366397, y: 0.0000005555474, z: -0.0000003192392}
+      rotation: {x: -0.0034761706, y: 0.016042834, z: 0.03535869, w: 0.99923986}
+      scale: {x: 1.0000004, y: 1.0000006, z: 0.99999994}
+    - name: RightHandThumb3
+      parentName: RightHandThumb2
+      position: {x: 0.035876296, y: 0.00000016299808, z: 0.00000033407144}
+      rotation: {x: -0.0000016191037, y: -0.000025575971, z: 0.03965048, w: 0.99921364}
+      scale: {x: 1.0000001, y: 1.0000006, z: 1}
+    - name: RightHandThumb4
+      parentName: RightHandThumb3
+      position: {x: 0.027048592, y: -0.00000022106605, z: -0.0000025178758}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1.0000001}
+    - name: RightHandRing1
+      parentName: RightHand
+      position: {x: 0.093086556, y: -0.0130819855, z: 0.017438997}
+      rotation: {x: 0.0039462135, y: -0.0059867813, z: 0.0036147353, w: 0.99996775}
+      scale: {x: 1.0000001, y: 1, z: 0.99999994}
+    - name: RightHandRing2
+      parentName: RightHandRing1
+      position: {x: 0.03746815, y: 0.0000014012795, z: -0.000000032351455}
+      rotation: {x: -0.00000047963084, y: -0.0000062594154, z: 0.03888543, w: 0.9992437}
+      scale: {x: 1.0000005, y: 1.0000002, z: 1.0000002}
+    - name: RightHandRing3
+      parentName: RightHandRing2
+      position: {x: 0.022955379, y: -0.0000031982422, z: -0.00000049800036}
+      rotation: {x: 0.00000024586916, y: -0.000000026077032, z: 0.028357714, w: 0.9995979}
+      scale: {x: 0.9999991, y: 0.99999946, z: 0.99999934}
+    - name: RightHandRing4
+      parentName: RightHandRing3
+      position: {x: 0.024415782, y: 0.0000003708218, z: 0.00000026696424}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1.0000002, y: 0.9999998, z: 0.9999998}
+    - name: RightHandPinky1
+      parentName: RightHand
+      position: {x: 0.08836552, y: -0.008012679, z: 0.038185213}
+      rotation: {x: 0.006350603, y: -0.01511061, z: -0.00012582021, w: 0.99986565}
+      scale: {x: 1.0000001, y: 1.0000002, z: 1.0000002}
+    - name: RightHandPinky2
+      parentName: RightHandPinky1
+      position: {x: 0.032830056, y: -0.0000036210447, z: -0.0000010287748}
+      rotation: {x: 0.0000006002372, y: 0.0000256244, z: 0.037588403, w: 0.9992934}
+      scale: {x: 1.0000001, y: 0.9999997, z: 0.99999934}
+    - name: RightHandPinky3
+      parentName: RightHandPinky2
+      position: {x: 0.022732977, y: 0.000006122673, z: 0.0000009729948}
+      rotation: {x: 0.000000230968, y: 0.000000070780516, z: 0.018586606, w: 0.9998273}
+      scale: {x: 1.0000004, y: 1.0000004, z: 1.0000004}
+    - name: RightHandPinky4
+      parentName: RightHandPinky3
+      position: {x: 0.021579312, y: -0.0000056923086, z: -0.00000089368746}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 0.9999997, y: 0.9999997, z: 0.9999997}
+    - name: RightHandMiddle1
+      parentName: RightHand
+      position: {x: 0.09277641, y: -0.01318032, z: -0.003724679}
+      rotation: {x: -0.00021759418, y: 0.005441195, z: 0.009920915, w: 0.9999359}
+      scale: {x: 1, y: 0.9999998, z: 0.9999998}
+    - name: RightHandMiddle2
+      parentName: RightHandMiddle1
+      position: {x: 0.039288618, y: -0.000004537285, z: -0.0000009518567}
+      rotation: {x: 0.0000013917742, y: 0.000026682854, z: 0.03701226, w: 0.99931484}
+      scale: {x: 1, y: 1.0000002, z: 1.0000002}
+    - name: RightHandMiddle3
+      parentName: RightHandMiddle2
+      position: {x: 0.026178442, y: 0.0000050355325, z: 0.0000013503446}
+      rotation: {x: 0.00000033533104, y: -0.0000032539908, z: 0.041529097, w: 0.9991373}
+      scale: {x: 0.9999997, y: 0.99999994, z: 1}
+    - name: RightHandMiddle4
+      parentName: RightHandMiddle3
+      position: {x: 0.026083775, y: -0.0000036223148, z: -0.0000006955289}
+      rotation: {x: 0.0000005621116, y: -0, z: -0, w: 1}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: RightHandIndex1
+      parentName: RightHand
+      position: {x: 0.09078874, y: -0.0126793, z: -0.029299397}
+      rotation: {x: -0.0013036014, y: 0.02028882, z: 0.011434542, w: 0.9997279}
+      scale: {x: 1, y: 1, z: 1}
+    - name: RightHandIndex2
+      parentName: RightHandIndex1
+      position: {x: 0.0368858, y: -0.0000027036494, z: -0.0000007331234}
+      rotation: {x: 0.0000002711312, y: 0.000015689055, z: 0.036609612, w: 0.9993296}
+      scale: {x: 1, y: 1.0000004, z: 1.0000002}
+    - name: RightHandIndex3
+      parentName: RightHandIndex2
+      position: {x: 0.026626283, y: 0.0000037640082, z: 0.0000006018164}
+      rotation: {x: 0.00000016391276, y: -0.0000000074505797, z: 0.040131714, w: 0.9991944}
+      scale: {x: 0.99999994, y: 0.9999996, z: 0.9999996}
+    - name: RightHandIndex4
+      parentName: RightHandIndex3
+      position: {x: 0.02470796, y: 0.0000004386452, z: 0.00000095279546}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1.0000001}
+    - name: Neck
+      parentName: Spine1
+      position: {x: 0.00000011290042, y: 0.24268691, z: 0.0013742375}
+      rotation: {x: 0.12585272, y: -0.000000055882268, z: 0.000000016670672, w: 0.992049}
+      scale: {x: 1.0000012, y: 1.0000002, z: 1}
+    - name: Head
+      parentName: Neck
+      position: {x: 5.4267707e-15, y: 0.10393006, z: -3.907985e-16}
+      rotation: {x: -0.089242, y: -0.00000066484597, z: 0.000000059569878, w: 0.99601}
+      scale: {x: 1, y: 1, z: 1.0000002}
+    - name: LeftShoulder
+      parentName: Spine1
+      position: {x: -0.03546744, y: 0.19058922, z: 0.0026851227}
+      rotation: {x: 0.000000022351742, y: 0.000000010184266, z: 0.058697533, w: 0.9982759}
+      scale: {x: 1.0000011, y: 1.0000002, z: 1.0000004}
+    - name: LeftArm
+      parentName: LeftShoulder
+      position: {x: -0.1698738, y: 0.00000015258789, z: -0.000000028610229}
+      rotation: {x: -0.0015050295, y: 0.0019348739, z: -0.02389202, w: 0.9997116}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1}
+    - name: LeftArmRoll
+      parentName: LeftArm
+      position: {x: -0.12099714, y: -0.000003967285, z: -0.00000091453967}
+      rotation: {x: -0.00000014945253, y: 6.617445e-24, z: 9.889939e-31, w: 1}
+      scale: {x: 1.0000001, y: 1, z: 1.0000002}
+    - name: LeftForeArm
+      parentName: LeftArm
+      position: {x: -0.2710414, y: -2.2737367e-15, z: 0.000000020774468}
+      rotation: {x: -0.013676067, y: 0.022390515, z: -0.032870974, w: 0.99911517}
+      scale: {x: 1.0000002, y: 1, z: 1.0000005}
+    - name: LeftForeArmRoll
+      parentName: LeftForeArm
+      position: {x: -0.14891969, y: 0.0000021362305, z: 0.0000022411346}
+      rotation: {x: 0.000000018626448, y: 2.775557e-16, z: 0.000000014901161, w: 1}
+      scale: {x: 1, y: 1.0000001, z: 1.0000001}
+    - name: LeftHand
+      parentName: LeftForeArm
+      position: {x: -0.28277162, y: -0.0000001566176, z: 0.00000011444058}
+      rotation: {x: 0.053187206, y: -0.060726315, z: 0.12767304, w: 0.98852575}
+      scale: {x: 0.99999994, y: 1.0000005, z: 1}
+    - name: LeftHandProp
+      parentName: LeftHand
+      position: {x: 0.18479176, y: -0.010269259, z: 0.010923915}
+      rotation: {x: -0.11957546, y: -0.15547925, z: -0.65263146, w: 0.73184705}
+      scale: {x: 1, y: 1.0000002, z: 1}
+    - name: LeftHandThumb1
+      parentName: LeftHand
+      position: {x: -0.011838579, y: 6.271406e-18, z: 0.021988293}
+      rotation: {x: 0.7090523, y: 0.2536924, z: -0.27216247, w: 0.5990097}
+      scale: {x: 1.0000006, y: 1.0000001, z: 1}
+    - name: LeftHandThumb2
+      parentName: LeftHandThumb1
+      position: {x: -0.053366598, y: 2.4868983e-16, z: 3.5527113e-17}
+      rotation: {x: -0.0034762893, y: 0.016039167, z: 0.03535587, w: 0.99924004}
+      scale: {x: 1.0000004, y: 1.0000002, z: 1.0000002}
+    - name: LeftHandThumb3
+      parentName: LeftHandThumb2
+      position: {x: -0.035876896, y: -7.105411e-17, z: 4.7961594e-16}
+      rotation: {x: 0.00000011175866, y: 0.0000004786996, z: 0.039646342, w: 0.9992138}
+      scale: {x: 0.99999887, y: 1.0000001, z: 0.99999934}
+    - name: LeftHandThumb4
+      parentName: LeftHandThumb3
+      position: {x: -0.02704627, y: 0.0000001335144, z: -1.4210841e-16}
+      rotation: {x: -0.0000013642688, y: 0.00000011975546, z: 0.00000006002856, w: 1}
+      scale: {x: 0.99999994, y: 1.0000001, z: 1.0000001}
+    - name: LeftHandRing1
+      parentName: LeftHand
+      position: {x: -0.09308742, y: 0.013081195, z: -0.01743882}
+      rotation: {x: 0.0039469725, y: -0.0059900396, z: 0.0036369907, w: 0.9999677}
+      scale: {x: 1.0000008, y: 1, z: 0.9999998}
+    - name: LeftHandRing2
+      parentName: LeftHandRing1
+      position: {x: -0.037466865, y: -0.000000085830685, z: -0.000000076293944}
+      rotation: {x: 0.0000002579762, y: 0.0000011348159, z: 0.03879289, w: 0.9992474}
+      scale: {x: 0.99999934, y: 0.99999934, z: 1}
+    - name: LeftHandRing3
+      parentName: LeftHandRing2
+      position: {x: -0.022958877, y: -0.000000076293944, z: -0.00000015258789}
+      rotation: {x: -0.000000014901159, y: -0.000000059604638, z: 0.02835784, w: 0.99959785}
+      scale: {x: 0.9999996, y: 1.0000006, z: 1.0000002}
+    - name: LeftHandRing4
+      parentName: LeftHandRing3
+      position: {x: -0.024415893, y: -0.000000009536743, z: 0.000000076293944}
+      rotation: {x: -0.0000026710607, y: -0.00000021623175, z: 0.14938973, w: 0.9887784}
+      scale: {x: 1.0000002, y: 0.9999998, z: 0.9999998}
+    - name: LeftHandPinky1
+      parentName: LeftHand
+      position: {x: -0.088366896, y: 0.008011721, z: -0.03818498}
+      rotation: {x: 0.0063501447, y: -0.015091049, z: -0.00017273602, w: 0.99986595}
+      scale: {x: 1, y: 0.99999946, z: 0.9999998}
+    - name: LeftHandPinky2
+      parentName: LeftHandPinky1
+      position: {x: -0.032832332, y: 0.000000076293944, z: -0.000000076293944}
+      rotation: {x: 0.000000010710203, y: -0.0000022035078, z: 0.037786312, w: 0.9992858}
+      scale: {x: 1.0000008, y: 1.0000006, z: 1.0000002}
+    - name: LeftHandPinky3
+      parentName: LeftHandPinky2
+      position: {x: -0.022726413, y: 1.9539921e-16, z: 0.000000076293944}
+      rotation: {x: -0.000000014901161, y: -0, z: 0.01858654, w: 0.99982727}
+      scale: {x: 0.999999, y: 0.99999994, z: 0.9999996}
+    - name: LeftHandPinky4
+      parentName: LeftHandPinky3
+      position: {x: -0.021585673, y: 0.00000014305114, z: 8.881782e-17}
+      rotation: {x: 0.0000018440858, y: -0.0000024269495, z: 0.14938842, w: 0.9887786}
+      scale: {x: 0.9999997, y: 0.9999997, z: 0.9999997}
+    - name: LeftHandMiddle1
+      parentName: LeftHand
+      position: {x: -0.092778176, y: 0.013179303, z: 0.0037245366}
+      rotation: {x: -0.00021802621, y: 0.0054507223, z: 0.009867472, w: 0.9999364}
+      scale: {x: 1.0000005, y: 1, z: 0.99999994}
+    - name: LeftHandMiddle2
+      parentName: LeftHandMiddle1
+      position: {x: -0.039290354, y: -0.000000009536743, z: 0.00000015258789}
+      rotation: {x: -0.00000023793822, y: 0.0000014388925, z: 0.03716814, w: 0.999309}
+      scale: {x: 1.0000002, y: 0.99999994, z: 1}
+    - name: LeftHandMiddle3
+      parentName: LeftHandMiddle2
+      position: {x: -0.026174273, y: -0.00000015258789, z: -2.486898e-16}
+      rotation: {x: 0.000000022290054, y: 0.000000057656926, z: 0.04135894, w: 0.9991444}
+      scale: {x: 0.9999991, y: 1, z: 0.9999998}
+    - name: LeftHandMiddle4
+      parentName: LeftHandMiddle3
+      position: {x: -0.026087632, y: -2.1316274e-16, z: 3.8191667e-16}
+      rotation: {x: -0.0000014814323, y: -0.0000000886109, z: 0.14938952, w: 0.9887784}
+      scale: {x: 1.0000001, y: 1, z: 1.0000001}
+    - name: LeftHandIndex1
+      parentName: LeftHand
+      position: {x: -0.09079056, y: 0.012677629, z: 0.029299146}
+      rotation: {x: -0.0013038098, y: 0.020290293, z: 0.011403178, w: 0.9997283}
+      scale: {x: 1.0000008, y: 1, z: 1}
+    - name: LeftHandIndex2
+      parentName: LeftHandIndex1
+      position: {x: -0.0368864, y: -3.1554436e-32, z: 0.00000015258789}
+      rotation: {x: -0.00000017369153, y: 0.0000013634552, z: 0.036723707, w: 0.9993255}
+      scale: {x: 0.99999994, y: 1, z: 0.9999998}
+    - name: LeftHandIndex3
+      parentName: LeftHandIndex2
+      position: {x: -0.02662345, y: 1.421085e-16, z: 3.197442e-16}
+      rotation: {x: -0.000000048428774, y: 0.00000011920929, z: 0.04013176, w: 0.9991944}
+      scale: {x: 0.9999997, y: 1.0000002, z: 1.0000002}
+    - name: LeftHandIndex4
+      parentName: LeftHandIndex3
+      position: {x: -0.02470739, y: -0.000000038146972, z: 3.5526994e-17}
+      rotation: {x: -0.000000227931, y: -0.0000006098122, z: 0.14938945, w: 0.9887784}
+      scale: {x: 1, y: 1, z: 1.0000001}
+    - name: DummyMESH
+      parentName: SwordShieldAnimsetPro_part2(Clone)
+      position: {x: -0, y: 0, z: 0}
+      rotation: {x: 0, y: -0, z: -0, w: 1}
+      scale: {x: 1, y: 1, z: 1}
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    globalScale: 1
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 1
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  autoGenerateAvatarMappingIfUnspecified: 1
+  animationType: 3
+  humanoidOversampling: 1
+  avatarSetup: 1
+  addHumanoidExtraRootOnlyWhenUsingAvatar: 1
+  remapMaterialsIfMaterialImportModeIsNone: 0
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

@@ -15,7 +15,7 @@ Material:
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
-  m_CustomRenderQueue: -1
+  m_CustomRenderQueue: 2007
   stringTagMap: {}
   disabledShaderPasses: []
   m_SavedProperties:
@@ -61,7 +61,7 @@ Material:
     - _DecalMeshDepthBias: 0
     - _DecalMeshViewBias: 0
     - _DelinkViewSubtract: 1
-    - _DrawOrder: 0
+    - _DrawOrder: 7
     - _FillTransparent: 1
     - _InlineOpacity: 3
     - _InlinePower: 10
@@ -82,7 +82,7 @@ Material:
     - _WalkPointsTextureOffset: -0.0042
     - _WalkingPointsTextureOffset: 0
     m_Colors:
-    - _AppearCenterPointUV: {r: 0.4055879, g: 0.6741639, b: 0, a: 0}
+    - _AppearCenterPointUV: {r: 0.40558872, g: 0.6645618, b: 0, a: 0}
     - _FillColor: {r: 0.18792273, g: 0.9486765, b: 0.9716981, a: 1}
     - _InlineAlphaColor: {r: 1, g: 1, b: 1, a: 0.772549}
     - _InlineColor: {r: 0, g: 1, b: 0.9374714, a: 1}

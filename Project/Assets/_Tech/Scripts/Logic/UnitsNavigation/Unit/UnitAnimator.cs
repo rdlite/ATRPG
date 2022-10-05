@@ -8,7 +8,8 @@ public class UnitAnimator
     private int IS_DEAD_HASH = Animator.StringToHash("IsDead");
     private int MOVEMENT_MAGNITUDE_HASH = Animator.StringToHash("MovementMagnitude");
     private int IMPART_TRIIGER_HASH = Animator.StringToHash("ImpactTrigger");
-    private int ATTACK_TRIGGER_HASH = Animator.StringToHash("AttackTrigger");
+    private int DEFAULT_ATTACK_TRIGGER_HASH = Animator.StringToHash("AttackTrigger");
+    private int SPECIAL_ATTACK_TRIGGER_HASH = Animator.StringToHash("SpecialAttackTrigger");
     private int IMPOSED_ATTACK_TRIGGER_HASH = Animator.StringToHash("ImposedAttackTrigger");
     private int IMPOSED_IMPACT_TRIGGER_HASH = Animator.StringToHash("ImposedImpactTrigger");
     private int WITHDRAWWEAPON_TRIGGER_HASH = Animator.StringToHash("WithdrawWeaponTrigger");
@@ -83,10 +84,10 @@ public class UnitAnimator
         _animator.SetTrigger(SHEALTWEAPON_TRIGGER_HASH);
     }
 
-    public void PlayAttackAnimation()
+    public void PlayAttackAnimation(bool isDefaultAttackAnimation)
     {
         SetRandomAnimation(_animatorsContainer.GetAttackAnimationsAmount(_currentWeapon));
-        _animator.SetTrigger(ATTACK_TRIGGER_HASH);
+        _animator.SetTrigger(isDefaultAttackAnimation ? DEFAULT_ATTACK_TRIGGER_HASH : SPECIAL_ATTACK_TRIGGER_HASH);
     }
 
     public void PlayImpactFromSwordAnimation()

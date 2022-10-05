@@ -28,14 +28,19 @@ public class BattleHandler
     private InputService _inputService;
     private ImposedPairsContainer _imposedPairsContainer;
     private BattleRaycaster _battleRaycaster;
+    private AssetsContainer _assetsContainer;
+    private Transform _bloodDecalsContainer;
     private bool _isCurrentlyShowWalkingDistance;
 
     public void Init(
         CameraSimpleFollower cameraFollower, BattleGridData battleGridData, DecalProjector decalProjector,
         UIRoot uiRoot, AssetsContainer assetsContainer, LineRenderer movementLinePrefab,
         Transform battleGeneratorTransform, ICoroutineService coroutineService, BattleGridGenerator gridGenerator,
-        InputService inputService, bool isAIActing, bool isDebugAIMovementWeights)
+        InputService inputService, bool isAIActing, bool isDebugAIMovementWeights,
+        Transform bloodDecalsContainer)
     {
+        _assetsContainer = assetsContainer;
+        _bloodDecalsContainer = bloodDecalsContainer;
         BattleGridDecalProjector = decalProjector;
 
         _battleGridData = battleGridData;
@@ -113,7 +118,7 @@ public class BattleHandler
 
     private void SetActiveUnderUnitsDecals(bool value)
     {
-        if (CurrentSelectedUnit == null || CurrentSelectedUnit is EnemyUnit)
+        if (CurrentSelectedUnit == null)
         {
             return;
         }
@@ -156,9 +161,9 @@ public class BattleHandler
         }
     }
 
-    public List<Node> GetPossibleWalkNodesForUnitAndSetField(UnitBase unit)
+    public List<Node> GetPossibleWalkNodesForUnitAndSetField(UnitBase unit, bool isShowEnemyWalkingDistance)
     {
-        if (!_turnsHandler.IsUnitHaveLengthToMove(unit))
+        if (!isShowEnemyWalkingDistance && !_turnsHandler.IsUnitHaveLengthToMove(unit))
         {
             return null;
         }
@@ -173,7 +178,7 @@ public class BattleHandler
         possibleNodes.Add(startNode);
 
         int crushProtection = 0;
-        float unitMaxWalkDistance = _turnsHandler.GetLastLengthForUnit(unit);
+        float unitMaxWalkDistance = isShowEnemyWalkingDistance ? _turnsHandler.GetDefaultLengthForUnit(unit) : _turnsHandler.GetLastLengthForUnit(unit);
 
         for (int x = 0; x < _battleGridData.Width; x++)
         {
@@ -304,7 +309,7 @@ public class BattleHandler
 
     private bool IsCanUseAbility()
     {
-        return _battleSM.GetActiveState() is IdlePlayerMovementState;
+        return (_battleSM.GetActiveState() is not AIMovementState && _battleSM.GetActiveState() is not PlayerUnitMovementAnimationState && _battleSM.GetActiveState() is not CameraFocusState);
     }
 
     public void AbilityButtonPressed(BattleFieldActionAbility ability, bool imposed)
@@ -328,7 +333,8 @@ public class BattleHandler
         else if (
           ability.Type == AbilityType.MeleeOneToOneAttack ||
           ability.Type == AbilityType.MeleeRangeAttack ||
-          ability.Type == AbilityType.ShotAttack)
+          ability.Type == AbilityType.ShotAttack ||
+          ability.Type == AbilityType.AroundAttackWithPush)
         {
             SwitchAttacking(ability);
         }
@@ -336,7 +342,7 @@ public class BattleHandler
 
     public void AbilityButtonPointerEnter(BattleFieldActionAbility ability, bool imposed)
     {
-        if (ability.Type == AbilityType.Walk && IsCanUseAbility() && !imposed)
+        if (ability.Type == AbilityType.Walk && IsCanUseAbility() && !imposed && CurrentSelectedUnit is not EnemyUnit)
         {
             WalkingButtonPointerEnter();
         }
@@ -344,7 +350,7 @@ public class BattleHandler
 
     public void AbilityButtonPointerExit(BattleFieldActionAbility ability, bool imposed)
     {
-        if (ability.Type == AbilityType.Walk && IsCanUseAbility() && !imposed)
+        if (ability.Type == AbilityType.Walk && IsCanUseAbility() && !imposed && CurrentSelectedUnit is not EnemyUnit)
         {
             WalkingButtonPointerExit();
         }
@@ -399,10 +405,13 @@ public class BattleHandler
 
     private void WaitButtonPressed()
     {
-        if (_battleSM.GetActiveState() is not IdlePlayerMovementState)
+        if (!IsCanUseAbility())
         {
             return;
         }
+
+        HideWalkingDistance(true);
+        StopAttackProcesses();
 
         _turnsHandler.SetUnitWalked(CurrentSelectedUnit);
 
@@ -430,8 +439,7 @@ public class BattleHandler
     {
         StopAttackProcesses();
 
-        if (
-            _battleSM.GetActiveState() is not PlayerUnitMovementChoosePathState &&
+        if (_battleSM.GetActiveState() is not PlayerUnitMovementChoosePathState &&
             _turnsHandler.IsUnitHaveLengthToMove(CurrentSelectedUnit) &&
             _turnsHandler.IsCanUnitWalk(CurrentSelectedUnit) &&
             _turnsHandler.IsItCurrentWalkingUnit(CurrentSelectedUnit))
@@ -446,11 +454,6 @@ public class BattleHandler
 
     private void SwitchAttacking(BattleFieldActionAbility battleFieldActionAbility)
     {
-        if (_isCurrentlyShowWalkingDistance || !_turnsHandler.IsItCurrentWalkingUnit(CurrentSelectedUnit))
-        {
-            return;
-        }
-
         HideWalkingDistance(false);
 
         _battleSM.Enter<AttackTransitionState, (BattleFieldActionAbility, bool)>((battleFieldActionAbility, false));
@@ -485,7 +488,7 @@ public class BattleHandler
 
         if (_battleSM.GetActiveState() is IdlePlayerMovementState)
         {
-            ShowUnitWalkingDistance(CurrentSelectedUnit);
+            ShowUnitWalkingDistance(CurrentSelectedUnit, false);
         }
     }
 
@@ -497,9 +500,9 @@ public class BattleHandler
         }
     }
 
-    public void ShowUnitWalkingDistance(UnitBase unitToShow)
+    public void ShowUnitWalkingDistance(UnitBase unitToShow, bool isShowEnemyWalkingDistance)
     {
-        if (_isCurrentlyShowWalkingDistance || !_turnsHandler.IsUnitHaveLengthToMove(unitToShow))
+        if (!isShowEnemyWalkingDistance && (_isCurrentlyShowWalkingDistance || !_turnsHandler.IsUnitHaveLengthToMove(unitToShow)) )
         {
             return;
         }
@@ -511,7 +514,7 @@ public class BattleHandler
         _currentAppearRange = 0f;
         SetActiveBattleGridDecal(true);
 
-        GetPossibleWalkNodesForUnitAndSetField(unitToShow);
+        GetPossibleWalkNodesForUnitAndSetField(unitToShow, isShowEnemyWalkingDistance);
 
         Vector3 minPoint = _battleGridData.LDPoint.position;
         Vector3 maxPoint = _battleGridData.RUPoint.position;
@@ -607,11 +610,6 @@ public class BattleHandler
         unit.DeactivateOverUnitData(isBattleEnded);
     }
 
-    public void AddNewBloodDecal(BloodDecalAppearance bloodDecal)
-    {
-        _createdBloodDecals.Add(bloodDecal);
-    }
-
     public void AddNewStunEffect(StunEffect newStunEffect)
     {
         _createdStunEffects.Add(newStunEffect);
@@ -633,6 +631,85 @@ public class BattleHandler
         {
             _battleGridData.Units[i].DeactivateOverUnitData(true);
         }
+    }
+
+    public void TryImposeUnitWithCollection(UnitBase attacker, List<UnitBase> targets)
+    {
+        List<UnitBase> targetsToTryImpose = new List<UnitBase>(targets);
+
+        for (int i = targetsToTryImpose.Count - 1; i >= 0; i--)
+        {
+            if (attacker.GetType() == targetsToTryImpose[i].GetType() || targetsToTryImpose[i].IsDeadOnBattleField || _imposedPairsContainer.HasPairWith(targetsToTryImpose[i]))
+            {
+                targetsToTryImpose.RemoveAt(i);
+            }
+        }
+
+        if (targetsToTryImpose.Count != 0)
+        {
+            UnitBase unitToImpose = null;
+            float nearestDotToTarget = -1f;
+
+            for (int i = 0; i < targetsToTryImpose.Count; i++)
+            {
+                Node attackerNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(attacker.transform.position);
+                Node targetNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(targetsToTryImpose[i].transform.position);
+
+                if (_battleGridData.GlobalGrid.IsNodesContacts(targetNode, attackerNode))
+                {
+                    float dot = Vector3.Dot(attacker.transform.forward, (targetsToTryImpose[i].transform.position - attacker.transform.position).normalized);
+
+                    if (dot > nearestDotToTarget)
+                    {
+                        nearestDotToTarget = dot;
+                        unitToImpose = targetsToTryImpose[i];
+                    }
+                }
+            }
+
+            if (unitToImpose != null)
+            {
+                _imposedPairsContainer.TryCreateNewPair(attacker, unitToImpose);
+            }
+        }
+    }
+
+    public bool IsCanImposeWithCollection(UnitBase attacker, List<UnitBase> targets)
+    {
+        if (targets.Count != 0)
+        {
+            for (int i = 0; i < targets.Count; i++)
+            {
+                if (attacker.GetType() == targets[i].GetType() || targets[i].IsDeadOnBattleField || _imposedPairsContainer.HasPairWith(targets[i]))
+                {
+                    continue;
+                } 
+
+                if (_battleGridData.GlobalGrid.IsNodesContacts(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(attacker.transform.position), _battleGridData.GlobalGrid.GetNodeFromWorldPoint(targets[i].transform.position)))
+                {
+                    return true;
+                }
+            }
+
+        }
+
+        return false;
+    }
+
+    public List<UnitBase> GetUnitsCanBeImposedWithAttacker(UnitBase attacker, List<UnitBase> targets)
+    {
+        List<UnitBase> unitsToReturn = new List<UnitBase>();
+
+        for (int i = 0; i < targets.Count; i++)
+        {
+            if (attacker.GetType() != targets[i].GetType() && !targets[i].IsDeadOnBattleField && !_imposedPairsContainer.HasPairWith(targets[i]) &&
+                _battleGridData.GlobalGrid.IsNodesContacts(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(attacker.transform.position), _battleGridData.GlobalGrid.GetNodeFromWorldPoint(targets[i].transform.position)))
+            {
+                unitsToReturn.Add(targets[i]);
+            }
+        }
+
+        return unitsToReturn;
     }
 
     private void SetBattleGridMovementMask()
@@ -666,5 +743,14 @@ public class BattleHandler
         BattleGridDecalProjector.material.SetTexture("_WalkingPointsMap", _battleGridData.WalkingPointsTexture);
         BattleGridDecalProjector.material.SetFloat("_TextureOffset", 0f);
         BattleGridDecalProjector.material.SetFloat("_WalkPointsTextureOffset", -.0042f);
+    }
+
+    public void CreateBloodDecal(UnitBase attacker, UnitBase target)
+    {
+        BloodDecalAppearance bloodDecal = Object.Instantiate(_assetsContainer.BloodDecal);
+        Object.Instantiate(_assetsContainer.BloodImpact, target.GetAttackPoint().position, Quaternion.LookRotation(attacker.transform.forward));
+        bloodDecal.ThrowDecalOnSurface(target.GetAttackPoint().position, (target.transform.position - attacker.transform.position).normalized);
+        _createdBloodDecals.Add(bloodDecal);
+        bloodDecal.transform.SetParent(_bloodDecalsContainer);
     }
 }

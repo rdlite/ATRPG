@@ -29,7 +29,7 @@ public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
     }
 
     public void Enter() {
-        _battleHandler.ShowUnitWalkingDistance(_battleHandler.CurrentSelectedUnit);
+        _battleHandler.ShowUnitWalkingDistance(_battleHandler.CurrentSelectedUnit, false);
     }
 
     public void Update() {

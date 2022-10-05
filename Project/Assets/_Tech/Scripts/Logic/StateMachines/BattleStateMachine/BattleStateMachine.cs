@@ -28,13 +28,17 @@ public class BattleStateMachine : UpdateStateMachine {
                 this, battleHandler),
             [typeof(AttackSequenceState)] = new AttackSequenceState(
                 coroutineService, uiRoot, battleHandler,
-                imposedPairsContainer, turnsHandler, assetsContainer,
-                battleGridData, this, cameraFollower),
+                imposedPairsContainer, turnsHandler, this, 
+                cameraFollower),
 
             [typeof(PlayerMeleeAttackOneToOneState)] = new PlayerMeleeAttackOneToOneState(
                 this, battleHandler, battleGridData,
                 imposedPairsContainer, battleRaycaster, inputService),
             [typeof(PlayerAttackMeleeRangeState)] = new PlayerAttackMeleeRangeState(
+                this, battleHandler, battleGridData,
+                imposedPairsContainer, battleRaycaster, inputService,
+                cameraFollower),
+            [typeof(PlayerAroundAttackWithPush)] = new PlayerAroundAttackWithPush(
                 this, battleHandler, battleGridData,
                 imposedPairsContainer, battleRaycaster, inputService,
                 cameraFollower),

@@ -64,7 +64,6 @@ MonoBehaviour:
   _characterRaycastDetector: {fileID: 1173083646998617225}
   _distanceToStartWalkingAnimation: 5
   _weaponType: 1
-  _weaponLayerType: 1
   _attackPoint: {fileID: 894693861919216183}
 --- !u!114 &2577137321308798024
 MonoBehaviour:
@@ -322,6 +321,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8989776160852178427, guid: d6e75616c9a59e14aa6004dea105cfe6,
+        type: 3}
+      propertyPath: m_Controller
+      value: 
+      objectReference: {fileID: 9100000, guid: a13e9c00fb1f3c44f96c38d21b4c5e0b, type: 2}
     m_RemovedComponents:
     - {fileID: 3347386746599535393, guid: d6e75616c9a59e14aa6004dea105cfe6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: d6e75616c9a59e14aa6004dea105cfe6, type: 3}

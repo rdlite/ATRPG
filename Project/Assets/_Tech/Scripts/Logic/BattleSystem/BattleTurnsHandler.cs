@@ -150,6 +150,11 @@ public class BattleTurnsHandler
         return _unitsRoundData_map[unit].MovementLengthLast;
     }
 
+    public float GetDefaultLengthForUnit(UnitBase unit)
+    {
+        return _unitsRoundData_map[unit].DefaultMovementLength;
+    }
+
     private void RefreshUnitsData()
     {
         if (_unitsRoundData_map == null)
@@ -377,13 +382,14 @@ public class BattleTurnsHandler
 
     private class CurrentRoundUnitsData
     {
+        public float DefaultMovementLength;
         public float MovementLengthLast;
         public bool IsCanWalk;
         public List<BattleFieldActionAbility> UsedAbilities;
 
         public CurrentRoundUnitsData(float movementRangeLast)
         {
-            MovementLengthLast = movementRangeLast;
+            MovementLengthLast = DefaultMovementLength = movementRangeLast;
             IsCanWalk = true;
             UsedAbilities = new List<BattleFieldActionAbility>();
         }
@@ -392,7 +398,7 @@ public class BattleTurnsHandler
         {
             IsCanWalk = true;
             UsedAbilities.Clear();
-            MovementLengthLast = defaultMovementLength;
+            MovementLengthLast = DefaultMovementLength = defaultMovementLength;
         }
     }
 }

@@ -91,7 +91,7 @@ public class AIMovementResolver
         {
             foreach (var ability in unitToMove.GetUnitAbilitites())
             {
-                List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
+                List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove, false);
 
                 if (!isAlreadyMoved && ability.Type == AbilityType.Walk && _turnsHandler.IsUnitHaveLengthToMove(unitToMove) && !_imposedPairsContainer.HasPairWith(unitToMove))
                 {
@@ -335,9 +335,11 @@ public class AIMovementResolver
 
             for (int i = 0; i < unitsAttackData.Count; i++)
             {
-                if (unitsAttackData[i].Item4 > maxPoints)
+                bool isCanBeImposed = _battleHandler.IsCanImposeWithCollection(unitToMove, bestWayToAttack.Item2);
+
+                if ((unitsAttackData[i].Item4 * (isCanBeImposed ? .5f : 1f)) > maxPoints)
                 {
-                    maxPoints = unitsAttackData[i].Item4;
+                    maxPoints = unitsAttackData[i].Item4 * (isCanBeImposed ? .5f : 1f);
                     bestWayToAttack = unitsAttackData[i];
                 }
             }
@@ -483,7 +485,7 @@ public class AIMovementResolver
     {
         _battleHandler.StartFocusCamera(unitToMove.transform, () => _battleSM.Enter<AIMovementState>());
 
-        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove);
+        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove, false);
 
         yield return new WaitForSeconds(.5f);
 

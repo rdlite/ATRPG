@@ -14,7 +14,9 @@ public class AttackTransitionState : IPayloadState<(BattleFieldActionAbility, bo
         if (data.Item1.Type == AbilityType.MeleeOneToOneAttack) {
             _battleSM.Enter<PlayerMeleeAttackOneToOneState, (BattleFieldActionAbility, bool)>(data);
         } else if (data.Item1.Type == AbilityType.MeleeRangeAttack) {
-            _battleSM.Enter<PlayerAttackMeleeRangeState, (BattleFieldActionAbility, bool) > (data);
+            _battleSM.Enter<PlayerAttackMeleeRangeState, (BattleFieldActionAbility, bool)>(data);
+        } else if (data.Item1.Type == AbilityType.AroundAttackWithPush) {
+            _battleSM.Enter<PlayerAroundAttackWithPush, (BattleFieldActionAbility, bool)>(data);
         } else if (data.Item1.Type == AbilityType.ShotAttack) {
 
         }
