@@ -1,13 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerAroundAttackWithPush : IPayloadState<(BattleFieldActionAbility, bool)>, IUpdateState
 {
-    private List<UnitBase> _unitsToAttack;
-    private UnitBase[] _selectionForAttackMap;
-    private bool[] _currentAttackingMap;
-
+    private List<(bool, Node, UnitBase)> _unitsToPushAway = new List<(bool, Node, UnitBase)>();
     private CameraSimpleFollower _cameraFollower;
+    private ICoroutineService _coroutineService;
+    private AssetsContainer _assetsContainer;
     private InputService _inputService;
     private BattleRaycaster _battleRaycaster;
     private ImposedPairsContainer _imposedPairsContainer;
@@ -20,112 +20,108 @@ public class PlayerAroundAttackWithPush : IPayloadState<(BattleFieldActionAbilit
     public PlayerAroundAttackWithPush(
         UpdateStateMachine battleSM, BattleHandler battleHandler, BattleGridData battleGridData,
         ImposedPairsContainer imposedPairsContainer, BattleRaycaster battleRaycaster, InputService inputService,
-        CameraSimpleFollower cameraFollower)
+        CameraSimpleFollower cameraFollower, AssetsContainer assetsContainer, ICoroutineService coroutineService)
     {
         _cameraFollower = cameraFollower;
+        _coroutineService = coroutineService;
+        _assetsContainer = assetsContainer;
         _inputService = inputService;
         _battleRaycaster = battleRaycaster;
         _imposedPairsContainer = imposedPairsContainer;
         _battleGridData = battleGridData;
         _battleHandler = battleHandler;
         _battleSM = battleSM;
-        _unitsToAttack = new List<UnitBase>();
-
-        _currentAttackingMap = new bool[_battleGridData.Units.Count];
-        _selectionForAttackMap = new UnitBase[_battleGridData.Units.Count];
     }
 
     public void Enter((BattleFieldActionAbility, bool) data)
     {
+        _cameraFollower.SetFreeMovement();
         _attackAbility = data.Item1;
         _isPossibilityAttack = data.Item2;
+        _unitsToPushAway.Clear();
+        ProcessMeleeRadiusAttack();
     }
 
     public void Exit()
     {
+        _battleHandler.DestroyAllPushPointers();
+
         _battleHandler.StopAttackProcesses();
     }
 
     public void Update()
     {
-        ProcessMeleeRadiusAttack();
+        TryAttack();
         AbortAttackProcess();
     }
 
     private Node[,] _attackRadiusNodesMatrix = new Node[0, 0];
     private void ProcessMeleeRadiusAttack()
     {
-        bool isImposed = _imposedPairsContainer.HasPairWith(_battleHandler.CurrentSelectedUnit);
+        _attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(_battleHandler.CurrentSelectedUnit.transform.position, _battleHandler.CurrentSelectedUnit.transform.forward, 3f, 360f);
 
-        if (Time.frameCount % 4 == 0)
+        if (_attackRadiusNodesMatrix.GetLength(0) != 0)
         {
-            _attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(_battleHandler.CurrentSelectedUnit.transform.position, _battleHandler.CurrentSelectedUnit.transform.forward, 3f, 360f);
-            //_attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(_battleHandler.CurrentSelectedUnit.transform.position, _battleHandler.CurrentSelectedUnit.transform.forward, 3f, 100f);
+            _battleHandler.AttackRangeDecalProjector.gameObject.SetActive(true);
+            _battleHandler.AttackRangeDecalProjector.transform.position = _battleHandler.CurrentSelectedUnit.transform.position + Vector3.up * _battleHandler.AttackRangeDecalProjector.size.z / 2f;
+            _battleHandler.AttackRangeDecalProjector.size = new Vector3(_attackRadiusNodesMatrix.GetLength(0) * _battleGridData.GlobalGrid.NodeRadius * 2f, _attackRadiusNodesMatrix.GetLength(1) * _battleGridData.GlobalGrid.NodeRadius * 2f, _battleHandler.BattleGridDecalProjector.size.z);
 
-            if (_attackRadiusNodesMatrix.GetLength(0) != 0)
+            Texture2D attackRangeDrawingTexture = new Texture2D(_attackRadiusNodesMatrix.GetLength(0) * 2, _attackRadiusNodesMatrix.GetLength(1) * 2);
+            Color destinatedColor = Color.black;
+
+            for (int x = 0; x < _attackRadiusNodesMatrix.GetLength(0); x++)
             {
-                _battleHandler.AttackRangeDecalProjector.gameObject.SetActive(true);
-                _battleHandler.AttackRangeDecalProjector.transform.position = _battleHandler.CurrentSelectedUnit.transform.position + Vector3.up * _battleHandler.AttackRangeDecalProjector.size.z / 2f;
-                _battleHandler.AttackRangeDecalProjector.size = new Vector3(_attackRadiusNodesMatrix.GetLength(0) * _battleGridData.GlobalGrid.NodeRadius * 2f, _attackRadiusNodesMatrix.GetLength(1) * _battleGridData.GlobalGrid.NodeRadius * 2f, _battleHandler.BattleGridDecalProjector.size.z);
-
-                Texture2D attackRangeDrawingTexture = new Texture2D(_attackRadiusNodesMatrix.GetLength(0) * 2, _attackRadiusNodesMatrix.GetLength(1) * 2);
-                Color destinatedColor = Color.black;
-
-                for (int x = 0; x < _attackRadiusNodesMatrix.GetLength(0); x++)
+                for (int y = 0; y < _attackRadiusNodesMatrix.GetLength(1); y++)
                 {
-                    for (int y = 0; y < _attackRadiusNodesMatrix.GetLength(1); y++)
-                    {
-                        destinatedColor = _attackRadiusNodesMatrix[x, y] == null ? Color.black : Color.white;
-                        attackRangeDrawingTexture.SetPixel(x * 2, y * 2, destinatedColor);
-                        attackRangeDrawingTexture.SetPixel(x * 2 + 1, y * 2, destinatedColor);
-                        attackRangeDrawingTexture.SetPixel(x * 2, y * 2 + 1, destinatedColor);
-                        attackRangeDrawingTexture.SetPixel(x * 2 + 1, y * 2 + 1, destinatedColor);
-                    }
+                    destinatedColor = _attackRadiusNodesMatrix[x, y] == null ? Color.black : Color.white;
+                    attackRangeDrawingTexture.SetPixel(x * 2, y * 2, destinatedColor);
+                    attackRangeDrawingTexture.SetPixel(x * 2 + 1, y * 2, destinatedColor);
+                    attackRangeDrawingTexture.SetPixel(x * 2, y * 2 + 1, destinatedColor);
+                    attackRangeDrawingTexture.SetPixel(x * 2 + 1, y * 2 + 1, destinatedColor);
                 }
-
-                attackRangeDrawingTexture.Apply();
-
-                _battleHandler.AttackRangeDecalProjector.material.SetTexture("_MainTex", attackRangeDrawingTexture);
             }
 
-            for (int i = 0; i < _battleGridData.Units.Count; i++)
-            {
-                bool isActivate = false;
-                Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+            attackRangeDrawingTexture.Apply();
 
-                for (int x = 0; x < _attackRadiusNodesMatrix.GetLength(0); x++)
+            _battleHandler.AttackRangeDecalProjector.material.SetTexture("_MainTex", attackRangeDrawingTexture);
+        }
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++)
+        {
+            bool isActivate = false;
+            Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+
+            for (int x = 0; x < _attackRadiusNodesMatrix.GetLength(0); x++)
+            {
+                for (int y = 0; y < _attackRadiusNodesMatrix.GetLength(1); y++)
                 {
-                    for (int y = 0; y < _attackRadiusNodesMatrix.GetLength(1); y++)
+                    if (_attackRadiusNodesMatrix[x, y] != null)
                     {
-                        if (_attackRadiusNodesMatrix[x, y] != null)
+                        if (unitNode == _attackRadiusNodesMatrix[x, y] && !_battleGridData.Units[i].IsDeadOnBattleField && _battleHandler.CurrentMouseOverSelectionUnit != _battleGridData.Units[i])
                         {
-                            if (unitNode == _attackRadiusNodesMatrix[x, y])
-                            {
-                                isActivate = true;
-                                if (!_battleGridData.Units[i].IsDeadOnBattleField)
-                                {
-                                    _battleHandler.ActivateAttackDecalUnderUnit(i);
-                                }
-                            }
+                            isActivate = true;
                         }
                     }
                 }
+            }
 
-                if (!isActivate)
-                {
-                    _battleHandler.SetActiveAttackDecalUnderUnit(i, false);
-                    _battleHandler.DeactivateOverUnitData(_battleGridData.Units[i], false);
-                }
-                else
-                {
-                    if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleHandler.CurrentMouseOverSelectionUnit != _battleGridData.Units[i])
-                    {
-                        _battleGridData.Units[i].ActivateOverUnitData(true, _battleHandler.CurrentSelectedUnit.GetUnitConfig(), _imposedPairsContainer.HasPairWith(_battleGridData.Units[i]));
-                    }
-                }
+            _battleHandler.SetActiveAttackDecalUnderUnit(i, isActivate);
+
+            if (!isActivate)
+            {
+                _battleHandler.DeactivateOverUnitData(_battleGridData.Units[i], false);
+            }
+            else
+            {
+                _battleGridData.Units[i].ActivateOverUnitData(true, _battleHandler.CurrentSelectedUnit.GetUnitConfig(), _imposedPairsContainer.HasPairWith(_battleGridData.Units[i]));
             }
         }
 
+        _unitsToPushAway = _battleHandler.CalculatePushingDistances(_attackRadiusNodesMatrix, _battleHandler.CurrentSelectedUnit, _battleHandler.CurrentSelectedUnit.transform.position, true);
+    }
+
+    private void TryAttack()
+    {
         if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject())
         {
             List<UnitBase> unitsToAttackInRange = new List<UnitBase>();
@@ -182,6 +178,6 @@ public class PlayerAroundAttackWithPush : IPayloadState<(BattleFieldActionAbilit
 
     private void TryAttackUnits(UnitBase attacker, List<UnitBase> targets, BattleFieldActionAbility ability)
     {
-        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action callback)>((attacker, targets, ability, _isPossibilityAttack, null));
+        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action, System.Action)>((attacker, targets, ability, _isPossibilityAttack, null, () => _battleHandler.PushTargets(_unitsToPushAway, attacker)));
     }
 }

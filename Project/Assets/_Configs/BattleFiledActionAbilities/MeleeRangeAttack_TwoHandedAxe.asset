@@ -17,3 +17,4 @@ MonoBehaviour:
   AdditionalButtonImage: {fileID: 0}
   IsHavePointerButtonEvents: 0
   IsDefaultAttack: 0
+  IsImposeTargetAbility: 1

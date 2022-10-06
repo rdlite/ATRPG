@@ -7,4 +7,5 @@ public class BattleFieldActionAbility : ScriptableObject
     public Sprite ButtonImage, AdditionalButtonImage;
     public bool IsHavePointerButtonEvents;
     public bool IsDefaultAttack;
+    public bool IsImposeTargetAbility;
 }

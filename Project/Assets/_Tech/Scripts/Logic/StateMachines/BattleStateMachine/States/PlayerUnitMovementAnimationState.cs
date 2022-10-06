@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class PlayerUnitMovementAnimationState : IPayloadState<Node> {
+public class PlayerUnitMovementAnimationState : IPayloadState<Node>
+{
     private CameraSimpleFollower _cameraFollower;
     private BattleStateMachine _battleSM;
     private BattleHandler _battleHandler;
@@ -14,7 +15,8 @@ public class PlayerUnitMovementAnimationState : IPayloadState<Node> {
     public PlayerUnitMovementAnimationState(
         BattleGridData battleGridData, ICoroutineService coroutineService, ImposedPairsContainer imposedPairsContainer,
         BattleHandler battleHandler, BattleTurnsHandler turnsHandler, CameraSimpleFollower cameraFollower,
-        BattleStateMachine battleSM) {
+        BattleStateMachine battleSM)
+    {
         _cameraFollower = cameraFollower;
         _battleSM = battleSM;
         _battleHandler = battleHandler;
@@ -24,17 +26,20 @@ public class PlayerUnitMovementAnimationState : IPayloadState<Node> {
         _imposedPairsContainer = imposedPairsContainer;
     }
 
-    public void Enter(Node endNode) {
+    public void Enter(Node endNode)
+    {
         _endMovementNode = endNode;
         StartUnitMovement();
     }
 
     public void Exit() { }
 
-    private void StartUnitMovement() {
+    private void StartUnitMovement()
+    {
         Node startMovementNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleHandler.CurrentSelectedUnit.transform.position);
 
-        if (startMovementNode != _endMovementNode) {
+        if (startMovementNode != _endMovementNode)
+        {
             _battleHandler.StartFocusCamera(_battleHandler.CurrentSelectedUnit.transform, null);
             _battleHandler.HideWalkingDistance(true);
             _turnsHandler.SetCurrentWalker(_battleHandler.CurrentSelectedUnit);
@@ -44,45 +49,55 @@ public class PlayerUnitMovementAnimationState : IPayloadState<Node> {
         }
     }
 
-    private void UnitEndedWalkAction(UnitBase unitWalked) {
+    private void UnitEndedWalkAction(UnitBase unitWalked)
+    {
         TryTurnEnemiesOnUnitEndWalking(unitWalked);
     }
 
-    private void OnEndedAction() {
+    private void OnEndedAction()
+    {
         _battleSM.Enter<IdlePlayerMovementState>();
     }
 
-    private void TryTurnEnemiesOnUnitEndWalking(UnitBase unitWalked) {
+    private void TryTurnEnemiesOnUnitEndWalking(UnitBase unitWalked)
+    {
         bool hasCharacterToRotate = false;
 
-        for (int i = 0; i < _battleGridData.Units.Count; i++) {
-            if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != unitWalked) {
+        for (int i = 0; i < _battleGridData.Units.Count; i++)
+        {
+            if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != unitWalked)
+            {
                 if (unitWalked.GetType() != _battleGridData.Units[i].GetType())
-                    if (IsTargetInMeleeAttackRange(unitWalked, _battleGridData.Units[i]) && !_imposedPairsContainer.HasPairWith(_battleGridData.Units[i])) {
+                    if (IsTargetInMeleeAttackRange(unitWalked, _battleGridData.Units[i]) && !_imposedPairsContainer.HasPairWith(_battleGridData.Units[i]))
+                    {
                         hasCharacterToRotate = true;
                         _coroutineService.StartCoroutine(RotateUnitToTarget(unitWalked, _battleGridData.Units[i]));
                     }
             }
         }
 
-        if (!hasCharacterToRotate) {
+        if (!hasCharacterToRotate)
+        {
             OnEndedAction();
         }
     }
 
-    private bool IsTargetInMeleeAttackRange(UnitBase unitCentre, UnitBase unitToCheck) {
+    private bool IsTargetInMeleeAttackRange(UnitBase unitCentre, UnitBase unitToCheck)
+    {
         Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitCentre.transform.position);
         Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToCheck.transform.position);
         return _battleGridData.GlobalGrid.IsNodesContacts(currentUnitNode, targetUnitNode);
     }
 
-    private IEnumerator RotateUnitToTarget(UnitBase toWhomRotate, UnitBase unitNeedsToBeRotated) {
+    private IEnumerator RotateUnitToTarget(UnitBase toWhomRotate, UnitBase unitNeedsToBeRotated)
+    {
         float t = 0f;
 
         Quaternion startTargetRotation = unitNeedsToBeRotated.transform.rotation;
         Quaternion endTargetRotation = Quaternion.LookRotation((toWhomRotate.transform.position - unitNeedsToBeRotated.transform.position).RemoveYCoord());
 
-        while (t <= 1f) {
+        while (t <= 1f)
+        {
             t += Time.deltaTime * 5f;
 
             unitNeedsToBeRotated.transform.rotation = Quaternion.Slerp(startTargetRotation, endTargetRotation, t);

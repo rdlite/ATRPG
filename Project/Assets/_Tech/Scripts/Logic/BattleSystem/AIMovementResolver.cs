@@ -55,19 +55,19 @@ public class AIMovementResolver
         yield return new WaitWhile(() => !endedWalk);
     }
 
-    private IEnumerator MeleeAttack(UnitBase attacker, List<UnitBase> targets, BattleFieldActionAbility ability, bool isImposedAttack)
+    private IEnumerator MeleeAttack(UnitBase attacker, List<UnitBase> targets, BattleFieldActionAbility ability, bool isImposedAttack, System.Action onDealDamageAttackCallback)
     {
         bool isAttackEnded = false;
 
         _turnsHandler.UnitUsedAbility(attacker, ability);
 
-        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action callback)>(
+        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action, System.Action)>(
             (attacker, targets, ability, isImposedAttack,
             () =>
             {
                 _battleSM.Enter<AIMovementState>();
                 isAttackEnded = true;
-            }
+            }, onDealDamageAttackCallback
         ));
 
         yield return new WaitWhile(() => !isAttackEnded);
@@ -118,7 +118,18 @@ public class AIMovementResolver
 
                     yield return _coroutineService.StartCoroutine(GetMeleeRangeAttackBestTurn(walkPoints, unitToMove, newAction, ability));
 
-                    if (/*newAction.Points >= 0f &&*/ newAction.IsCanBeUsed)
+                    if (newAction.Points > 0f && newAction.IsCanBeUsed)
+                    {
+                        possibleAIActions.Add(newAction);
+                    }
+                }
+                else if (ability.Type == AbilityType.AroundAttackWithPush && !_turnsHandler.IsUnitUsedAbility(unitToMove, ability))
+                {
+                    AIAction newAction = new AIAction();
+
+                    yield return _coroutineService.StartCoroutine(GetAroundAttackWithPushBestTurn(walkPoints, unitToMove, newAction, ability));
+
+                    if (newAction.Points > 0f && newAction.IsCanBeUsed)
                     {
                         possibleAIActions.Add(newAction);
                     }
@@ -145,7 +156,7 @@ public class AIMovementResolver
                         }
                     }
                 }
-
+                
                 yield return _coroutineService.StartCoroutine(ImplementAIAction(unitToMove, bestAIAction));
             }
 
@@ -178,13 +189,14 @@ public class AIMovementResolver
                 {
                     while (Vector3.Dot(unit.transform.forward, aIAction.AttackDirection) < .95)
                     {
+                        Debug.Log(Vector3.Dot(unit.transform.forward, aIAction.AttackDirection));
                         unit.transform.rotation = Quaternion.Slerp(unit.transform.rotation, Quaternion.LookRotation(aIAction.AttackDirection, Vector3.up), 10f * Time.deltaTime);
                         yield return null;
                     }
                 }
             }
 
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unit, aIAction.Targets, aIAction.Ability, false));
+            yield return _coroutineService.StartCoroutine(MeleeAttack(unit, aIAction.Targets, aIAction.Ability, false, aIAction.OnDealDamageCallback));
         }
 
         yield return new WaitForSeconds(1f);
@@ -263,14 +275,14 @@ public class AIMovementResolver
         bestAIAction.Ability = actionAbility;
     }
 
-    private IEnumerator GetMeleeRangeAttackBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction, BattleFieldActionAbility attackAbility)
+    private IEnumerator GetAroundAttackWithPushBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction, BattleFieldActionAbility attackAbility)
     {
         float attackRange = 3f;
-        float attackAngle = 100f;
+        float attackAngle = 360f;
 
         if (_imposedPairsContainer.HasPairWith(unitToMove))
         {
-            List<UnitBase> attackUnits = _battleHandler.GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitToMove.transform.position, unitToMove.transform.forward, attackRange, attackAngle);
+            List<UnitBase> attackUnits = _battleHandler.GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitToMove, unitToMove.transform.position, unitToMove.transform.forward, attackRange, attackAngle);
             float damageToGive = 0f;
             foreach (UnitBase unitInRange in attackUnits)
             {
@@ -279,7 +291,88 @@ public class AIMovementResolver
                 damageToGive += sign * GetDamageOnTarget(unitToMove, unitInRange, attackAbility, false);
             }
 
-            SetAttackActionTemplate(bestAIAction, damageToGive, _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position), attackUnits, unitToMove.transform.forward, attackAbility);
+            Node[,] attackRadiusNodes = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(unitToMove.transform.position, unitToMove.transform.forward, attackRange, attackAngle);
+            List<(bool, Node, UnitBase)> unitsToPushAway = _battleHandler.CalculatePushingDistances(attackRadiusNodes, unitToMove, unitToMove.transform.position, false);
+
+            SetAttackActionTemplate(bestAIAction, damageToGive, _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position), attackUnits, unitToMove.transform.forward, attackAbility, () => _battleHandler.PushTargets(unitsToPushAway, unitToMove));
+
+            yield break;
+        }
+
+        Node attackerNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
+        if (walkPoints == null || walkPoints.Count == 0)
+        {
+            walkPoints = new List<Node>();
+            walkPoints.Add(attackerNode);
+        }
+
+        List<(Node, List<UnitBase>, float)> unitsAttackData = new List<(Node, List<UnitBase>, float)>(walkPoints.Count);
+
+        int callsAmount = 0;
+
+        foreach (Node nodeAttackFrom in walkPoints)
+        {
+            List<UnitBase> attackUnits = _battleHandler.GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitToMove, nodeAttackFrom.WorldPosition, Vector3.up, attackRange, attackAngle);
+
+            if (attackUnits.Count != 0)
+            {
+                float damageToGive = 0f;
+                foreach (UnitBase unitInRange in attackUnits)
+                {
+                    float sign = unitInRange.GetType() != unitToMove.GetType() ? 1f : -1f;
+
+                    damageToGive += sign * GetDamageOnTarget(unitToMove, unitInRange, attackAbility, false);
+                }
+                unitsAttackData.Add((nodeAttackFrom, attackUnits, damageToGive));
+            }
+
+            callsAmount++;
+            if (callsAmount % 80 == 0)
+            {
+                yield return null;
+            }
+        }
+
+        if (unitsAttackData.Count != 0)
+        {
+            float maxPoints = -Mathf.Infinity;
+            (Node, List<UnitBase>, float) bestWayToAttack = unitsAttackData[0];
+
+            for (int i = 0; i < unitsAttackData.Count; i++)
+            {
+                bool isCanBeImposed = _battleHandler.IsCanImposeWithCollection(unitToMove, bestWayToAttack.Item2);
+
+                if ((unitsAttackData[i].Item3 * (isCanBeImposed ? .5f : 1f)) > maxPoints)
+                {
+                    maxPoints = unitsAttackData[i].Item3 * (isCanBeImposed ? .5f : 1f);
+                    bestWayToAttack = unitsAttackData[i];
+                }
+            }
+
+            Node[,] attackRadiusNodes = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(bestWayToAttack.Item1.WorldPosition, Vector3.up, attackRange, attackAngle);
+            List<(bool, Node, UnitBase)> unitsToPushAway = _battleHandler.CalculatePushingDistances(attackRadiusNodes, unitToMove, bestWayToAttack.Item1.WorldPosition, false);
+
+            SetAttackActionTemplate(bestAIAction, bestWayToAttack.Item3, bestWayToAttack.Item1, bestWayToAttack.Item2, Vector3.forward, attackAbility, () => _battleHandler.PushTargets(unitsToPushAway, unitToMove));
+        }
+    }
+    
+    private IEnumerator GetMeleeRangeAttackBestTurn(List<Node> walkPoints, UnitBase unitToMove, AIAction bestAIAction, BattleFieldActionAbility attackAbility)
+    {
+        float attackRange = 3f;
+        float attackAngle = 100f;
+
+        if (_imposedPairsContainer.HasPairWith(unitToMove))
+        {
+            List<UnitBase> attackUnits = _battleHandler.GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitToMove, unitToMove.transform.position, unitToMove.transform.forward, attackRange, attackAngle);
+            float damageToGive = 0f;
+            foreach (UnitBase unitInRange in attackUnits)
+            {
+                float sign = unitInRange.GetType() != unitToMove.GetType() ? 1f : -1f;
+
+                damageToGive += sign * GetDamageOnTarget(unitToMove, unitInRange, attackAbility, false);
+            }
+
+            SetAttackActionTemplate(bestAIAction, damageToGive, _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position), attackUnits, unitToMove.transform.forward, attackAbility, null);
 
             yield break;
         }
@@ -305,7 +398,7 @@ public class AIMovementResolver
 
                     Vector3 attackDir = new Vector3(x, 0f, y).normalized;
 
-                    List<UnitBase> attackUnits = _battleHandler.GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(nodeAttackFrom.WorldPosition, attackDir, attackRange, attackAngle);
+                    List<UnitBase> attackUnits = _battleHandler.GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitToMove, nodeAttackFrom.WorldPosition, attackDir, attackRange, attackAngle);
 
                     if (attackUnits.Count != 0)
                     {
@@ -344,7 +437,7 @@ public class AIMovementResolver
                 }
             }
 
-            SetAttackActionTemplate(bestAIAction, bestWayToAttack.Item4, bestWayToAttack.Item1, bestWayToAttack.Item2, bestWayToAttack.Item3, attackAbility);
+            SetAttackActionTemplate(bestAIAction, bestWayToAttack.Item4, bestWayToAttack.Item1, bestWayToAttack.Item2, bestWayToAttack.Item3, attackAbility, null);
         }
     }
 
@@ -353,7 +446,7 @@ public class AIMovementResolver
         if (_imposedPairsContainer.HasPairWith(unitToMove))
         {
             UnitBase target = _imposedPairsContainer.GetPairFor(unitToMove);
-            SetAttackActionTemplate(bestAIAction, GetDamageOnTarget(unitToMove, target, attackAbility, false), _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position), new List<UnitBase>() { target }, Vector3.forward, attackAbility);
+            SetAttackActionTemplate(bestAIAction, GetDamageOnTarget(unitToMove, target, attackAbility, false), _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position), new List<UnitBase>() { target }, Vector3.forward, attackAbility, null);
             yield break;
         }
 
@@ -477,159 +570,8 @@ public class AIMovementResolver
                 }
             }
 
-            SetAttackActionTemplate(bestAIAction, maxTacticalPoints, bestAttackTarget.Item3, new List<UnitBase>() { bestAttackTarget.Item2 }, Vector3.forward, attackAbility);
+            SetAttackActionTemplate(bestAIAction, maxTacticalPoints, bestAttackTarget.Item3, new List<UnitBase>() { bestAttackTarget.Item2 }, Vector3.forward, attackAbility, null);
         }
-    }
-
-    private IEnumerator OLD_TurnSequence(UnitBase unitToMove)
-    {
-        _battleHandler.StartFocusCamera(unitToMove.transform, () => _battleSM.Enter<AIMovementState>());
-
-        List<Node> walkPoints = _battleHandler.GetPossibleWalkNodesForUnitAndSetField(unitToMove, false);
-
-        yield return new WaitForSeconds(.5f);
-
-        BattleFieldActionAbility attackAbility = unitToMove.GetUnitAbilitites().Single(ability => ability.Type != AbilityType.Walk);
-
-        if (_imposedPairsContainer.HasPairWith(unitToMove))
-        {
-            UnitBase target = _imposedPairsContainer.GetPairFor(unitToMove);
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, new List<UnitBase>() { target }, attackAbility, true));
-        }
-        else
-        {
-            Node currentUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position);
-
-            List<(UnitBase, List<Node>)> unitAttackData = new List<(UnitBase, List<Node>)>();
-
-            for (int j = 0; j < _battleGridData.Units.Count; j++)
-            {
-                if (!_battleGridData.Units[j].IsDeadOnBattleField && _battleGridData.Units[j] != unitToMove && _battleGridData.Units[j] is PlayerUnit)
-                {
-                    Node targetUnitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[j].transform.position);
-
-                    unitAttackData.Add(new(_battleGridData.Units[j], new List<Node>()));
-
-                    for (int x = -1; x < 2; x++)
-                    {
-                        for (int y = -1; y < 2; y++)
-                        {
-                            if (x == 0 || y == 0)
-                            {
-                                if (x == 0 && y == 0)
-                                {
-                                    continue;
-                                }
-
-                                Node nodeToAdd = _battleGridData.GlobalGrid.GetNodesGrid()[targetUnitNode.GridX + x, targetUnitNode.GridY + y];
-
-                                if (walkPoints.Contains(nodeToAdd))
-                                {
-                                    unitAttackData[^1].Item2.Add(nodeToAdd);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            List<(float, UnitBase, Node)> targets = new List<(float, UnitBase, Node)>();
-
-            if (_isDebugAIMovementWeights)
-            {
-                bool isFirst = false;
-                foreach (var item in Object.FindObjectsOfType<TMPro.TextMeshPro>())
-                {
-                    if (!isFirst)
-                    {
-                        isFirst = true;
-                        continue;
-                    }
-                    Object.Destroy(item.gameObject);
-                }
-
-                Object.FindObjectOfType<TMPro.TextMeshPro>().transform.position = Vector3.one * 10000f;
-            }
-
-            for (int i = 0; i < unitAttackData.Count; i++)
-            {
-                if (unitAttackData[i].Item2.Count > 0)
-                {
-                    List<(float, Node)> nodesByTacticalPoints = new List<(float, Node)>(unitAttackData[i].Item2.Count);
-
-                    Node bestNodeToAttackFrom = unitAttackData[i].Item2[0];
-
-                    for (int j = 0; j < unitAttackData[i].Item2.Count; j++)
-                    {
-                        (bool, float) damageResult = unitAttackData[i].Item1.GetUnitHealthContainer().GedModifiedDamageAmount(unitToMove.GetUnitConfig().DefaultAttackDamage);
-                        float tacticalPoints = damageResult.Item1 ? 100000 : damageResult.Item2;
-
-                        Vector3 attackDirection = (unitAttackData[i].Item1.transform.position.RemoveYCoord() - unitAttackData[i].Item2[j].WorldPosition.RemoveYCoord()).normalized;
-
-                        if (_imposedPairsContainer.HasPairWith(unitAttackData[i].Item1))
-                        {
-                            tacticalPoints *= 1.2f;
-
-                            bool isAttackFromBehind = _imposedPairsContainer.HasPairWith(unitAttackData[i].Item1) && (Vector3.Dot(attackDirection, unitAttackData[i].Item1.transform.forward.RemoveYCoord()) >= .9f);
-
-                            if (isAttackFromBehind)
-                            {
-                                tacticalPoints += damageResult.Item2 * .2f;
-                            }
-                        }
-
-                        // add more tactical points the health is closer to zero
-                        float targetUnitHealthCompleteness = unitAttackData[i].Item1.GetUnitHealthContainer().GetHealthCompleteness();
-                        float remappedTactitialPointsValue = Mathf.Lerp(tacticalPoints, tacticalPoints * 1.25f, Mathf.InverseLerp(1f, 0f, targetUnitHealthCompleteness));
-
-                        float distToTarget = Vector3.Distance(unitAttackData[i].Item2[j].WorldPosition, unitToMove.transform.position);
-                        tacticalPoints -= distToTarget / 8f;
-
-                        nodesByTacticalPoints.Add(new(tacticalPoints, unitAttackData[i].Item2[j]));
-                    }
-
-                    float maxTacticalAttackPoints = -Mathf.Infinity;
-
-                    for (int j = 0; j < nodesByTacticalPoints.Count; j++)
-                    {
-                        if (_isDebugAIMovementWeights)
-                        {
-                            TMPro.TextMeshPro worldText = Object.Instantiate(Object.FindObjectOfType<TMPro.TextMeshPro>());
-                            worldText.transform.position = Vector3.up + nodesByTacticalPoints[j].Item2.WorldPosition;
-                            worldText.text = nodesByTacticalPoints[j].Item1.ToString("F1");
-                        }
-
-                        if (nodesByTacticalPoints[j].Item1 > maxTacticalAttackPoints)
-                        {
-                            maxTacticalAttackPoints = nodesByTacticalPoints[j].Item1;
-                            bestNodeToAttackFrom = nodesByTacticalPoints[j].Item2;
-                        }
-                    }
-
-                    targets.Add(new(maxTacticalAttackPoints, unitAttackData[i].Item1, bestNodeToAttackFrom));
-                }
-            }
-
-            float maxTacticalPoints = -Mathf.Infinity;
-            (float, UnitBase, Node) target = (maxTacticalPoints, null, null);
-            for (int i = 0; i < targets.Count; i++)
-            {
-                if (targets[i].Item1 > maxTacticalPoints)
-                {
-                    maxTacticalPoints = targets[i].Item1;
-                    target = targets[i];
-                }
-            }
-
-            if (target.Item3 != _battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToMove.transform.position))
-            {
-                yield return _coroutineService.StartCoroutine(MovementRoutine(unitToMove, target.Item3.WorldPosition));
-            }
-
-            yield return _coroutineService.StartCoroutine(MeleeAttack(unitToMove, new List<UnitBase>() { target.Item2 }, attackAbility, false));
-        }
-
-        _turnsHandler.AIEndedTurn();
     }
 
     private float GetDamageOnTarget(UnitBase attacker, UnitBase target, BattleFieldActionAbility ability, bool isAttackFromBehind)
@@ -662,13 +604,14 @@ public class AIMovementResolver
         _turnsHandler.AIEndedTurn();
     }
 
-    private void SetAttackActionTemplate(AIAction baseAction, float points, Node endNodeWalking, List<UnitBase> targets, Vector3 attackDirection, BattleFieldActionAbility ability)
+    private void SetAttackActionTemplate(AIAction baseAction, float points, Node endNodeWalking, List<UnitBase> targets, Vector3 attackDirection, BattleFieldActionAbility ability, System.Action onDealDamageCallback)
     {
         baseAction.Points = points;
         baseAction.EndNodeWalking = endNodeWalking;
         baseAction.Targets = targets;
         baseAction.AttackDirection = attackDirection;
         baseAction.Ability = ability;
+        baseAction.OnDealDamageCallback = onDealDamageCallback;
         baseAction.IsAttack = true;
         baseAction.IsCanBeUsed = true;
     }
@@ -681,6 +624,7 @@ public class AIMovementResolver
         action1.IsCanBeUsed = action2.IsCanBeUsed;
         action1.Targets = action2.Targets;
         action1.AttackDirection = action2.AttackDirection;
+        action1.OnDealDamageCallback = action2.OnDealDamageCallback;
         action1.Ability = action2.Ability;
     }
 
@@ -690,6 +634,7 @@ public class AIMovementResolver
         public Node EndNodeWalking;
         public bool IsAttack;
         public bool IsCanBeUsed;
+        public System.Action OnDealDamageCallback;
         public List<UnitBase> Targets;
         public Vector3 AttackDirection;
         public BattleFieldActionAbility Ability;

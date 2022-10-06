@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
@@ -20,6 +21,7 @@ public class BattleHandler
     private float _currentAppearRange = 0f;
 
     private List<BloodDecalAppearance> _createdBloodDecals;
+    private List<PushPointer> _createdPushPointers;
     private List<StunEffect> _createdStunEffects;
     private DecalProjector[] _createdUnderUnitWalkingDecals;
     private DecalProjector[] _createdUnderUnitAttackDecals;
@@ -28,6 +30,9 @@ public class BattleHandler
     private InputService _inputService;
     private ImposedPairsContainer _imposedPairsContainer;
     private BattleRaycaster _battleRaycaster;
+    private ICoroutineService _coroutineService;
+    private UIRoot _uiRoot;
+    private CameraSimpleFollower _cameraFollower;
     private AssetsContainer _assetsContainer;
     private Transform _bloodDecalsContainer;
     private bool _isCurrentlyShowWalkingDistance;
@@ -39,6 +44,9 @@ public class BattleHandler
         InputService inputService, bool isAIActing, bool isDebugAIMovementWeights,
         Transform bloodDecalsContainer)
     {
+        _coroutineService = coroutineService;
+        _uiRoot = uiRoot;
+        _cameraFollower = cameraFollower;
         _assetsContainer = assetsContainer;
         _bloodDecalsContainer = bloodDecalsContainer;
         BattleGridDecalProjector = decalProjector;
@@ -93,6 +101,7 @@ public class BattleHandler
 
         _createdBloodDecals = new List<BloodDecalAppearance>();
         _createdStunEffects = new List<StunEffect>();
+        _createdPushPointers = new List<PushPointer>();
 
         AttackRangeDecalProjector = Object.Instantiate(assetsContainer.AttackRangeDecalPrefab);
         AttackRangeDecalProjector.gameObject.SetActive(false);
@@ -106,7 +115,7 @@ public class BattleHandler
 
         ProcessMovementDecalAppearance();
 
-        if (!_inputService.IsPointerOverUIObject())
+        if (!_inputService.IsPointerOverUIObject() && (_battleSM.GetActiveState() is IdlePlayerMovementState || _battleSM.GetActiveState() is PlayerMeleeAttackOneToOneState))
         {
             CurrentMouseOverSelectionUnit = _battleRaycaster.GetCurrentMouseOverSelectionUnit();
         }
@@ -295,21 +304,21 @@ public class BattleHandler
 
         if (defaultAttackAbility.Type == AbilityType.MeleeRangeAttack)
         {
-            unitsToAttack.AddRange(GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitAttacker.transform.position, unitAttacker.transform.forward, 3f, 100f));
+            unitsToAttack.AddRange(GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(unitAttacker, unitAttacker.transform.position, unitAttacker.transform.forward, 3f, 100f));
         } 
         else
         {
             unitsToAttack.Add(CurrentSelectedUnit);
         }
 
-        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action callback)>(
-            (unitAttacker, unitsToAttack, unitAttacker.GetDefaultUnitAttackAbility(), true, null));
+        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, Action, Action)>(
+            (unitAttacker, unitsToAttack, unitAttacker.GetDefaultUnitAttackAbility(), true, null, null));
         _imposedPairsContainer.TryRemovePair(CurrentSelectedUnit);
     }
 
     private bool IsCanUseAbility()
     {
-        return (_battleSM.GetActiveState() is not AIMovementState && _battleSM.GetActiveState() is not PlayerUnitMovementAnimationState && _battleSM.GetActiveState() is not CameraFocusState);
+        return (_battleSM.GetActiveState() is not AIMovementState && _battleSM.GetActiveState() is not PlayerUnitMovementAnimationState && _battleSM.GetActiveState() is not AttackSequenceState && _battleSM.GetActiveState() is not CameraFocusState);
     }
 
     public void AbilityButtonPressed(BattleFieldActionAbility ability, bool imposed)
@@ -356,14 +365,6 @@ public class BattleHandler
         }
     }
 
-    public void ActivateAttackDecalUnderUnit(int unitID)
-    {
-        SetActiveAttackDecalUnderUnit(unitID, true);
-        _createdUnderUnitAttackDecals[unitID].transform.position = _battleGridData.Units[unitID].transform.position + Vector3.up / 3f;
-        _createdUnderUnitAttackDecals[unitID].material = Object.Instantiate(_createdUnderUnitAttackDecals[unitID].material);
-        _createdUnderUnitAttackDecals[unitID].material.SetColor("_Color", _createdUnderUnitAttackDecals[unitID].material.GetColor("_DefaultColor"));
-    }
-
     public void SetAttackDecalUnderUnitAsSelected(int unitID)
     {
         _createdUnderUnitAttackDecals[unitID].material.SetColor("_Color", _createdUnderUnitAttackDecals[unitID].material.GetColor("_SelectedColor"));
@@ -377,6 +378,13 @@ public class BattleHandler
     public void SetActiveAttackDecalUnderUnit(int decalID, bool value)
     {
         _createdUnderUnitAttackDecals[decalID].gameObject.SetActive(value);
+
+        if (value)
+        {
+            _createdUnderUnitAttackDecals[decalID].transform.position = _battleGridData.Units[decalID].transform.position + Vector3.up / 3f;
+            _createdUnderUnitAttackDecals[decalID].material = Object.Instantiate(_createdUnderUnitAttackDecals[decalID].material);
+            _createdUnderUnitAttackDecals[decalID].material.SetColor("_Color", _createdUnderUnitAttackDecals[decalID].material.GetColor("_DefaultColor"));
+        }
     }
 
     private void ProcessMovementDecalAppearance()
@@ -550,7 +558,7 @@ public class BattleHandler
         return createdLine;
     }
 
-    public List<UnitBase> GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(Vector3 startPos, Vector3 direction, float range, float angle)
+    public List<UnitBase> GetUnitsWithinAttackRaduisOfMeleeRangeWeapon(UnitBase unitAttacker, Vector3 startPos, Vector3 direction, float range, float angle)
     {
         List<UnitBase> unitsResult = new List<UnitBase>();
         Node[,] attackRadiusNodesMatrix = _battleGridData.GlobalGrid.GetNodesInRadiusByMatrix(startPos, direction, range, angle);
@@ -569,7 +577,7 @@ public class BattleHandler
                     {
                         if (unitNode == attackRadiusNodesMatrix[x, y])
                         {
-                            if (!_battleGridData.Units[i].IsDeadOnBattleField)
+                            if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleGridData.Units[i] != unitAttacker)
                             {
                                 unitsResult.Add(_battleGridData.Units[i]);
                             }
@@ -752,5 +760,188 @@ public class BattleHandler
         bloodDecal.ThrowDecalOnSurface(target.GetAttackPoint().position, (target.transform.position - attacker.transform.position).normalized);
         _createdBloodDecals.Add(bloodDecal);
         bloodDecal.transform.SetParent(_bloodDecalsContainer);
+    }
+
+    public bool DealDamageOnUnit(UnitBase unit, UnitBase attacker)
+    {
+        float damage = attacker.GetUnitConfig().DefaultAttackDamage;
+
+        _uiRoot.DynamicObjectsPanel.SpawnDamageNumber(Mathf.RoundToInt(damage), false, unit.transform.position + Vector3.up * 3f, _cameraFollower.Camera);
+
+        return unit.TakeDamage(damage);
+    }
+
+    public bool DealDamageOnUnit(UnitBase unit, float damage)
+    {
+        _uiRoot.DynamicObjectsPanel.SpawnDamageNumber(Mathf.RoundToInt(damage), false, unit.transform.position + Vector3.up * 3f, _cameraFollower.Camera);
+
+        return unit.TakeDamage(damage);
+    }
+
+    public void UnitDeadEvent(UnitBase unit)
+    {
+        if (unit is PlayerUnit)
+        {
+            AddNewStunEffect(unit.CreateStunParticle());
+        }
+
+        unit.DeactivateOverUnitData(true);
+        _imposedPairsContainer.TryRemovePair(unit);
+        _turnsHandler.MarkUnitAsDead(unit, CurrentSelectedUnit == unit);
+    }
+
+    public void DestroyAllPushPointers()
+    {
+        foreach (var item in _createdPushPointers)
+        {
+            item.HideLine();
+        }
+
+        _createdPushPointers.Clear();
+    }
+
+    private UnitBase _distanceAttackerCheckUnit;
+    public List<(bool, Node, UnitBase)> CalculatePushingDistances(Node[,] attackRadiusNodesMatrix, UnitBase attacker, Vector3 attackPosition, bool isCreatePushPointers)
+    {
+        List<UnitBase> unitsToAttackInRange = new List<UnitBase>();
+        List<Node> unitsObstacles = new List<Node>();
+
+        for (int i = 0; i < _battleGridData.Units.Count; i++)
+        {
+            if (!_battleGridData.Units[i].IsDeadOnBattleField)
+            {
+                Node unitNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position);
+
+                bool isBreakLoop = false;
+                for (int x = 0; x < attackRadiusNodesMatrix.GetLength(0); x++)
+                {
+                    for (int y = 0; y < attackRadiusNodesMatrix.GetLength(1); y++)
+                    {
+                        if (attackRadiusNodesMatrix[x, y] != null)
+                        {
+                            if (unitNode == attackRadiusNodesMatrix[x, y])
+                            {
+                                unitsToAttackInRange.Add(_battleGridData.Units[i]);
+                                isBreakLoop = true;
+                            }
+                        }
+
+                        if (isBreakLoop)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (isBreakLoop)
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        if (unitsToAttackInRange.Count != 0)
+        {
+            _distanceAttackerCheckUnit = attacker;
+            unitsToAttackInRange.Sort(DistancesComparator);
+            for (int i = 0; i < _battleGridData.Units.Count; i++)
+            {
+                if (!_battleGridData.Units[i].IsDeadOnBattleField && !unitsToAttackInRange.Contains(_battleGridData.Units[i]))
+                {
+                    unitsObstacles.Add(_battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleGridData.Units[i].transform.position));
+                }
+            }
+        }
+
+        bool isCanDealDamage = false;
+
+        int nodesBoundsOffset = 2;
+        Node[,] nodesGrid = _battleGridData.GlobalGrid.GetNodesGrid();
+        Vector3 startNodesPos = nodesGrid[_battleGridData.StartNodeIDX + nodesBoundsOffset, _battleGridData.StartNodeIDY + nodesBoundsOffset].WorldPosition;
+        Vector3 endNodePos = nodesGrid[_battleGridData.StartNodeIDX + _battleGridData.Width - nodesBoundsOffset, _battleGridData.StartNodeIDY + _battleGridData.Height - nodesBoundsOffset].WorldPosition;
+        Vector4 bounds = new Vector4(startNodesPos.x, startNodesPos.z, endNodePos.x, endNodePos.z);
+
+        List<(bool, Node, UnitBase)> unitsToPushAway = new List<(bool, Node, UnitBase)>();
+
+        for (int i = 0; i < unitsToAttackInRange.Count; i++)
+        {
+            (Node, bool) pushData = _battleGridData.GlobalGrid.GetEndPushingNode(
+                unitsToAttackInRange[i].transform.position,
+                (unitsToAttackInRange[i].transform.position - attackPosition).normalized,
+                3f, bounds,
+                unitsObstacles);
+
+            unitsObstacles.Add(pushData.Item1);
+
+            if (isCreatePushPointers)
+            {
+                PushPointer newPushPointer = Object.Instantiate(_assetsContainer.PushPointer);
+                newPushPointer.ShowLine(unitsToAttackInRange[i].transform.position + Vector3.up * .2f, pushData.Item1.WorldPosition + Vector3.up * .22f, pushData.Item2 && isCanDealDamage);
+                _createdPushPointers.Add(newPushPointer);
+            }
+
+            unitsToPushAway.Add((pushData.Item2 && isCanDealDamage, pushData.Item1, unitsToAttackInRange[i]));
+        }
+
+        return unitsToPushAway;
+    }
+
+    private int DistancesComparator(UnitBase unit1, UnitBase unit2)
+    {
+        float distToFisrt = Vector3.Distance(unit1.transform.position, _distanceAttackerCheckUnit.transform.position);
+        float distToSecond = Vector3.Distance(unit2.transform.position, _distanceAttackerCheckUnit.transform.position);
+
+        if (distToFisrt == distToSecond)
+        {
+            return 0;
+        }
+        else if (distToFisrt > distToSecond)
+        {
+            return -1;
+        }
+        else
+        {
+            return 1;
+        }
+    }
+
+    public void PushTargets(List<(bool, Node, UnitBase)> unitsToPushAway, UnitBase pusher)
+    {
+        for (int i = 0; i < unitsToPushAway.Count; i++)
+        {
+            _coroutineService.StartCoroutine(PushEvent(unitsToPushAway[i].Item3, pusher, unitsToPushAway[i].Item2, unitsToPushAway[i].Item1));
+        }
+    }
+
+    private IEnumerator PushEvent(UnitBase unitToPush, UnitBase pusher, Node target, bool isTakeDamage)
+    {
+        float t = 0f;
+
+        Vector3 startPos = unitToPush.transform.position;
+
+        _imposedPairsContainer.TryRemovePair(unitToPush);
+
+        if (_battleGridData.GlobalGrid.GetNodeFromWorldPoint(unitToPush.transform.position) != target)
+        {
+            while (t <= 1f)
+            {
+                t += Time.deltaTime * 5f;
+
+                unitToPush.transform.rotation = Quaternion.Lerp(unitToPush.transform.rotation, Quaternion.LookRotation(pusher.transform.position.RemoveYCoord() - startPos.RemoveYCoord(), Vector3.up), Time.deltaTime * 10f);
+                unitToPush.transform.position = Vector3.Lerp(startPos, target.WorldPosition, t);
+
+                yield return null;
+            }
+        }
+
+        yield return new WaitForSeconds(.1f);
+
+        if (!unitToPush.IsDeadOnBattleField && isTakeDamage)
+        {
+            if (DealDamageOnUnit(unitToPush, 20f))
+            {
+                UnitDeadEvent(unitToPush);
+            }
+        }
     }
 }

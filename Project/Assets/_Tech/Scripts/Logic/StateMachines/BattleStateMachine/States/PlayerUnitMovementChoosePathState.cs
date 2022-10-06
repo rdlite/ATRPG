@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 
-public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
+public class PlayerUnitMovementChoosePathState : IState, IUpdateState
+{
     private LineRenderer _movementLinePrefab;
     private BattleGridData _battleGridData;
     private BattleRaycaster _battleRaycaster;
@@ -14,7 +15,8 @@ public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
     public PlayerUnitMovementChoosePathState(
         BattleHandler battleHandler, InputService inputService, UpdateStateMachine battleSM,
         BattleRaycaster battleRaycaster, BattleGridData battleGridData, LineRenderer movementLinePrefab,
-        AssetsContainer assetsContainer) {
+        AssetsContainer assetsContainer)
+    {
         _movementLinePrefab = movementLinePrefab;
         _battleGridData = battleGridData;
         _battleRaycaster = battleRaycaster;
@@ -28,25 +30,32 @@ public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
         _movementPointerEnd.gameObject.SetActive(false);
     }
 
-    public void Enter() {
+    public void Enter()
+    {
         _battleHandler.ShowUnitWalkingDistance(_battleHandler.CurrentSelectedUnit, false);
     }
 
-    public void Update() {
-        if (Input.GetMouseButtonDown(1) && !_inputService.IsPointerOverUIObject() && _battleHandler.CurrentSelectedUnit != null) {
+    public void Update()
+    {
+        if (Input.GetMouseButtonDown(1) && !_inputService.IsPointerOverUIObject() && _battleHandler.CurrentSelectedUnit != null)
+        {
             _battleSM.Enter<IdlePlayerMovementState>();
             return;
         }
 
-        if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject()) {
+        if (Input.GetMouseButtonDown(0) && !_inputService.IsPointerOverUIObject())
+        {
             SetUnitDestination();
             return;
-        } else {
+        }
+        else
+        {
             TryDrawWalkLine();
         }
     }
 
-    private void TryDrawWalkLine() {
+    private void TryDrawWalkLine()
+    {
         Vector3 groundPoint = _battleRaycaster.GetRaycastPoint();
 
         Node startNode = _battleGridData.GlobalGrid.GetNodeFromWorldPoint(_battleHandler.CurrentSelectedUnit.transform.position);
@@ -56,7 +65,8 @@ public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
             Quaternion.LookRotation(groundPoint.RemoveYCoord() - _battleHandler.CurrentSelectedUnit.transform.position.RemoveYCoord(), Vector3.up),
             20f * Time.deltaTime);
 
-        if (_prevMovementNode != endNodeCheckInWorld) {
+        if (_prevMovementNode != endNodeCheckInWorld)
+        {
             Node endNode = _battleGridData.GlobalGrid.GetFirstNearestWalkableNode(
            endNodeCheckInWorld,
            false,
@@ -66,12 +76,14 @@ public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
 
             _battleHandler.DeactivateMovementLine();
 
-            if (path.Length != 0) {
+            if (path.Length != 0)
+            {
                 _endMovementNode = endNode;
 
                 LineRenderer createdLine = _battleHandler.CreateMovementLinePrefab(path.Length);
 
-                for (int i = 0; i < path.Length; i++) {
+                for (int i = 0; i < path.Length; i++)
+                {
                     createdLine.SetPosition(i, path[i] + Vector3.up * .1f);
                 }
 
@@ -86,11 +98,13 @@ public class PlayerUnitMovementChoosePathState : IState, IUpdateState {
         _prevMovementNode = endNodeCheckInWorld;
     }
 
-    private void SetUnitDestination() {
+    private void SetUnitDestination()
+    {
         _battleSM.Enter<PlayerUnitMovementAnimationState, Node>(_endMovementNode);
     }
 
-    public void Exit() {
+    public void Exit()
+    {
         _movementPointerStart.gameObject.SetActive(false);
         _movementPointerEnd.gameObject.SetActive(false);
         _battleHandler.HideWalkingDistance(false);

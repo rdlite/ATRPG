@@ -108,29 +108,23 @@ public class PlayerAttackMeleeRangeState : IPayloadState<(BattleFieldActionAbili
                         {
                             if (_attackRadiusNodesMatrix[x, y] != null)
                             {
-                                if (unitNode == _attackRadiusNodesMatrix[x, y])
+                                if (unitNode == _attackRadiusNodesMatrix[x, y] && !_battleGridData.Units[i].IsDeadOnBattleField && _battleHandler.CurrentMouseOverSelectionUnit != _battleGridData.Units[i])
                                 {
                                     isActivate = true;
-                                    if (!_battleGridData.Units[i].IsDeadOnBattleField)
-                                    {
-                                        _battleHandler.ActivateAttackDecalUnderUnit(i);
-                                    }
                                 }
                             }
                         }
                     }
 
+                    _battleHandler.SetActiveAttackDecalUnderUnit(i, isActivate);
+
                     if (!isActivate)
                     {
-                        _battleHandler.SetActiveAttackDecalUnderUnit(i, false);
                         _battleHandler.DeactivateOverUnitData(_battleGridData.Units[i], false);
                     }
                     else
                     {
-                        if (!_battleGridData.Units[i].IsDeadOnBattleField && _battleHandler.CurrentMouseOverSelectionUnit != _battleGridData.Units[i])
-                        {
-                            _battleGridData.Units[i].ActivateOverUnitData(true, _battleHandler.CurrentSelectedUnit.GetUnitConfig(), _imposedPairsContainer.HasPairWith(_battleGridData.Units[i]));
-                        }
+                        _battleGridData.Units[i].ActivateOverUnitData(true, _battleHandler.CurrentSelectedUnit.GetUnitConfig(), _imposedPairsContainer.HasPairWith(_battleGridData.Units[i]));
                     }
                 }
             }
@@ -192,6 +186,6 @@ public class PlayerAttackMeleeRangeState : IPayloadState<(BattleFieldActionAbili
 
     private void TryAttackUnits(UnitBase attacker, List<UnitBase> targets, BattleFieldActionAbility ability)
     {
-        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action callback)>((attacker, targets, ability, _isPossibilityAttack, null));
+        _battleSM.Enter<AttackSequenceState, (UnitBase, List<UnitBase>, BattleFieldActionAbility, bool, System.Action, System.Action)>((attacker, targets, ability, _isPossibilityAttack, null, null));
     }
 }

@@ -210,6 +210,11 @@ public class BattleTurnsHandler
             _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^1]));
             _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^1]);
         }
+        if (!_battleGridData.Units[^2].IsDeadOnBattleField)
+        {
+            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^2]));
+            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
+        }
         //if (!_battleGridData.Units[^3].IsDeadOnBattleField)
         //{
         //    _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^3]));
@@ -229,11 +234,6 @@ public class BattleTurnsHandler
         {
             _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Player, _battleGridData.Units[3]));
             _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Player, _battleHandler, _battleGridData.Units[3]);
-        }
-        if (!_battleGridData.Units[^2].IsDeadOnBattleField)
-        {
-            _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.Enemy, _battleGridData.Units[^2]));
-            _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.Enemy, _battleHandler, _battleGridData.Units[^2]);
         }
         _turnsContainer.Add(new TurnData(TurnsUILayout.IconType.RestartRound, null));
         _uiRoot.GetPanel<BattlePanel>().AddTurnIcon(TurnsUILayout.IconType.RestartRound, null, null);
@@ -343,6 +343,12 @@ public class BattleTurnsHandler
                     }
                 }
             }
+        }
+
+        if (_battleHandler.CurrentSelectedUnit != null && deadUnit.GetType() == _battleHandler.CurrentSelectedUnit.GetType())
+        {
+            startFindID = 1;
+            startFindFromFirstIcon = true;
         }
 
         for (int i = startFindID; i < _turnsContainer.Count; i++)

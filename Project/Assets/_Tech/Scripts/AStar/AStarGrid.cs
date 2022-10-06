@@ -688,6 +688,50 @@ public class AStarGrid : MonoBehaviour
         return checkNodes;
     }
 
+    public (Node, bool) GetEndPushingNode(Vector3 startPoint, Vector3 direction, float length, Vector4 bounds, List<Node> additionalObstacles = null)
+    {
+        Node startNode = GetNodeFromWorldPoint(startPoint);
+        Node endNode = null;
+        Node lastPossiblePushNode = startNode;
+        bool isBreakPath = false;
+        float t = 0f;
+        float stepAlongLine = .1f;
+
+        while (t <= length)
+        {
+            t += stepAlongLine;
+            Vector3 checkDistance = Vector3.Lerp(startPoint, startPoint + direction * length, t / length);
+            Node checkNode = GetNodeFromWorldPoint(checkDistance);
+
+            if (checkNode != lastPossiblePushNode)
+            {
+                if (!checkNode.IsWalkable || additionalObstacles != null && additionalObstacles.Contains(checkNode))
+                {
+                    isBreakPath = true;
+                    endNode = lastPossiblePushNode;
+                    break;
+                }
+                else if (checkDistance.x <= bounds.x || checkDistance.z <= bounds.y || checkDistance.x >= bounds.z || checkDistance.z >= bounds.w)
+                {
+                    isBreakPath = false;
+                    endNode = lastPossiblePushNode;
+                    break;
+                }
+                else
+                {
+                    lastPossiblePushNode = checkNode;
+                }
+            }
+        }
+
+        if (endNode == null)
+        {
+            endNode = GetNodeFromWorldPoint(startPoint + direction * length);
+        }
+
+        return (endNode, isBreakPath);
+    }
+
     private bool IsHaveObstacleBetweenPoints(Vector3 pointA, Vector3 pointB)
     {
         return Physics.Linecast(pointA, pointB, _obstacleLayerMask);
@@ -826,7 +870,7 @@ public class AStarGrid : MonoBehaviour
         None = 0, Paths = 1, Ground = 2, Colliders = 4, PenaltyMap = 8
     }
 
-    [System.Serializable]
+    [Serializable]
     public class TerrainType
     {
         public LayerMask TerrainMask;

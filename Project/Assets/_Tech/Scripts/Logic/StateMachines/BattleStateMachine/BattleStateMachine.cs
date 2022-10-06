@@ -41,7 +41,7 @@ public class BattleStateMachine : UpdateStateMachine {
             [typeof(PlayerAroundAttackWithPush)] = new PlayerAroundAttackWithPush(
                 this, battleHandler, battleGridData,
                 imposedPairsContainer, battleRaycaster, inputService,
-                cameraFollower),
+                cameraFollower, assetsContainer, coroutineService),
             
             [typeof(UnitSelectionState)] = new UnitSelectionState(
                 battleHandler, this, turnsHandler,

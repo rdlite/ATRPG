@@ -6,6 +6,7 @@ public class AssetsContainer : ScriptableObject
 {
     [Header("Battle")]
     public GameObject BattleOverUnitSelectionPrefab;
+    public PushPointer PushPointer;
     public OverUnitWorldDataPanel BattleOverUnitDataPrefab;
     public DecalProjector UnderUnitDecalPrefab;
     public DecalProjector AttackUnderUnitDecalPrefab;

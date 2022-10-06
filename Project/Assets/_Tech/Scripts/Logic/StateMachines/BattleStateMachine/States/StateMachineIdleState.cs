@@ -1,9 +1,12 @@
-﻿public class StateMachineIdleState : IState {
-    public void Enter() {
+﻿public class StateMachineIdleState : IState
+{
+    public void Enter()
+    {
 
     }
 
-    public void Exit() {
+    public void Exit()
+    {
 
     }
 }
